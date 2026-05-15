@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type FormState = {
   companyName: string;
@@ -21,7 +22,7 @@ const initialForm: FormState = {
   secondaryColor: "#ffffff",
   supportEmail: "",
   currency: "USD",
-  planType: "Beginner"
+  planType: "Beginner",
 };
 
 function slugify(value: string) {
@@ -33,9 +34,10 @@ function slugify(value: string) {
 }
 
 export default function CompanySignupPage() {
+  const router = useRouter();
+
   const [form, setForm] = useState<FormState>(initialForm);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
   const slugPreview = useMemo(() => slugify(form.companyName), [form.companyName]);
@@ -47,16 +49,15 @@ export default function CompanySignupPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
-    setMessage("");
     setError("");
 
     try {
       const response = await fetch("/api/company-signup", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
 
       const data = await response.json();
@@ -65,8 +66,7 @@ export default function CompanySignupPage() {
         throw new Error(data.message || "Unable to create company");
       }
 
-      setMessage(`${data.company.companyName} is ready with slug ${data.company.slug}.`);
-      setForm(initialForm);
+      router.push(`/pricing?company=${data.company.slug}`);
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -95,10 +95,8 @@ export default function CompanySignupPage() {
             <p className="panel-kicker">Workspace details</p>
             <h2>Create company</h2>
           </div>
-          <span className="plan-pill">{form.planType}</span>
         </div>
 
-        {message && <div className="form-alert success">{message}</div>}
         {error && <div className="form-alert error">{error}</div>}
 
         <form className="signup-form" onSubmit={handleSubmit}>
@@ -172,23 +170,6 @@ export default function CompanySignupPage() {
                 <option value="INR">INR</option>
                 <option value="EUR">EUR</option>
                 <option value="GBP">GBP</option>
-              </select>
-            </label>
-
-            <label>
-              <span>Plan</span>
-              <select
-                value={form.planType}
-                onChange={(event) =>
-                  updateField(
-                    "planType",
-                    event.target.value as FormState["planType"]
-                  )
-                }
-              >
-                <option value="Beginner">Beginner</option>
-                <option value="Professional">Professional</option>
-                <option value="Enterprise">Enterprise</option>
               </select>
             </label>
           </div>
