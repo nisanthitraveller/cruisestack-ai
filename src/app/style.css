@@ -518,10 +518,36 @@
 }
 .cruise-page-body .cruise-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 24px;
+  
   max-width: 1100px;
   margin: 0 auto;
+}
+.cruise-grid .row{
+  display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: center;
+    gap: 5px;
+}
+.cruise-grid .row .col {
+    border: 1px solid #ebebeb;
+    width: 22%;
+    height: 101px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+  } 
+  @media (max-width: 480px) {
+    .cruise-grid .row .col {
+      width: 31%;
+      height: 47px;
+    }
+  }
+  .col.lgs img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
 }
 .cruise-page-body .cruise-logo-cell {
   background: white;

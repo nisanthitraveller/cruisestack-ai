@@ -2,6 +2,36 @@ import React from 'react';
 import './style.css'; // Adjust this path based on where you save the CSS file
 import heroImg from '../assets/hero.png'
 import ftrImg from '../assets/ftr.png'
+import lg1 from "../assets/1-Carnival.svg";
+import lg2 from "../assets/2-RCL.svg";
+import lg3 from "../assets/3-Celebrity.svg";
+import lg4 from "../assets/4-Cordelia.svg";
+import lg5 from "../assets/5-MSC.svg";
+import lg6 from "../assets/6-Norwegian.svg";
+import lg7 from "../assets/7-Holland.svg";
+import lg8 from "../assets/8-Princess.svg";
+import lg9 from "../assets/9-Costa.svg";
+import lg10 from "../assets/10-RWC.svg";
+import lg11 from "../assets/11-Windstar.svg";
+import lg12 from "../assets/12-Seabourn.svg";
+import lg13 from "../assets/13-Disney.svg";
+import lg14 from "../assets/14-Crystal.svg";
+import lg15 from "../assets/15-Ponant.svg";
+import lg16 from "../assets/16-Cunard.svg";
+import lg17 from "../assets/17-Oceania.svg";
+import lg18 from "../assets/18-Fred Olsen.svg";
+import lg19 from "../assets/19-Azamara.svg";
+import lg20 from "../assets/20-Viking.svg";
+import lg21 from "../assets/21-Silversea.svg";
+import lg22 from "../assets/22-Star Cruise.svg";
+import lg23 from "../assets/23-Emerald.svg";
+import lg24 from "../assets/24-Avalon.svg";
+import lg25 from "../assets/25-Uniworld.svg";
+import lg26 from "../assets/26-Celestyal.svg";
+import lg27 from "../assets/27-AMA.svg";
+import lg28 from "../assets/28-Virgin.svg";
+import lg29 from "../assets/29-Croisi.svg";
+import Image from 'next/image';
 
 export default function CruiseCommercePage() {
 
@@ -175,7 +205,7 @@ const ftrimgsect = {
         <div className="dashboard-mockup">
           <div className="db-topbar">
             <span className="db-logo">⚓ CruiseEngine</span>
-            <div className="db-dots"><div className="db-dot"></div><div class="db-dot"></div><div class="db-dot"></div></div>
+            <div className="db-dots"><div className="db-dot"></div><div className="db-dot"></div><div className="db-dot"></div></div>
           </div>
           <div className="db-body">
             <div className="db-sidebar">
@@ -254,7 +284,103 @@ const ftrimgsect = {
           <p>Connect, compare and book from the world's best cruise brands.</p>
         </div>
         <div className="cruise-grid">
-          <div className="cruise-logo-cell"><span>NCL<br />NORWEGIAN</span></div>
+          
+                <div className="row">
+                  <div className="col lgs">
+                    <Image src={lg1} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg2} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg3} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg4} alt="" width={100} height={100}  />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg5} alt="" width={100} height={100} />
+                  </div>
+               
+                  <div className="col lgs">
+                    <Image src={lg6} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg7} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg8} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg9} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg10} alt="" width={100} height={100} />
+                  </div>
+                
+                  <div className="col lgs">
+                    <Image src={lg11} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg12} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg13} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg14} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg15} alt="" width={100} height={100}  />
+                  </div>
+               
+                  <div className="col lgs">
+                    <Image src={lg16} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg17} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg18} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg19} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg20} alt="" width={100} height={100} />
+                  </div>
+               
+                  <div className="col lgs">
+                    <Image src={lg21} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg22} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg23} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg24} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg25} alt="" width={100} height={100} />
+                  </div>
+               
+                  <div className="col lgs">
+                    <Image src={lg26} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg27} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg28} alt="" width={100} height={100} />
+                  </div>
+                  <div className="col lgs">
+                    <Image src={lg29} alt="" />
+                  </div>
+                </div>
+              
+          {/* <div className="cruise-logo-cell"><span>NCL<br />NORWEGIAN</span></div>
           <div className="cruise-logo-cell"><span>☀ MSC CRUISES</span></div>
           <div className="cruise-logo-cell"><span>Costa</span></div>
           <div className="cruise-logo-cell"><span>🌟 DREAM CRUISES</span></div>
@@ -277,7 +403,7 @@ const ftrimgsect = {
           <div className="cruise-logo-cell"><span>P&O CRUISES</span></div>
           <div className="cruise-logo-cell"><span>HX HURTIGRUTEN EXPEDITIONS</span></div>
           <div className="cruise-logo-cell"><span>⬡ HURTIGRUTEN</span></div>
-          <div className="cruise-logo-cell more"><span>& MORE</span></div>
+          <div className="cruise-logo-cell more"><span>& MORE</span></div> */}
         </div>
       </section>
 
