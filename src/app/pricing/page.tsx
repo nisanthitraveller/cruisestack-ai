@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Script from "next/script";
 
 const plans = [
@@ -14,6 +16,7 @@ const plans = [
     estimated: "~$1300",
     bookings: "up to 50 bookings",
     buyButtonId: "buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B",
+    stripePriceId: "price_1TXERSEmqvBXj5NHd0ImLbQk",
   },
   {
     name: "Professional",
@@ -26,6 +29,7 @@ const plans = [
     estimated: "~$1800",
     bookings: "up to 100 bookings",
     buyButtonId: "buy_btn_1TXFHhEmqvBXj5NHX68zHgJi",
+    stripePriceId: "price_1TXERoEmqvBXj5NHejeHS6Kk",
   },
   {
     name: "Enterprise",
@@ -38,10 +42,14 @@ const plans = [
     estimated: "~$2700",
     bookings: "up to 200 bookings",
     buyButtonId: "buy_btn_1TXFJjEmqvBXj5NHAMCe0CWw",
+    stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
   },
 ];
 
-export default function PricingPage() {
+function PricingContent() {
+  const searchParams = useSearchParams();
+  const companySlug = searchParams?.get("company") || undefined;
+
   return (
     <main className="pricing-page">
       <Script
@@ -97,11 +105,20 @@ export default function PricingPage() {
               <stripe-buy-button
                 buy-button-id={plan.buyButtonId}
                 publishable-key="pk_test_xQRIZXb6NdxLp0H7njlt4fcb009VCIPwSf"
+                client-reference-id={companySlug}
               />
             </div>
           </article>
         ))}
       </section>
     </main>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={null}>
+      <PricingContent />
+    </Suspense>
   );
 }
