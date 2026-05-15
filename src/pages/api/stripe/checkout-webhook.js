@@ -272,6 +272,91 @@ async function upsertCompanySubscription(connection, details) {
   return result.insertId;
 }
 
+async function copyMasterCommissionToCompany(connection, company, planId) {
+  if (!company?.id || !company?.slug || !planId) {
+  console.log("Skipping commission copy. Missing:", {
+    companyId: company?.id,
+    slug: company?.slug,
+    planId,
+  });
+  return;
+}
+
+  const tablePrefix = company.slug
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  const agentTable = `${tablePrefix}_agent`;
+  const commissionTable = `${tablePrefix}_agent_commission`;
+
+  const [agents] = await connection.query(
+    `
+    SELECT id
+    FROM \`${agentTable}\`
+    WHERE company_id = ?
+    ORDER BY id ASC
+    LIMIT 1
+    `,
+    [company.id]
+  );
+
+  if (agents.length === 0) {
+    throw new Error(`No agent found in ${agentTable}`);
+  }
+
+  const agentId = agents[0].id;
+
+  const [existing] = await connection.query(
+    `
+    SELECT id
+    FROM \`${commissionTable}\`
+    WHERE tour_agent_id = ?
+      AND company_id = ?
+    LIMIT 1
+    `,
+    [agentId, company.id]
+  );
+
+  if (existing.length > 0) return;
+
+  await connection.query(
+    `
+    INSERT INTO \`${commissionTable}\`
+      (
+        tour_agent_id,
+        cruiseline_id,
+        commission,
+        discount,
+        markup,
+        gmc_discount,
+        created_at,
+        updated_at,
+        status,
+        company_id
+      )
+    SELECT
+      ?,
+      cruiseline_id,
+      commission,
+      discount,
+      markup,
+      gmc_discount,
+      NOW(),
+      NOW(),
+      status,
+      ?
+    FROM cruisestack_master_commission
+    WHERE subscription_plan_id = ?
+    `,
+    [agentId, company.id, planId]
+  );
+  console.log(
+  `Copied commission data into ${commissionTable} for company ${company.id}, agent ${agentId}, plan ${planId}`
+);
+}
+
 async function handleCheckoutCompleted(connection, session) {
   const company = await findCompanyBySlug(connection, session.client_reference_id);
 
@@ -315,6 +400,8 @@ async function handleCheckoutCompleted(connection, session) {
     currentPeriodEnd: stripeDateToMysql(subscription?.current_period_end),
     cancelAtPeriodEnd: subscription?.cancel_at_period_end || false,
   });
+
+  await copyMasterCommissionToCompany(connection, company, plan?.id || null);
 
   if (plan?.plan_name && planNames.has(plan.plan_name)) {
     await connection.query("UPDATE companies SET plan_type = ? WHERE id = ?", [

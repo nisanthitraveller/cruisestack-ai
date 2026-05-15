@@ -32,6 +32,7 @@ import lg27 from "../assets/27-AMA.svg";
 import lg28 from "../assets/28-Virgin.svg";
 import lg29 from "../assets/29-Croisi.svg";
 import Image from 'next/image';
+import Link from "next/link";
 
 export default function CruiseCommercePage() {
 
@@ -63,9 +64,15 @@ const ftrimgsect = {
           <li><a href="#">Resources <span className="chevron">▾</span></a></li>
           <li><a href="#">Company <span className="chevron">▾</span></a></li>
         </ul>
+        
         <div className="nav-actions">
-          <button className="btn-ghost">Log In</button>
-          <button className="btn-primary">Book a Demo</button>
+        <Link href="/signup" className="btn-ghost">
+         Sign Up
+        </Link>
+
+        <Link href="/bookdemo" className="btn-primary">
+         Book a Demo
+        </Link>
         </div>
       </nav>
 
