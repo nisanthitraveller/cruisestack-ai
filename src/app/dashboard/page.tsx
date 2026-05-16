@@ -5,6 +5,9 @@ import {
   getDashboardData,
   verifyAgentSessionToken,
 } from "@/lib/agentAuth";
+import cruiseNames from "@/data/cruises.json";
+
+const cruiseNameMap = cruiseNames as Record<string, string>;
 
 function formatDate(value: string | Date | null) {
   if (!value) return "Not available";
@@ -32,6 +35,18 @@ function formatPercent(value: number | string | null) {
   return `${Number(value).toFixed(2)}%`;
 }
 
+function formatValue(value: string | number | null | undefined) {
+  if (value === null || value === undefined || value === "") return "Not available";
+
+  return String(value);
+}
+
+function getCruiseLineName(cruiselineId: string | number | null) {
+  const id = String(cruiselineId || "");
+
+  return cruiseNameMap[id] || (id ? `Cruiseline ${id}` : "Unknown cruiseline");
+}
+
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const session = verifyAgentSessionToken(
@@ -56,6 +71,7 @@ export default async function DashboardPage() {
     : [];
   const subscription = dashboard.subscription;
   const commissionSummary = dashboard.commissionSummary;
+  const agentDetails = dashboard.agentDetails || dashboard.agent;
 
   return (
     <main className="dashboard-page">
@@ -116,6 +132,86 @@ export default async function DashboardPage() {
         <section className="dashboard-section">
           <div className="section-heading">
             <div>
+              <p className="panel-kicker">Company</p>
+              <h3>Workspace information</h3>
+            </div>
+          </div>
+
+          <div className="detail-grid profile-grid">
+            <div>
+              <span>Company name</span>
+              <strong>{formatValue(dashboard.company.company_name)}</strong>
+            </div>
+            <div>
+              <span>Slug</span>
+              <strong>{formatValue(dashboard.company.slug)}</strong>
+            </div>
+            <div>
+              <span>Support email</span>
+              <strong>{formatValue(dashboard.company.support_email)}</strong>
+            </div>
+            <div>
+              <span>Currency</span>
+              <strong>{formatValue(dashboard.company.currency)}</strong>
+            </div>
+            <div>
+              <span>Plan type</span>
+              <strong>{formatValue(dashboard.company.plan_type)}</strong>
+            </div>
+            <div>
+              <span>Status</span>
+              <strong>{Number(dashboard.company.status) === 1 ? "Active" : "Inactive"}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="dashboard-section">
+          <div className="section-heading">
+            <div>
+              <p className="panel-kicker">Agent</p>
+              <h3>Logged-in agent information</h3>
+            </div>
+          </div>
+
+          <div className="detail-grid profile-grid">
+            <div>
+              <span>Name</span>
+              <strong>{formatValue(agentDetails.name)}</strong>
+            </div>
+            <div>
+              <span>Email</span>
+              <strong>{formatValue(agentDetails.email)}</strong>
+            </div>
+            <div>
+              <span>Mobile</span>
+              <strong>{formatValue(agentDetails.mobile)}</strong>
+            </div>
+            <div>
+              <span>Type</span>
+              <strong>{formatValue(agentDetails.type)}</strong>
+            </div>
+            <div>
+              <span>Agency code</span>
+              <strong>{formatValue(agentDetails.agency_code)}</strong>
+            </div>
+            <div>
+              <span>User ID</span>
+              <strong>{formatValue(agentDetails.user_id)}</strong>
+            </div>
+            <div>
+              <span>Contact person</span>
+              <strong>{formatValue(agentDetails.primary_contact_name)}</strong>
+            </div>
+            <div>
+              <span>Address</span>
+              <strong>{formatValue(agentDetails.address)}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="dashboard-section">
+          <div className="section-heading">
+            <div>
               <p className="panel-kicker">Subscription</p>
               <h3>Billing setup</h3>
             </div>
@@ -165,7 +261,10 @@ export default async function DashboardPage() {
             {commissionRows.length > 0 ? (
               commissionRows.map((row) => (
                 <div className="table-row" key={String(row.cruiseline_id)}>
-                  <span>{row.cruiseline_id}</span>
+                  <span>
+                    <strong>{getCruiseLineName(row.cruiseline_id)}</strong>
+                    <small>ID {row.cruiseline_id}</small>
+                  </span>
                   <span>{formatPercent(row.commission)}</span>
                   <span>{formatPercent(row.discount)}</span>
                   <span>{formatPercent(row.markup)}</span>

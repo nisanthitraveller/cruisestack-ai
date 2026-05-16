@@ -169,7 +169,38 @@ export async function getDashboardData(session) {
     }
 
     const tablePrefix = tableSafePrefix(company.slug);
+    const agentTable = `${tablePrefix}_agent`;
     const commissionTable = `${tablePrefix}_agent_commission`;
+
+    const [agents] = await connection.query(
+      `
+      SELECT
+        id,
+        name,
+        email,
+        mobile,
+        company_name,
+        address,
+        primary_contact_name,
+        gst_number,
+        bank_name,
+        bank_account_number,
+        bank_account_name,
+        ifsc_code,
+        branch_name,
+        logo,
+        status,
+        type,
+        user_id,
+        agency_code,
+        company_id
+      FROM \`${agentTable}\`
+      WHERE company_id = ?
+        AND id = ?
+      LIMIT 1
+      `,
+      [company.id, session.agentId]
+    );
 
     const [subscriptions] = await connection.query(
       `
@@ -234,6 +265,7 @@ export async function getDashboardData(session) {
 
     return {
       agent: session,
+      agentDetails: agents[0] || null,
       company,
       subscription: subscriptions[0] || null,
       billingHistory,

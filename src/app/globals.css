@@ -580,6 +580,11 @@ h1 {
 
 .detail-grid strong {
   font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.profile-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .dashboard-table {
@@ -610,6 +615,18 @@ h1 {
 .table-row:not(.header) {
   border-top: 1px solid var(--border);
   color: #293431;
+}
+
+.table-row strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.table-row small {
+  color: #63706b;
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 3px;
 }
 
 .empty-state {
@@ -758,7 +775,8 @@ h1 {
   }
 
   .metric-grid,
-  .detail-grid {
+  .detail-grid,
+  .profile-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -784,7 +802,8 @@ h1 {
   }
 
   .metric-grid,
-  .detail-grid {
+  .detail-grid,
+  .profile-grid {
     grid-template-columns: 1fr;
   }
 
