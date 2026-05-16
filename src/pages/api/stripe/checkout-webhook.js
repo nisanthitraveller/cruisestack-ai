@@ -373,10 +373,15 @@ async function handleCheckoutCompleted(connection, session) {
   const lineItem = fullSession.line_items?.data?.[0];
   const price = lineItem?.price || null;
   const product = price?.product || null;
-  const subscription =
-    typeof fullSession.subscription === "string"
-      ? null
-      : fullSession.subscription;
+  let subscription = null;
+
+if (typeof fullSession.subscription === "string") {
+  subscription = await stripe.subscriptions.retrieve(
+    fullSession.subscription
+  );
+} else {
+  subscription = fullSession.subscription;
+}
   const plan = await findPlanByPrice(connection, price?.id);
 
   await upsertCompanySubscription(connection, {

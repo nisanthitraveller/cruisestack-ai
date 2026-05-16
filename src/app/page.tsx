@@ -120,7 +120,7 @@ const ftrimgsect = {
           {/* Deal card */}
           <div className="deal-card">
             <div className="deal-info">
-              <div className="deal-label">Today's Top Deal</div>
+              <div className="deal-label">Today&apos;s Top Deal</div>
               <div className="deal-title">7 Night Western Caribbean from Miami, USA</div>
               <div className="deal-price">US$ 699 <span>/pp</span></div>
               <div className="deal-link">View Details</div>
@@ -288,7 +288,7 @@ const ftrimgsect = {
       <section className="cruise-lines">
         <div className="section-header">
           <h2>Integrated with 32+ Leading Cruise Lines</h2>
-          <p>Connect, compare and book from the world's best cruise brands.</p>
+          <p>Connect, compare and book from the world&apos;s best cruise brands.</p>
         </div>
         <div className="cruise-grid">
           
@@ -476,7 +476,7 @@ const ftrimgsect = {
           </div>
 
           <div className="footer-col footer-contact">
-            <h4>Have Questions? Let's Talk.</h4>
+            <h4>Have Questions? Let&apos;s Talk.</h4>
             <p>Our experts are ready to help you choose the right plan and grow your cruise business.</p>
             <div className="footer-contact-btns">
               <button className="btn-primary">Book a Demo</button>
