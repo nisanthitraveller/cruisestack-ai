@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
+import { appUrl } from "@/lib/appUrl";
 import { AGENT_SESSION_COOKIE } from "@/lib/agentAuth";
 
 export async function POST(request) {
-  const response = NextResponse.redirect(new URL("/login", request.url), 303);
+  const response = NextResponse.redirect(appUrl(request, "/login"), 303);
 
   response.cookies.set(AGENT_SESSION_COOKIE, "", {
     httpOnly: true,

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { appUrl } from "@/lib/appUrl";
 import pool from "@/lib/db_mysql";
 import {
   AGENT_SESSION_COOKIE,
@@ -12,7 +13,7 @@ import {
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 function dashboardRedirect(request, path) {
-  return NextResponse.redirect(new URL(path, request.url));
+  return NextResponse.redirect(appUrl(request, path));
 }
 
 export async function GET(request) {
