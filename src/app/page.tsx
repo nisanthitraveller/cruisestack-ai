@@ -31,6 +31,8 @@ import lg26 from "../assets/26-Celestyal.svg";
 import lg27 from "../assets/27-AMA.svg";
 import lg28 from "../assets/28-Virgin.svg";
 import lg29 from "../assets/29-Croisi.svg";
+import logoMain from "../assets/logo.svg";
+import logoft from "../assets/logo-white.png";
 import Image from 'next/image';
 import Link from "next/link";
 
@@ -51,23 +53,23 @@ const ftrimgsect = {
       
       {/* ───── NAV ───── */}
       <nav>
-        <a href="#" className="nav-logo">
-          <div className="anchor-icon">⚓</div>
-          <div className="logo-text">
-            <span className="logo-name">CruiseEngine</span>
-            <span className="logo-sub">Powering Cruise Commerce</span>
-          </div>
+        <div className='container-nav'>
+          <a href="#" className="nav-logo">
+            
+              <Image src={logoMain} alt="CruiseEngine" width={190}/>
+           
+           
         </a>
         <ul className="nav-links">
-          <li><a href="#">Product <span className="chevron">▾</span></a></li>
-          <li><a href="#">Solutions <span className="chevron">▾</span></a></li>
-          <li><a href="#">Resources <span className="chevron">▾</span></a></li>
-          <li><a href="#">Company <span className="chevron">▾</span></a></li>
+          <li><a href="#">Product</a></li>
+          <li><a href="#">Solutions </a></li>
+          <li><a href="#">Resources </a></li>
+          <li><a href="#">Company </a></li>
         </ul>
         
         <div className="nav-actions">
         <Link href="/login" className="btn-ghost">
-         Agent Sign In
+         Login
         </Link>
 
         <Link href="/signup" className="btn-ghost">
@@ -78,13 +80,15 @@ const ftrimgsect = {
          Book a Demo
         </Link>
         </div>
+        </div>
       </nav>
 
       {/* ───── HERO ───── */}
       <section className="hero" style={sectionStyle}>
+      <div className='container-hero'>
         <div className="hero-content">
           <span className="hero-badge">All-in-one Cruise Booking Engine</span>
-          <h1>The Complete Cruise Commerce Platform for Modern Travel Businesses</h1>
+          <h1>The complete cruise commerce platform for modern travel businesses</h1>
           <p>Power your brand with real-time inventory, instant quotations, secure bookings and end-to-end operations—across 32+ global cruise lines.</p>
           <div className="hero-btns">
             <button className="btn-primary" style={{ padding: '13px 28px', fontSize: '15px' }}>Book a Demo</button>
@@ -122,7 +126,7 @@ const ftrimgsect = {
           </div>
 
           {/* Deal card */}
-          <div className="deal-card">
+          {/* <div className="deal-card">
             <div className="deal-info">
               <div className="deal-label">Today&apos;s Top Deal</div>
               <div className="deal-title">7 Night Western Caribbean from Miami, USA</div>
@@ -132,13 +136,13 @@ const ftrimgsect = {
             <div className="deal-img">
               <img src="https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?w=144&q=80" alt="cruise ship" />
             </div>
-          </div>
-        </div>
+          </div> */}
+        </div></div>
       </section>
 
       {/* ───── TRUST BAR ───── */}
       <section className="trust-bar">
-        <p>Trusted by Leading Travel Brands Worldwide</p>
+        <p>Trusted by leading travel brands worldwide</p>
         <div className="trust-logos">
           <span className="trust-logo script">Dream Vacations</span>
           <span className="trust-logo blue">FLY CRUISE</span>
@@ -152,7 +156,7 @@ const ftrimgsect = {
       {/* ───── FEATURES ───── */}
       <section className="features">
         <div className="section-header">
-          <h2>Everything You Need to Sell Cruises, Effortlessly</h2>
+          <h2>Everything you need to sell cruises, effortlessly</h2>
           <p>Built for travel agencies, OTAs, and enterprises to grow, automate and scale.</p>
         </div>
         <div className="features-grid">
@@ -203,7 +207,7 @@ const ftrimgsect = {
       <section className="platform">
         <div className='container'>
           <div className="platform-content">
-          <h2>Powerful Platform.<br />Seamless Experience.</h2>
+          <h2>Powerful platform.<br />seamless experience.</h2>
           <ul className="platform-list">
             <li>iFrame integration in any website</li>
             <li>White-label &amp; brand customizable</li>
@@ -291,7 +295,7 @@ const ftrimgsect = {
       {/* ───── CRUISE LINES ───── */}
       <section className="cruise-lines">
         <div className="section-header">
-          <h2>Integrated with 32+ Leading Cruise Lines</h2>
+          <h2>Integrated with 32+ leading cruise lines</h2>
           <p>Connect, compare and book from the world&apos;s best cruise brands.</p>
         </div>
         <div className="cruise-grid">
@@ -421,7 +425,7 @@ const ftrimgsect = {
       {/* ───── CTA ───── */}
       <section className="cta" style={ftrimgsect}>
         <div className="cta-content">
-          <h2>Ready to Grow Your Cruise Business?</h2>
+          <h2>Ready to grow your cruise business?</h2>
           <p>Join hundreds of travel businesses that trust CruiseEngine to power their cruise commerce.</p>
           <div className="cta-btns">
             <button className="btn-white">Book a Demo</button>
@@ -435,11 +439,7 @@ const ftrimgsect = {
         <div className="footer-top">
           <div className="footer-brand">
             <a href="#" className="nav-logo" style={{ textDecoration: 'none' }}>
-              <div className="anchor-icon">⚓</div>
-              <div className="logo-text">
-                <span className="logo-name">CruiseEngine</span>
-                <span className="logo-sub" style={{ color: 'rgba(255,255,255,.4)' }}>Powering Cruise Commerce</span>
-              </div>
+             <Image src={logoft} alt="CruiseEngine" width={190}/>
             </a>
             <p>The most complete cruise booking engine for travel companies worldwide.</p>
             <div className="social-links">
@@ -490,7 +490,7 @@ const ftrimgsect = {
         </div>
 
         <div className="footer-bottom">
-          <span>© 2024 CruiseEngine. All rights reserved.</span>
+          <span>© 2026 CruiseEngine. All rights reserved.</span>
           <div className="footer-bottom-links">
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
