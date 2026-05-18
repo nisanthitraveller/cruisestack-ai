@@ -14,77 +14,6 @@ export function tableSafePrefix(value) {
     .slice(0, 100);
 }
 
-function getSessionSecret() {
-  return (
-    process.env.AGENT_SESSION_SECRET ||
-    process.env.NEXTAUTH_SECRET ||
-    process.env.STRIPE_WEBHOOK_SECRET ||
-    "cruisestack-dev-agent-session-secret"
-  );
-}
-
-function base64UrlEncode(value) {
-  return Buffer.from(value).toString("base64url");
-}
-
-function base64UrlJson(value) {
-  return base64UrlEncode(JSON.stringify(value));
-}
-
-function sign(value) {
-  return crypto
-    .createHmac("sha256", getSessionSecret())
-    .update(value)
-    .digest("base64url");
-}
-
-function timingSafeEqual(left, right) {
-  const leftBuffer = Buffer.from(left);
-  const rightBuffer = Buffer.from(right);
-
-  if (leftBuffer.length !== rightBuffer.length) return false;
-
-  return crypto.timingSafeEqual(leftBuffer, rightBuffer);
-}
-
-export function createAgentSessionToken(agent) {
-  const now = Math.floor(Date.now() / 1000);
-  const payload = {
-    agentId: agent.id,
-    companyId: agent.company_id,
-    companySlug: agent.company_slug,
-    email: agent.email,
-    name: agent.name,
-    type: agent.type,
-    iat: now,
-    exp: now + SESSION_MAX_AGE_SECONDS,
-  };
-  const encodedPayload = base64UrlJson(payload);
-
-  return `${encodedPayload}.${sign(encodedPayload)}`;
-}
-
-export function verifyAgentSessionToken(token) {
-  if (!token || typeof token !== "string") return null;
-
-  const [encodedPayload, signature] = token.split(".");
-  if (!encodedPayload || !signature) return null;
-
-  const expectedSignature = sign(encodedPayload);
-  if (!timingSafeEqual(signature, expectedSignature)) return null;
-
-  try {
-    const payload = JSON.parse(Buffer.from(encodedPayload, "base64url").toString());
-    const now = Math.floor(Date.now() / 1000);
-
-    if (!payload.exp || payload.exp < now) return null;
-
-    return payload;
-  } catch {
-    return null;
-  }
-}
-
 export function getAgentCookieOptions() {
   return {
     httpOnly: true,
@@ -93,6 +22,148 @@ export function getAgentCookieOptions() {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
   };
+}
+
+function getCookieValue(source, name) {
+  if (!source) return null;
+
+  if (typeof source.get === "function") {
+    const cookie = source.get(name);
+    if (typeof cookie === "string") return cookie;
+    return cookie?.value || null;
+  }
+
+  if (typeof source.cookies?.get === "function") {
+    const cookie = source.cookies.get(name);
+    if (typeof cookie === "string") return cookie;
+    return cookie?.value || null;
+  }
+
+  const cookieHeader =
+    typeof source.headers?.get === "function"
+      ? source.headers.get("cookie")
+      : source.headers?.cookie;
+
+  if (!cookieHeader) return null;
+
+  const cookies = cookieHeader.split(";").map((cookie) => cookie.trim());
+  const matchedCookie = cookies.find((cookie) => cookie.startsWith(`${name}=`));
+
+  return matchedCookie
+    ? decodeURIComponent(matchedCookie.slice(name.length + 1))
+    : null;
+}
+
+function createSessionExpiry() {
+  return new Date(Date.now() + SESSION_MAX_AGE_SECONDS * 1000);
+}
+
+function getWhitelabelSessionTable(companySlug) {
+  return `${tableSafePrefix(companySlug)}_whitelabel_sessions`;
+}
+
+function encodeSessionCookie(companySlug, token) {
+  return `${companySlug}.${token}`;
+}
+
+function decodeSessionCookie(value) {
+  if (!value || typeof value !== "string") return null;
+
+  const separatorIndex = value.indexOf(".");
+  if (separatorIndex === -1) return null;
+
+  const companySlug = value.slice(0, separatorIndex);
+  const token = value.slice(separatorIndex + 1);
+
+  if (!companySlug || !token) return null;
+
+  return { companySlug, token };
+}
+
+export async function createAgentSession(connection, agent, company) {
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = createSessionExpiry();
+  const sessionTable = getWhitelabelSessionTable(company.slug);
+
+  await connection.query(
+    `
+    INSERT INTO \`${sessionTable}\`
+      (token, agent_id, expires_at)
+    VALUES
+      (?, ?, ?)
+    `,
+    [token, agent.id, expiresAt]
+  );
+
+  return encodeSessionCookie(company.slug, token);
+}
+
+export async function getAgentFromSession(source) {
+  const sessionCookie = decodeSessionCookie(
+    getCookieValue(source, AGENT_SESSION_COOKIE)
+  );
+
+  if (!sessionCookie) return null;
+
+  const connection = await pool.getConnection();
+
+  try {
+    const company = await findCompanyBySlug(connection, sessionCookie.companySlug);
+
+    if (!company) return null;
+
+    const sessionTable = getWhitelabelSessionTable(company.slug);
+
+    const [sessions] = await connection.query(
+      `
+      SELECT
+        token,
+        agent_id AS agentId,
+        expires_at AS expiresAt
+      FROM \`${sessionTable}\`
+      WHERE token = ?
+        AND expires_at > NOW()
+      LIMIT 1
+      `,
+      [sessionCookie.token]
+    );
+
+    if (!sessions[0]) return null;
+
+    return {
+      token: sessionCookie.token,
+      companyId: company.id,
+      companySlug: company.slug,
+      agentId: sessions[0].agentId,
+      expiresAt: sessions[0].expiresAt,
+    };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function clearAgentSession(source) {
+  const sessionCookie = decodeSessionCookie(
+    getCookieValue(source, AGENT_SESSION_COOKIE)
+  );
+
+  if (!sessionCookie) return;
+
+  const connection = await pool.getConnection();
+
+  try {
+    const company = await findCompanyBySlug(connection, sessionCookie.companySlug);
+
+    if (!company) return;
+
+    const sessionTable = getWhitelabelSessionTable(company.slug);
+
+    await connection.query(`DELETE FROM \`${sessionTable}\` WHERE token = ?`, [
+      sessionCookie.token,
+    ]);
+  } finally {
+    connection.release();
+  }
 }
 
 export async function findCompanyBySlug(connection, slug) {

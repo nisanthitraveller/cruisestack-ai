@@ -10,6 +10,7 @@ type FormState = {
   primaryColor: string;
   secondaryColor: string;
   supportEmail: string;
+  adminPassword: string;
   currency: string;
   planType: "Beginner" | "Professional" | "Enterprise";
 };
@@ -21,6 +22,7 @@ const initialForm: FormState = {
   primaryColor: "#003366",
   secondaryColor: "#ffffff",
   supportEmail: "",
+  adminPassword: "",
   currency: "USD",
   planType: "Beginner",
 };
@@ -118,6 +120,18 @@ export default function CompanySignupPage() {
               value={form.supportEmail}
               onChange={(event) => updateField("supportEmail", event.target.value)}
               placeholder="support@company.com"
+            />
+          </label>
+
+          <label>
+            <span>Admin password</span>
+            <input
+              required
+              minLength={8}
+              type="password"
+              value={form.adminPassword}
+              onChange={(event) => updateField("adminPassword", event.target.value)}
+              placeholder="Minimum 8 characters"
             />
           </label>
 

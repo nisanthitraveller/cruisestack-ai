@@ -1,10 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import {
-  AGENT_SESSION_COOKIE,
-  getDashboardData,
-  verifyAgentSessionToken,
-} from "@/lib/agentAuth";
+import { getAgentFromSession, getDashboardData } from "@/lib/agentAuth";
 import cruiseNames from "@/data/cruises.json";
 
 const cruiseNameMap = cruiseNames as Record<string, string>;
@@ -49,9 +45,7 @@ function getCruiseLineName(cruiselineId: string | number | null) {
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
-  const session = verifyAgentSessionToken(
-    cookieStore.get(AGENT_SESSION_COOKIE)?.value
-  );
+  const session = await getAgentFromSession(cookieStore);
 
   if (!session) {
     redirect("/login");

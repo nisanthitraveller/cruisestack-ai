@@ -4,7 +4,7 @@ import { appUrl } from "@/lib/appUrl";
 import pool from "@/lib/db_mysql";
 import {
   AGENT_SESSION_COOKIE,
-  createAgentSessionToken,
+  createAgentSession,
   findCompanyBySlug,
   findFirstCompanyAgent,
   getAgentCookieOptions,
@@ -59,7 +59,7 @@ export async function GET(request) {
     const response = dashboardRedirect(request, "/dashboard");
     response.cookies.set(
       AGENT_SESSION_COOKIE,
-      createAgentSessionToken(agent),
+      await createAgentSession(connection, agent, company),
       getAgentCookieOptions()
     );
 

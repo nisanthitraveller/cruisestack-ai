@@ -66,6 +66,10 @@ const ftrimgsect = {
         </ul>
         
         <div className="nav-actions">
+        <Link href="/login" className="btn-ghost">
+         Agent Sign In
+        </Link>
+
         <Link href="/signup" className="btn-ghost">
          Sign Up
         </Link>

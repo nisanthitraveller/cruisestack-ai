@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import pool from "@/lib/db_mysql";
 import {
   AGENT_SESSION_COOKIE,
-  createAgentSessionToken,
+  createAgentSession,
   findAgentByCredentials,
   findCompanyBySlug,
   getAgentCookieOptions,
@@ -52,7 +52,7 @@ export async function POST(request) {
     const response = NextResponse.json({ ok: true });
     response.cookies.set(
       AGENT_SESSION_COOKIE,
-      createAgentSessionToken(agent),
+      await createAgentSession(connection, agent, company),
       getAgentCookieOptions()
     );
 

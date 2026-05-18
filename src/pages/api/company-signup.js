@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import pool from "../../lib/db_mysql";
 
 const plans = new Set(["Beginner", "Professional", "Enterprise"]);
@@ -38,6 +39,32 @@ function normalizeDomain(value) {
     .toLowerCase();
 }
 
+function generateWhitelabelToken() {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+function createWhitelabelSessionExpiry() {
+  return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+}
+
+async function ensureWhitelabelSessionsTable(connection, tableName) {
+  await connection.query(
+    `
+    CREATE TABLE IF NOT EXISTS \`${tableName}\` (
+      id bigint(20) NOT NULL AUTO_INCREMENT,
+      token varchar(128) NOT NULL,
+      agent_id bigint(20) NOT NULL,
+      expires_at datetime NOT NULL,
+      created_at datetime DEFAULT current_timestamp(),
+      PRIMARY KEY (id),
+      UNIQUE KEY token (token),
+      KEY token_2 (token),
+      KEY agent_id (agent_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `
+  );
+}
+
 export default async function handler(req, res) {
   let connection;
 
@@ -54,12 +81,14 @@ export default async function handler(req, res) {
       primaryColor,
       secondaryColor,
       supportEmail: rawSupportEmail,
+      adminPassword: rawAdminPassword,
       currency: rawCurrency,
       planType: rawPlanType,
     } = req.body;
 
     const normalizedCompanyName = companyName?.trim();
     const supportEmail = rawSupportEmail?.trim().toLowerCase();
+    const adminPassword = rawAdminPassword?.trim();
     const slug = normalizedCompanyName ? createSlug(normalizedCompanyName) : "";
     const tablePrefix = tableSafePrefix(slug);
     const domain = normalizeDomain(rawDomain);
@@ -69,6 +98,12 @@ export default async function handler(req, res) {
     if (!normalizedCompanyName || !slug || !tablePrefix || !supportEmail) {
       return res.status(400).json({
         message: "Company name and support email are required",
+      });
+    }
+
+    if (!adminPassword || adminPassword.length < 8) {
+      return res.status(400).json({
+        message: "Admin password must be at least 8 characters",
       });
     }
 
@@ -158,6 +193,13 @@ export default async function handler(req, res) {
     
       const companyId = result.insertId;
       const agentTable = `${tablePrefix}_agent`;
+      const whitelabelSessionsTable = `${tablePrefix}_whitelabel_sessions`;
+
+      await ensureWhitelabelSessionsTable(connection, whitelabelSessionsTable);
+
+      if (!createdTables.includes(whitelabelSessionsTable)) {
+        createdTables.push(whitelabelSessionsTable);
+      }
 
       const insertAgentSql = `
         INSERT INTO \`${agentTable}\`
@@ -186,10 +228,10 @@ export default async function handler(req, res) {
           (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
-      await connection.query(insertAgentSql, [
+      const [agentResult] = await connection.query(insertAgentSql, [
         normalizedCompanyName,
         supportEmail,
-        `${slug}_test`,
+        adminPassword,
         null,
         normalizedCompanyName,
         domain,
@@ -210,6 +252,20 @@ export default async function handler(req, res) {
 
       console.log("Default agent inserted into:", agentTable);
 
+      const whitelabelToken = generateWhitelabelToken();
+
+      await connection.query(
+        `
+        INSERT INTO \`${whitelabelSessionsTable}\`
+          (token, agent_id, expires_at)
+        VALUES
+          (?, ?, ?)
+        `,
+        [whitelabelToken, agentResult.insertId, createWhitelabelSessionExpiry()]
+      );
+
+      console.log("Default whitelabel session inserted into:", whitelabelSessionsTable);
+
     await connection.commit();
 
     return res.status(201).json({
@@ -226,6 +282,12 @@ export default async function handler(req, res) {
         currency,
         planType,
         status: 1,
+      },
+      defaultAgent: {
+        id: agentResult.insertId,
+        email: supportEmail,
+        userId: `${slug}_test`,
+        agencyCode: slug,
       },
       createdTables,
     });

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, Suspense, useState } from "react";
+import { FormEvent, Suspense, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function LoginContent() {
@@ -11,6 +11,10 @@ function LoginContent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const defaultUserId = useMemo(
+    () => (companySlug.trim() ? `${companySlug.trim().toLowerCase()}_test` : ""),
+    [companySlug]
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -48,16 +52,19 @@ function LoginContent() {
   return (
     <main className="login-page">
       <section className="login-intro">
-        <p className="eyebrow">Agent Login</p>
-        <h1>Welcome back to CruiseStack AI</h1>
-        <p>Use the admin agent created for your company workspace.</p>
+        <p className="eyebrow">Company Agent Sign In</p>
+        <h1>Open your CruiseStack dashboard</h1>
+        <p>
+          Sign in with the agent created for your company workspace to view
+          subscription, billing, and commission details.
+        </p>
       </section>
 
       <section className="signup-panel login-panel" aria-label="Agent login form">
         <div className="signup-panel-header">
           <div>
-            <p className="panel-kicker">Workspace access</p>
-            <h2>Log in</h2>
+            <p className="panel-kicker">Agent access</p>
+            <h2>Sign in</h2>
           </div>
         </div>
 
@@ -80,7 +87,7 @@ function LoginContent() {
               required
               value={identifier}
               onChange={(event) => setIdentifier(event.target.value)}
-              placeholder="support@company.com"
+              placeholder={defaultUserId || "support@company.com"}
             />
           </label>
 
@@ -96,9 +103,18 @@ function LoginContent() {
           </label>
 
           <button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Log in"}
+            {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
+
+        <div className="agent-login-hint">
+          <span>Default admin pattern</span>
+          <strong>{defaultUserId || "company-slug_test"}</strong>
+          <p>
+            During company signup, the default admin uses this value as user ID
+            and password unless changed later.
+          </p>
+        </div>
       </section>
     </main>
   );

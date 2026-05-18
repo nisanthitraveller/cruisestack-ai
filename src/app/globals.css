@@ -408,6 +408,35 @@ h1 {
   align-self: center;
 }
 
+.agent-login-hint {
+  background: #f5f7f2;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  gap: 7px;
+  margin-top: 18px;
+  padding: 14px;
+}
+
+.agent-login-hint span {
+  color: #63706b;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.agent-login-hint strong {
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+
+.agent-login-hint p {
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
 .dashboard-page {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
