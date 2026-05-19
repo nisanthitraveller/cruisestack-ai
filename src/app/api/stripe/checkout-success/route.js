@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { appUrl } from "@/lib/appUrl";
 import pool from "@/lib/db_mysql";
 import {
   AGENT_SESSION_COOKIE,
@@ -11,9 +10,20 @@ import {
 } from "@/lib/agentAuth";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const PUBLIC_APP_ORIGIN = "https://cruisestack.ai";
 
-function dashboardRedirect(request, path) {
-  return NextResponse.redirect(appUrl(request, path));
+function publicUrl(path) {
+  return new URL(path, PUBLIC_APP_ORIGIN);
+}
+
+function dashboardRedirect(_request, path) {
+  return NextResponse.redirect(publicUrl(path));
+}
+
+function agentWhitelabelPath(agent, agentSession) {
+  return `/agents/${encodeURIComponent(
+    agent.slug,
+  )}/whitelabel?token=${encodeURIComponent(agentSession.token)}`;
 }
 
 export async function GET(request) {
@@ -70,11 +80,7 @@ export async function GET(request) {
 
     const response = dashboardRedirect(
       request,
-      `/agents/${encodeURIComponent(
-        agent.slug,
-      )}/api/company/whitelabel?token=${encodeURIComponent(
-        agentSession.token,
-      )}`,
+      agentWhitelabelPath(agent, agentSession),
     );
     response.cookies.set(
       AGENT_SESSION_COOKIE,

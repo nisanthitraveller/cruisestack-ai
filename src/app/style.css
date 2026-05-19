@@ -105,6 +105,23 @@ body{
   align-items: center;
   gap: 12px;
 }
+.cruise-page-body .nav-logout-form {
+  margin: 0;
+}
+.cruise-page-body .nav-user-name,
+.cruise-page-body .nav-user-skeleton {
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 700;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cruise-page-body .nav-user-skeleton {
+  color: var(--gray-500);
+  font-weight: 600;
+}
 .nav-actions a{
   text-decoration: none;
   

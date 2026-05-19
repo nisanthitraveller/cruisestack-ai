@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
 import '../style.css'; 
@@ -98,9 +98,92 @@ const plans = [
   },
 ];
 
-const stripePublishableKey =
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ||
-  "pk_test_xQRIZXb6NdxLp0H7njlt4fcb009VCIPwSf";
+const stripePublishableKey = "pk_test_xQRIZXb6NdxLp0H7njlt4fcb009VCIPwSf";
+
+type AgentSummary = {
+  name: string;
+  email?: string | null;
+};
+
+function PricingNavActions() {
+  const [agent, setAgent] = useState<AgentSummary | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadAgent() {
+      try {
+        const response = await fetch("/api/agent/me", {
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        if (!active) return;
+
+        if (!response.ok) {
+          setAgent(null);
+          return;
+        }
+
+        const data = await response.json();
+        setAgent(data.authenticated ? data.agent : null);
+      } catch {
+        if (active) setAgent(null);
+      } finally {
+        if (active) setCheckingSession(false);
+      }
+    }
+
+    loadAgent();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function handleLogout(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoggingOut(true);
+
+    await fetch("/api/agent/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    window.location.href = "/login";
+  }
+
+  if (checkingSession) {
+    return (
+      <div className="nav-actions">
+        <span className="nav-user-skeleton">Checking session...</span>
+      </div>
+    );
+  }
+
+  if (!agent) {
+    return (
+      <div className="nav-actions">
+        <Link href="/login" className="btn-ghost">Login</Link>
+        <Link href="/signup" className="btn-ghost">Sign Up</Link>
+        <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="nav-actions">
+      <span className="nav-user-name">{agent.name}</span>
+      <form className="nav-logout-form" onSubmit={handleLogout}>
+        <button className="btn-ghost" type="submit" disabled={loggingOut}>
+          {loggingOut ? "Logging out..." : "Logout"}
+        </button>
+      </form>
+    </div>
+  );
+}
 
 function PricingContent() {
   const searchParams = useSearchParams();
@@ -120,15 +203,12 @@ function PricingContent() {
             <li><a href="#">Company </a></li>
           </ul>
           
-          <div className="nav-actions">
-            <Link href="/login" className="btn-ghost">Login</Link>
-            <Link href="/signup" className="btn-ghost">Sign Up</Link>
-            <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
-          </div>
+          <PricingNavActions />
         </div>
       </nav>
 
       <Script
+        async
         src="https://js.stripe.com/v3/buy-button.js"
         strategy="afterInteractive"
       />
