@@ -38,6 +38,10 @@ export function getAppOrigin(request) {
     return configuredOrigin.replace(/\/+$/, "");
   }
 
+  if (process.env.NODE_ENV === "production") {
+    return "https://cruisestack.ai";
+  }
+
   const origins = [
     originFromHost(forwardedHost, forwardedProto),
     originFromHost(host, forwardedProto || requestUrl.protocol.replace(":", "")),
