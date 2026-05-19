@@ -14,13 +14,34 @@ function SuccessContent() {
     return `/api/stripe/checkout-success?session_id=${encodeURIComponent(sessionId)}`;
   }, [sessionId]);
 
+  const checkoutJsonUrl = useMemo(() => {
+    if (!sessionId) return "";
+
+    return `${checkoutUrl}&format=json`;
+  }, [checkoutUrl, sessionId]);
+
   useEffect(() => {
     if (!sessionId) return;
 
     const countdown = window.setInterval(() => {
       setSecondsLeft((current) => Math.max(current - 1, 0));
     }, 1000);
-    const redirect = window.setTimeout(() => {
+    const redirect = window.setTimeout(async () => {
+      try {
+        const response = await fetch(checkoutJsonUrl, {
+          cache: "no-store",
+          credentials: "include",
+        });
+        const data = await response.json();
+
+        if (response.ok && data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+          return;
+        }
+      } catch {
+        // Fall back to the server redirect below.
+      }
+
       window.location.replace(checkoutUrl);
     }, 3000);
 
@@ -28,7 +49,7 @@ function SuccessContent() {
       window.clearInterval(countdown);
       window.clearTimeout(redirect);
     };
-  }, [checkoutUrl, sessionId]);
+  }, [checkoutJsonUrl, checkoutUrl, sessionId]);
 
   return (
     <main className="success-page">

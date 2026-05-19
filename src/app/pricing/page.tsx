@@ -254,7 +254,7 @@ function PricingContent() {
                       buy-button-id={plan.buyButtonId}
                       publishable-key={stripePublishableKey}
                       client-reference-id={companySlug}
-                    />
+                    ></stripe-buy-button>
                   </div>
                 ) : (
                   <Link
