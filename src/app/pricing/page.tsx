@@ -4,50 +4,91 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
 import '../style.css'; 
-import logoMain from "../../assets/logo.svg";
+import logoMain from "../../assets/logo.png";
 import logoft from "../../assets/logo-white.png";
 import Image from 'next/image';
 import Link from "next/link";
 
 const plans = [
   {
-    name: "Beginner",
+    name: "Current agency commissions",
+    colorClass: "lite",
+    features: {
+      "Iframe integration": "Yes",
+      "Online cruise-direct payments": "No",
+      "Cabin blocking": "No",
+      "PDF quotations": "No",
+      "Leads CRM dashboard": "No",
+      "Ops support": "No",
+      "Backend booking ops system": "No",
+      "User login integration": "No",
+      "Payment gateway integration": "No",
+      "Brand theme customisation": "No",
+      "API integration": "No",
+      "Sales support": "No",
+      "Marketing support": "No",
+      "Cruise line & GSA/PSA connects": "No",
+    }
+  },
+  {
+    name: "Low",
     colorClass: "beginner",
-    deposit: "$1000",
-    monthly: "$1000",
-    bookingFee: "$4 / booking",
-    tripSummary: "$1 / trip summary",
-    apiFee: "$0.04 / scan",
-    estimated: "~$1300",
-    bookings: "up to 50 bookings",
-    buyButtonId: "buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B",
-    stripePriceId: "price_1TXERSEmqvBXj5NHd0ImLbQk",
+    features: {
+      "Iframe integration": "Yes",
+      "Online cruise-direct payments": "Yes",
+      "Cabin blocking": "Yes",
+      "PDF quotations": "Yes",
+      "Leads CRM dashboard": "Yes",
+      "Ops support": "Yes",
+      "Backend booking ops system": "Yes",
+      "User login integration": "No",
+      "Payment gateway integration": "No",
+      "Brand theme customisation": "No",
+      "API integration": "No",
+      "Sales support": "No",
+      "Marketing support": "No",
+      "Cruise line & GSA/PSA connects": "No",
+    }
   },
   {
-    name: "Professional",
+    name: "Medium",
     colorClass: "professional",
-    deposit: "$2000",
-    monthly: "$1400",
-    bookingFee: "$3 / booking",
-    tripSummary: "$0.4 / trip summary",
-    apiFee: "$0.03 / scan",
-    estimated: "~$1800",
-    bookings: "up to 100 bookings",
-    buyButtonId: "buy_btn_1TXFHhEmqvBXj5NHX68zHgJi",
-    stripePriceId: "price_1TXERoEmqvBXj5NHejeHS6Kk",
+    features: {
+      "Iframe integration": "Yes",
+      "Online cruise-direct payments": "Yes",
+      "Cabin blocking": "Yes",
+      "PDF quotations": "Yes",
+      "Leads CRM dashboard": "Yes",
+      "Ops support": "Yes",
+      "Backend booking ops system": "Yes",
+      "User login integration": "Yes",
+      "Payment gateway integration": "Yes",
+      "Brand theme customisation": "Yes",
+      "API integration": "No",
+      "Sales support": "No",
+      "Marketing support": "No",
+      "Cruise line & GSA/PSA connects": "No",
+    }
   },
   {
-    name: "Enterprise",
+    name: "High",
     colorClass: "enterprise",
-    deposit: "$3000",
-    monthly: "$2200",
-    bookingFee: "$2 / booking",
-    tripSummary: "$0.1 / trip summary",
-    apiFee: "$0.02 / scan",
-    estimated: "~$2700",
-    bookings: "up to 200 bookings",
-    buyButtonId: "buy_btn_1TXFJjEmqvBXj5NHAMCe0CWw",
-    stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
+    features: {
+      "Iframe integration": "Yes",
+      "Online cruise-direct payments": "Yes",
+      "Cabin blocking": "Yes",
+      "PDF quotations": "Yes",
+      "Leads CRM dashboard": "Yes",
+      "Ops support": "Yes",
+      "Backend booking ops system": "Yes",
+      "User login integration": "Yes",
+      "Payment gateway integration": "Yes",
+      "Brand theme customisation": "Yes",
+      "API integration": "Yes",
+      "Sales support": "Yes",
+      "Marketing support": "Yes",
+      "Cruise line & GSA/PSA connects": "Yes",
+    }
   },
 ];
 
@@ -57,98 +98,75 @@ function PricingContent() {
 
   return (
      <main className="cruise-page-body">
-       {/* ───── NAV ───── */}
       <nav>
         <div className='container-nav'>
-          <a href="#" className="nav-logo">
-            
+          <a href="/" className="nav-logo">
               <Image src={logoMain} alt="CruiseEngine" width={190}/>
-           
-           
-        </a>
-        <ul className="nav-links">
-          <li><a href="#">Product</a></li>
-          <li><a href="#">Solutions </a></li>
-          <li><a href="#">Resources </a></li>
-          <li><a href="#">Company </a></li>
-        </ul>
-        
-        <div className="nav-actions">
-        <Link href="/login" className="btn-ghost">
-         Login
-        </Link>
-
-        <Link href="/signup" className="btn-ghost">
-         Sign Up
-        </Link>
-
-        <Link href="/bookdemo" className="btn-primary">
-         Book a Demo
-        </Link>
-        </div>
+          </a>
+          <ul className="nav-links">
+            <li><a href="#">Product</a></li>
+            <li><a href="#">Solutions </a></li>
+            <li><a href="#">Resources </a></li>
+            <li><a href="#">Company </a></li>
+          </ul>
+          
+          <div className="nav-actions">
+            <Link href="/login" className="btn-ghost">Login</Link>
+            <Link href="/signup" className="btn-ghost">Sign Up</Link>
+            <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
+          </div>
         </div>
       </nav>
-      <Script
-        src="https://js.stripe.com/v3/buy-button.js"
-        strategy="afterInteractive"
-      />
+
       <div className="pricing-page">
-      <section className="pricing-hero">
-        <p className="eyebrow">Pricing</p>
-        <h1>Simple, Transparent & Scalable Pricing</h1>
-        <p>Choose the plan that fits your business.</p>
-      </section>
+        <section className="pricing-hero">
+          <p className="eyebrow">Pricing & Plans</p>
+          <h1>Simple, Transparent & Scalable Tiers</h1>
+          <p>Choose the feature landscape that matches your business scale.</p>
+        </section>
 
-      <section className="pricing-grid">
-        {plans.map((plan) => (
-          <article className="pricing-card" key={plan.name}>
-            <div className={`pricing-card-header ${plan.colorClass}`}>
-              {plan.name}
-            </div>
+        <section className="pricing-grid structural-four-columns">
+          {plans.map((plan) => (
+            <article className="pricing-card" key={plan.name} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'between' }}>
+              <div>
+                <div className={`pricing-card-header ${plan.colorClass}`} style={{ padding: '1rem', fontWeight: 'bold', textAlign: 'center', fontSize: '1.1rem' }}>
+                  {plan.name}
+                </div>
 
-            <div className="pricing-row">
-              <span>One-time Deposit</span>
-              <strong>{plan.deposit}</strong>
-            </div>
+                {/* Features List */}
+                <div className="features-list" style={{ margin: '2rem 0' }}>
+                  {Object.entries(plan.features).map(([feature, available]) => (
+                    <div 
+                      key={feature} 
+                      className={`feature-item ${available === "No" ? "disabled" : ""}`}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', opacity: available === "No" ? 0.35 : 1 }}
+                    >
+                      <span className="feature-status" style={{ fontWeight: 'bold', color: available === "Yes" ? "#22c55e" : "#ef4444" }}>
+                        {available === "Yes" ? "✓" : "✕"}
+                      </span>
+                      <span className="feature-name" style={{ fontSize: '0.9rem', textDecoration: available === "No" ? "line-through" : "none" }}>
+                        {feature}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-            <div className="pricing-row">
-              <span>Monthly Fee</span>
-              <strong>{plan.monthly}</strong>
-            </div>
-
-            <div className="pricing-row">
-              <span>Variable Fee / Booking</span>
-              <strong>{plan.bookingFee}</strong>
-            </div>
-
-            <div className="pricing-row">
-              <span>Variable Fee / Trip Summary</span>
-              <strong>{plan.tripSummary}</strong>
-            </div>
-
-            <div className="pricing-row">
-              <span>Variable Fee / APIs Scan Fees</span>
-              <strong>{plan.apiFee}</strong>
-            </div>
-
-            <div className="pricing-total">
-              <span>Estimated Monthly Billing</span>
-              <h2>{plan.estimated}</h2>
-              <p>{plan.bookings}</p>
-            </div>
-
-            <div className="stripe-button-wrapper">
-              <stripe-buy-button
-                buy-button-id={plan.buyButtonId}
-                publishable-key="pk_test_xQRIZXb6NdxLp0H7njlt4fcb009VCIPwSf"
-                client-reference-id={companySlug}
-              />
-            </div>
-          </article>
-        ))}
-      </section>
+              {/* Action Button Area */}
+              <div style={{ marginTop: 'auto', paddingTop: '1rem', padding:'8px' }}>
+                <Link 
+                  href={`/signup?plan=${plan.name.toLowerCase()}${companySlug ? `&company=${companySlug}` : ''}`} 
+                  className="btn-primary"
+                  style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.75rem 0', textDecoration: 'none' }}
+                >
+                  Start Trial
+                </Link>
+              </div>
+            </article>
+          ))}
+        </section>
       </div>
-       {/* ───── FOOTER ───── */}
+
       <footer>
         <div className="footer-top">
           <div className="footer-brand">

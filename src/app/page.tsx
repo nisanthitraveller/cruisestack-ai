@@ -31,7 +31,7 @@ import lg26 from "../assets/26-Celestyal.svg";
 import lg27 from "../assets/27-AMA.svg";
 import lg28 from "../assets/28-Virgin.svg";
 import lg29 from "../assets/29-Croisi.svg";
-import logoMain from "../assets/logo.svg";
+import logoMain from "../assets/logo.png";
 import logoft from "../assets/logo-white.png";
 import Image from 'next/image';
 import Link from "next/link";
@@ -54,7 +54,7 @@ const ftrimgsect = {
       {/* ───── NAV ───── */}
       <nav>
         <div className='container-nav'>
-          <a href="#" className="nav-logo">
+          <a href="/" className="nav-logo">
             
               <Image src={logoMain} alt="CruiseEngine" width={190}/>
            

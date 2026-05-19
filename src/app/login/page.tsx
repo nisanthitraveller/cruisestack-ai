@@ -1,10 +1,10 @@
 "use client";
-
 import { FormEvent, Suspense, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import '../style.css'; 
-import logoMain from "../../assets/logo.svg";
+import logoMain from "../../assets/logo.png";
 import logoft from "../../assets/logo-white.png";
+import loginImg from "../../assets/pana.svg";
 import Image from 'next/image';
 import Link from "next/link";
 
@@ -59,7 +59,7 @@ function LoginContent() {
        {/* ───── NAV ───── */}
       <nav>
         <div className='container-nav'>
-          <a href="#" className="nav-logo">
+          <a href="/" className="nav-logo">
             
               <Image src={logoMain} alt="CruiseEngine" width={190}/>
            
@@ -90,17 +90,17 @@ function LoginContent() {
       <div className="login-page ">
       <section className="login-intro">
         <p className="eyebrow">Company Agent Sign In</p>
-        <h1>Open your CruiseStack dashboard</h1>
-        <p>
-          Sign in with the agent created for your company workspace to view
-          subscription, billing, and commission details.
+        <h1>Your Cruise Business, Connected</h1>
+        <p style={{ marginBottom: "24px" }}>
+          Enter your credentials to access your company portal and continue managing your cruise business seamlessly.
         </p>
+        <Image src={loginImg} alt="CruiseEngine" width={330}/>
       </section>
 
       <section className="signup-panel login-panel" aria-label="Agent login form">
         <div className="signup-panel-header">
           <div>
-            <p className="panel-kicker">Agent access</p>
+            
             <h2>Sign in</h2>
           </div>
         </div>
@@ -139,7 +139,7 @@ function LoginContent() {
             />
           </label>
 
-          <button type="submit" disabled={loading}>
+          <button className="btn-primary" type="submit" disabled={loading}>
             {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>

@@ -3,8 +3,9 @@
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import '../style.css'; 
-import logoMain from "../../assets/logo.svg";
+import logoMain from "../../assets/logo.png";
 import logoft from "../../assets/logo-white.png";
+import signImg from "../../assets/pana-l.svg";
 import Image from 'next/image';
 import Link from "next/link";
 
@@ -90,7 +91,7 @@ export default function CompanySignupPage() {
        {/* ───── NAV ───── */}
       <nav>
         <div className='container-nav'>
-          <a href="#" className="nav-logo">
+          <a href="/" className="nav-logo">
             
               <Image src={logoMain} alt="CruiseEngine" width={190}/>
            
@@ -121,17 +122,17 @@ export default function CompanySignupPage() {
       <div className="login-page">
       <section className="login-intro">
         <p className="eyebrow">Company Signup</p>
-        <h1>CruiseStack AI onboarding</h1>
-        <p>
-          Register a cruise company workspace for partners like Aerticket,
-          GetMyCruise, and new white-label travel brands.
+        <h1>Get Started with CruiseStack</h1>
+        <p style={{marginBottom:'28px'}}>
+         Register your workspace and start managing your cruise business with a secure, centralized system.
         </p>
+        <Image src={signImg} alt="CruiseEngine" width={340}/>
       </section>
 
       <section className="signup-panel" aria-label="Company signup form">
         <div className="signup-panel-header">
           <div>
-            <p className="panel-kicker">Workspace details</p>
+           
             <h2>Create company</h2>
           </div>
         </div>
@@ -230,7 +231,7 @@ export default function CompanySignupPage() {
             <strong>{slugPreview || "company-slug"}</strong>
           </div>
 
-          <button type="submit" disabled={loading}>
+          <button className="btn-primary" type="submit" disabled={loading}>
             {loading ? "Creating company..." : "Create company"}
           </button>
         </form>
