@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import '../style.css'; 
 import logoMain from "../../assets/logo.png";
@@ -33,22 +33,12 @@ const initialForm: FormState = {
   planType: "Beginner",
 };
 
-function slugify(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
 export default function CompanySignupPage() {
   const router = useRouter();
 
   const [form, setForm] = useState<FormState>(initialForm);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const slugPreview = useMemo(() => slugify(form.companyName), [form.companyName]);
 
   function updateField<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -91,12 +81,12 @@ export default function CompanySignupPage() {
        {/* ───── NAV ───── */}
       <nav>
         <div className='container-nav'>
-          <a href="/" className="nav-logo">
+          <Link href="/" className="nav-logo">
             
               <Image src={logoMain} alt="CruiseEngine" width={190}/>
            
            
-        </a>
+        </Link>
         <ul className="nav-links">
           <li><a href="#">Product</a></li>
           <li><a href="#">Solutions </a></li>
@@ -173,66 +163,8 @@ export default function CompanySignupPage() {
             />
           </label>
 
-          <label>
-            <span>Domain</span>
-            <input
-              value={form.domain}
-              onChange={(event) => updateField("domain", event.target.value)}
-              placeholder="company.com"
-            />
-          </label>
-
-          <label>
-            <span>Logo URL</span>
-            <input
-              value={form.logo}
-              onChange={(event) => updateField("logo", event.target.value)}
-              placeholder="https://company.com/logo.png"
-            />
-          </label>
-
-          <div className="form-row">
-            <label>
-              <span>Primary color</span>
-              <input
-                type="color"
-                value={form.primaryColor}
-                onChange={(event) => updateField("primaryColor", event.target.value)}
-              />
-            </label>
-
-            <label>
-              <span>Secondary color</span>
-              <input
-                type="color"
-                value={form.secondaryColor}
-                onChange={(event) => updateField("secondaryColor", event.target.value)}
-              />
-            </label>
-          </div>
-
-          <div className="form-row">
-            <label>
-              <span>Currency</span>
-              <select
-                value={form.currency}
-                onChange={(event) => updateField("currency", event.target.value)}
-              >
-                <option value="USD">USD</option>
-                <option value="INR">INR</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-              </select>
-            </label>
-          </div>
-
-          <div className="slug-preview">
-            <span>Slug</span>
-            <strong>{slugPreview || "company-slug"}</strong>
-          </div>
-
           <button className="btn-primary" type="submit" disabled={loading}>
-            {loading ? "Creating company..." : "Create company"}
+            {loading ? "Signing up..." : "Signup"}
           </button>
         </form>
       </section>

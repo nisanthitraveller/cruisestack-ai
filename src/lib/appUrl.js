@@ -1,6 +1,6 @@
 export function getAppOrigin(request) {
   const forwardedHost = request.headers.get("x-forwarded-host");
-  const forwardedProto = request.headers.get("x-forwarded-proto") || "https";
+  const forwardedProto = request.headers.get("x-forwarded-proto");
   const configuredOrigin =
     process.env.NEXT_PUBLIC_APP_URL ||
     process.env.APP_URL ||
@@ -11,7 +11,12 @@ export function getAppOrigin(request) {
   }
 
   if (forwardedHost) {
-    return `${forwardedProto}://${forwardedHost}`;
+    const localHost =
+      forwardedHost.startsWith("localhost") ||
+      forwardedHost.startsWith("127.0.0.1");
+    const proto = forwardedProto || (localHost ? "http" : "https");
+
+    return `${proto}://${forwardedHost}`;
   }
 
   return new URL(request.url).origin;
