@@ -5,10 +5,7 @@ const plans = new Set(["Beginner", "Professional", "Enterprise"]);
 
 const MASTER_PREFIX = "cruisestack_";
 
-const excludedTemplateTables = [
-  "cruisestack_logs",
-  "cruisestack_migrations",
-];
+const excludedTemplateTables = ["cruisestack_logs", "cruisestack_migrations"];
 
 function createSlug(value) {
   return value
@@ -61,7 +58,7 @@ async function ensureWhitelabelSessionsTable(connection, tableName) {
       KEY token_2 (token),
       KEY agent_id (agent_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    `
+    `,
   );
 }
 
@@ -117,7 +114,7 @@ export default async function handler(req, res) {
       WHERE slug = ? OR support_email = ? OR (? IS NOT NULL AND domain = ?)
       LIMIT 1
       `,
-      [slug, supportEmail, domain, domain]
+      [slug, supportEmail, domain, domain],
     );
 
     if (existing.length > 0) {
@@ -156,11 +153,11 @@ export default async function handler(req, res) {
         supportEmail,
         currency,
         planType,
-      ]
+      ],
     );
 
     const [tables] = await connection.query(
-      `SHOW TABLES LIKE '${MASTER_PREFIX}%'`
+      `SHOW TABLES LIKE '${MASTER_PREFIX}%'`,
     );
 
     const templateTables = tables
@@ -174,10 +171,7 @@ export default async function handler(req, res) {
     const createdTables = [];
 
     for (const templateTable of templateTables) {
-      const newTable = templateTable.replace(
-        MASTER_PREFIX,
-        `${tablePrefix}_`
-      );
+      const newTable = templateTable.replace(MASTER_PREFIX, `${tablePrefix}_`);
 
       const createTableSql = `
         CREATE TABLE IF NOT EXISTS \`${newTable}\`
@@ -190,18 +184,18 @@ export default async function handler(req, res) {
       await connection.query(createTableSql);
       createdTables.push(newTable);
     }
-    
-      const companyId = result.insertId;
-      const agentTable = `${tablePrefix}_agent`;
-      const whitelabelSessionsTable = `${tablePrefix}_whitelabel_sessions`;
 
-      await ensureWhitelabelSessionsTable(connection, whitelabelSessionsTable);
+    const companyId = result.insertId;
+    const agentTable = `${tablePrefix}_agent`;
+    const whitelabelSessionsTable = `${tablePrefix}_whitelabel_sessions`;
 
-      if (!createdTables.includes(whitelabelSessionsTable)) {
-        createdTables.push(whitelabelSessionsTable);
-      }
+    await ensureWhitelabelSessionsTable(connection, whitelabelSessionsTable);
 
-      const insertAgentSql = `
+    if (!createdTables.includes(whitelabelSessionsTable)) {
+      createdTables.push(whitelabelSessionsTable);
+    }
+
+    const insertAgentSql = `
         INSERT INTO \`${agentTable}\`
           (
             name,
@@ -228,43 +222,46 @@ export default async function handler(req, res) {
           (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
-      const [agentResult] = await connection.query(insertAgentSql, [
-        normalizedCompanyName,
-        supportEmail,
-        adminPassword,
-        null,
-        normalizedCompanyName,
-        domain,
-        `${slug}_test`,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        logo?.trim() || null,
-        1,
-        "Admin",
-        `${slug}_test`,
-        slug,
-        companyId,
-      ]);
+    const [agentResult] = await connection.query(insertAgentSql, [
+      normalizedCompanyName,
+      supportEmail,
+      adminPassword,
+      null,
+      normalizedCompanyName,
+      domain,
+      `${slug}_test`,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      logo?.trim() || null,
+      1,
+      "Admin",
+      `${slug}_test`,
+      slug,
+      companyId,
+    ]);
 
-      console.log("Default agent inserted into:", agentTable);
+    console.log("Default agent inserted into:", agentTable);
 
-      const whitelabelToken = generateWhitelabelToken();
+    const whitelabelToken = generateWhitelabelToken();
 
-      await connection.query(
-        `
+    await connection.query(
+      `
         INSERT INTO \`${whitelabelSessionsTable}\`
           (token, agent_id, expires_at)
         VALUES
           (?, ?, ?)
         `,
-        [whitelabelToken, agentResult.insertId, createWhitelabelSessionExpiry()]
-      );
+      [whitelabelToken, agentResult.insertId, createWhitelabelSessionExpiry()],
+    );
 
-      console.log("Default whitelabel session inserted into:", whitelabelSessionsTable);
+    console.log(
+      "Default whitelabel session inserted into:",
+      whitelabelSessionsTable,
+    );
 
     await connection.commit();
 

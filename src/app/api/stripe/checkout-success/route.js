@@ -39,7 +39,10 @@ export async function GET(request) {
       checkoutSession.status === "complete";
 
     if (!paid) {
-      return dashboardRedirect(request, `/login?company=${companySlug}&checkout=pending`);
+      return dashboardRedirect(
+        request,
+        `/login?company=${companySlug}&checkout=pending`,
+      );
     }
 
     connection = await pool.getConnection();
@@ -53,14 +56,21 @@ export async function GET(request) {
     const agent = await findFirstCompanyAgent(connection, company);
 
     if (!agent) {
-      return dashboardRedirect(request, `/login?company=${company.slug}&checkout=agent-not-found`);
+      return dashboardRedirect(
+        request,
+        `/login?company=${company.slug}&checkout=agent-not-found`,
+      );
     }
 
-    const response = dashboardRedirect(request, "/dashboard");
+    //const response = dashboardRedirect(request, "/dashboard");
+    const response = dashboardRedirect(
+      request,
+      `/agents/${agent.slug}/api/company/whitelabel?token=${agent.token}`,
+    );
     response.cookies.set(
       AGENT_SESSION_COOKIE,
       await createAgentSession(connection, agent, company),
-      getAgentCookieOptions()
+      getAgentCookieOptions(),
     );
 
     return response;
