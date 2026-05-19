@@ -1029,84 +1029,124 @@ h1 {
 
 .success-page {
   align-items: center;
+  background: #f8fafc;
   display: grid;
   min-height: 100vh;
-  padding: 32px 18px;
+  padding: 48px 18px;
 }
 
 .success-card {
-  background: #ffffff;
-  border: 1px solid var(--border);
+  background: var(--white);
+  border: 1px solid var(--gray-200);
   border-radius: 8px;
-  box-shadow: 0 24px 70px rgb(24 33 31 / 10%);
+  box-shadow: 0 24px 70px rgba(10, 31, 68, 0.12);
   display: grid;
   gap: 18px;
   justify-self: center;
-  padding: 34px;
+  padding: 40px;
+  position: relative;
   text-align: center;
-  width: min(560px, 100%);
+  width: min(590px, 100%);
+}
+
+.success-card::before {
+  background: var(--blue);
+  border-radius: 8px 8px 0 0;
+  content: "";
+  height: 5px;
+  left: -1px;
+  position: absolute;
+  right: -1px;
+  top: -1px;
 }
 
 .success-mark {
   align-items: center;
-  background: #eef8f8;
-  border: 1px solid #c9eeee;
+  background: var(--blue-light);
+  border: 1px solid #bfdbfe;
   border-radius: 999px;
-  color: #0c686a;
+  color: var(--blue);
   display: inline-flex;
   font-size: 2rem;
-  font-weight: 800;
-  height: 64px;
+  font-weight: 900;
+  height: 68px;
   justify-content: center;
   justify-self: center;
-  width: 64px;
+  width: 68px;
+}
+
+.success-card .eyebrow {
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+  margin: 2px 0 0;
+  text-transform: uppercase;
 }
 
 .success-card h1 {
-  font-size: clamp(2.3rem, 6vw, 4.2rem);
-  line-height: 1;
+  color: var(--navy);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  line-height: 1.06;
   margin: 0;
 }
 
 .success-card p:not(.eyebrow) {
-  color: var(--muted);
-  line-height: 1.6;
+  color: var(--gray-600);
+  font-size: 17px;
+  line-height: 1.65;
   margin: 0 auto;
-  max-width: 450px;
+  max-width: 470px;
 }
 
 .success-details {
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
   display: grid;
   gap: 1px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 4px;
   overflow: hidden;
 }
 
 .success-details div {
-  background: #f5f7f2;
+  background: var(--gray-50);
   display: grid;
   gap: 8px;
   padding: 16px;
 }
 
 .success-details span {
-  color: #63706b;
+  color: var(--gray-600);
   font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
+.success-details strong {
+  color: var(--navy);
+  font-size: 1rem;
+}
+
 .success-button {
-  background: var(--foreground);
+  background: var(--blue);
   border-radius: 8px;
-  color: #ffffff;
+  color: var(--white);
   display: inline-flex;
   font-weight: 800;
   justify-content: center;
   justify-self: center;
+  margin-top: 4px;
   min-height: 48px;
-  padding: 15px 20px;
+  padding: 15px 22px;
   text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.success-button:hover {
+  background: var(--blue-bright);
+  transform: translateY(-1px);
 }
 
 .login-page {

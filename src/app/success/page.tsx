@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import "../style.css";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -31,7 +32,7 @@ function SuccessContent() {
   }, [checkoutUrl, sessionId]);
 
   return (
-    <main className="success-page">
+    <main className="cruise-page-body success-page">
       <section className="success-card">
         <div className="success-mark" aria-hidden="true">
           ✓
