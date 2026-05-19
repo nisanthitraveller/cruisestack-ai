@@ -33,6 +33,8 @@ const plans = [
   {
     name: "Low",
     colorClass: "beginner",
+    buyButtonId: "buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B",
+    stripePriceId: "price_1TXERSEmqvBXj5NHd0ImLbQk",
     features: {
       "Iframe integration": "Yes",
       "Online cruise-direct payments": "Yes",
@@ -53,6 +55,8 @@ const plans = [
   {
     name: "Medium",
     colorClass: "professional",
+    buyButtonId: "buy_btn_1TXFHhEmqvBXj5NHX68zHgJi",
+    stripePriceId: "price_1TXERoEmqvBXj5NHejeHS6Kk",
     features: {
       "Iframe integration": "Yes",
       "Online cruise-direct payments": "Yes",
@@ -73,6 +77,8 @@ const plans = [
   {
     name: "High",
     colorClass: "enterprise",
+    buyButtonId: "buy_btn_1TXFJjEmqvBXj5NHAMCe0CWw",
+    stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
     features: {
       "Iframe integration": "Yes",
       "Online cruise-direct payments": "Yes",
@@ -92,6 +98,10 @@ const plans = [
   },
 ];
 
+const stripePublishableKey =
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ||
+  "pk_test_xQRIZXb6NdxLp0H7njlt4fcb009VCIPwSf";
+
 function PricingContent() {
   const searchParams = useSearchParams();
   const companySlug = searchParams?.get("company") || undefined;
@@ -100,9 +110,9 @@ function PricingContent() {
      <main className="cruise-page-body">
       <nav>
         <div className='container-nav'>
-          <a href="/" className="nav-logo">
+          <Link href="/" className="nav-logo">
               <Image src={logoMain} alt="CruiseEngine" width={190}/>
-          </a>
+          </Link>
           <ul className="nav-links">
             <li><a href="#">Product</a></li>
             <li><a href="#">Solutions </a></li>
@@ -117,6 +127,11 @@ function PricingContent() {
           </div>
         </div>
       </nav>
+
+      <Script
+        src="https://js.stripe.com/v3/buy-button.js"
+        strategy="afterInteractive"
+      />
 
       <div className="pricing-page">
         <section className="pricing-hero">
@@ -152,15 +167,24 @@ function PricingContent() {
                 </div>
               </div>
 
-              {/* Action Button Area */}
               <div style={{ marginTop: 'auto', paddingTop: '1rem', padding:'8px' }}>
-                <Link 
-                  href={`/signup?plan=${plan.name.toLowerCase()}${companySlug ? `&company=${companySlug}` : ''}`} 
-                  className="btn-primary"
-                  style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.75rem 0', textDecoration: 'none' }}
-                >
-                  Start Trial
-                </Link>
+                {plan.buyButtonId ? (
+                  <div className="stripe-button-wrapper">
+                    <stripe-buy-button
+                      buy-button-id={plan.buyButtonId}
+                      publishable-key={stripePublishableKey}
+                      client-reference-id={companySlug}
+                    />
+                  </div>
+                ) : (
+                  <Link
+                    href={`/signup?plan=${plan.name.toLowerCase()}${companySlug ? `&company=${companySlug}` : ''}`}
+                    className="btn-primary"
+                    style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.75rem 0', textDecoration: 'none' }}
+                  >
+                    Start Trial
+                  </Link>
+                )}
               </div>
             </article>
           ))}
