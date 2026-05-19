@@ -4,7 +4,7 @@ import { appUrl } from "@/lib/appUrl";
 import pool from "@/lib/db_mysql";
 import {
   AGENT_SESSION_COOKIE,
-  createAgentSession,
+  createAgentSessionRecord,
   findCompanyBySlug,
   findFirstCompanyAgent,
   getAgentCookieOptions,
@@ -62,14 +62,23 @@ export async function GET(request) {
       );
     }
 
-    //const response = dashboardRedirect(request, "/dashboard");
+    const agentSession = await createAgentSessionRecord(
+      connection,
+      agent,
+      company,
+    );
+
     const response = dashboardRedirect(
       request,
-      `/agents/${agent.slug}/api/company/whitelabel?token=${agent.token}`,
+      `/agents/${encodeURIComponent(
+        agent.slug,
+      )}/api/company/whitelabel?token=${encodeURIComponent(
+        agentSession.token,
+      )}`,
     );
     response.cookies.set(
       AGENT_SESSION_COOKIE,
-      await createAgentSession(connection, agent, company),
+      agentSession.cookieValue,
       getAgentCookieOptions(),
     );
 
