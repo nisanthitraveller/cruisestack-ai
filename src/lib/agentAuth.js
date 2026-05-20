@@ -325,8 +325,7 @@ export async function getDashboardData(session) {
       FROM \`${commissionTable}\`
       WHERE company_id = ?
         AND tour_agent_id = ?
-      ORDER BY id ASC
-      LIMIT 8
+      ORDER BY CAST(discount AS DECIMAL(10, 4)) DESC, cruiseline_id ASC
       `,
       [company.id, session.agentId]
     );

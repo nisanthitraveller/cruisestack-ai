@@ -7,7 +7,7 @@ import "../style.css";
 function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams?.get("session_id") || "";
-  const [secondsLeft, setSecondsLeft] = useState(3);
+  const [secondsLeft, setSecondsLeft] = useState(5);
 
   const checkoutUrl = useMemo(() => {
     if (!sessionId) return "/login?checkout=missing-session";
@@ -23,7 +23,7 @@ function SuccessContent() {
     }, 1000);
     const redirect = window.setTimeout(() => {
       window.location.replace(checkoutUrl);
-    }, 3000);
+    }, 5000);
 
     return () => {
       window.clearInterval(countdown);

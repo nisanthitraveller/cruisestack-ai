@@ -46,7 +46,7 @@ function LoginContent() {
       }
 
       if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
+        router.push(data.redirectUrl);
         return;
       }
 

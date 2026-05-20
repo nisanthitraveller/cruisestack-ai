@@ -1249,11 +1249,27 @@ h1 {
   margin: 42px 0 auto;
 }
 
-.dashboard-nav span {
+.dashboard-nav span,
+.dashboard-nav a,
+.dashboard-nav button {
+  background: transparent;
+  border: 0;
   border-radius: 8px;
   color: #cbd6d0;
+  display: block;
+  font: inherit;
   font-weight: 700;
   padding: 11px 12px;
+  text-align: left;
+  text-decoration: none;
+  width: 100%;
+}
+
+.dashboard-nav a:hover,
+.dashboard-nav button:hover {
+  background: #24312e;
+  color: #ffffff;
+  cursor: pointer;
 }
 
 .dashboard-nav .active {
@@ -1377,6 +1393,12 @@ h1 {
   padding: 7px 10px;
 }
 
+.masked-value {
+  color: #7c8782;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
 .detail-grid {
   display: grid;
   gap: 1px;
@@ -1445,6 +1467,201 @@ h1 {
 .empty-state {
   color: var(--muted);
   padding: 22px;
+}
+
+.dashboard-modal-backdrop {
+  align-items: center;
+  background: rgba(10, 31, 68, 0.48);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 200;
+}
+
+.dashboard-modal {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(10, 31, 68, 0.22);
+  padding: 26px;
+  width: min(720px, 100%);
+}
+
+.dashboard-modal-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.dashboard-modal-header h2 {
+  color: var(--navy);
+  font-size: 1.5rem;
+  margin: 4px 0 0;
+}
+
+.dashboard-modal-header small {
+  color: #444;
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 6px;
+}
+
+.dashboard-modal-close {
+  background: #f5f7f2;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: #4e5a55;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 8px 11px;
+}
+
+.dashboard-agent-form {
+  display: grid;
+  gap: 16px;
+}
+
+.dashboard-agent-modal-grid {
+  align-items: center;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(190px, 0.85fr) minmax(0, 1fr);
+}
+
+.dashboard-agent-illustration {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.dashboard-agent-illustration img {
+  height: auto;
+  max-width: 100%;
+}
+
+.dashboard-agent-fields {
+  display: grid;
+  gap: 16px;
+}
+
+.dashboard-agent-form label {
+  display: grid;
+  gap: 4px;
+}
+
+.dashboard-agent-form span {
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dashboard-agent-form input {
+  background: #ffffff;
+  border: 1px solid #888;
+  border-radius: 8px;
+  color: var(--foreground);
+  font: inherit;
+  font-size: 14px;
+  min-height: 46px;
+  padding: 0 13px;
+  width: 100%;
+}
+
+.dashboard-agent-form input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgb(15 139 141 / 14%);
+  outline: none;
+}
+
+.dashboard-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.dashboard-modal-actions .btn-ghost,
+.dashboard-modal-actions .btn-primary {
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+}
+
+.integration-modal {
+  width: min(820px, 100%);
+}
+
+.integration-info-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.integration-info-card {
+  background: #fbfcfa;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+}
+
+.integration-info-card > span {
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.integration-info-card h3 {
+  color: var(--navy);
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.integration-info-card p {
+  color: var(--gray-600);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.integration-info-card code,
+.integration-info-card pre {
+  background: #f1f5f9;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  color: #17211f;
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  margin: 0;
+  overflow-x: auto;
+  padding: 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 720px) {
+  .dashboard-agent-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-agent-illustration {
+    display: none;
+  }
+
+  .integration-info-grid {
+    grid-template-columns: 1fr;
+  }
 }
 .pricing-page {
   min-height: 100vh;

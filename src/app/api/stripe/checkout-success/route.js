@@ -20,23 +20,12 @@ function dashboardRedirect(_request, path) {
   return NextResponse.redirect(publicUrl(path));
 }
 
-function agentWhitelabelPath(agent, agentSession) {
-  return `/agents/${encodeURIComponent(
-    agent.slug,
-  )}/whitelabel?token=${encodeURIComponent(agentSession.token)}`;
-}
-
-function wantsJsonResponse(searchParams) {
-  return searchParams.get("format") === "json";
-}
-
 export async function GET(request) {
   let connection;
 
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get("session_id");
-    const jsonResponse = wantsJsonResponse(searchParams);
 
     if (!sessionId) {
       return dashboardRedirect(request, "/login?checkout=missing-session");
@@ -83,14 +72,7 @@ export async function GET(request) {
       company,
     );
 
-    const redirectPath = agentWhitelabelPath(agent, agentSession);
-    const response = jsonResponse
-      ? NextResponse.json({
-          ok: true,
-          redirectUrl: publicUrl(redirectPath).toString(),
-        })
-      : dashboardRedirect(request, redirectPath);
-
+    const response = dashboardRedirect(request, "/dashboard");
     response.cookies.set(
       AGENT_SESSION_COOKIE,
       agentSession.cookieValue,

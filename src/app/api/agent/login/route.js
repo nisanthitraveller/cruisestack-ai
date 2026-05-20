@@ -8,14 +8,6 @@ import {
   getAgentCookieOptions,
 } from "@/lib/agentAuth";
 
-const PUBLIC_APP_ORIGIN = "https://cruisestack.ai";
-
-function agentWhitelabelUrl(agent, agentSession) {
-  return `${PUBLIC_APP_ORIGIN}/agents/${encodeURIComponent(
-    agent.slug,
-  )}/whitelabel?token=${encodeURIComponent(agentSession.token)}`;
-}
-
 export async function POST(request) {
   let connection;
 
@@ -65,7 +57,7 @@ export async function POST(request) {
 
     const response = NextResponse.json({
       ok: true,
-      redirectUrl: agentWhitelabelUrl(agent, agentSession),
+      redirectUrl: "/dashboard",
     });
     response.cookies.set(
       AGENT_SESSION_COOKIE,

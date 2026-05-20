@@ -1,10 +1,12 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAgentFromSession, getDashboardData } from "@/lib/agentAuth";
+import DashboardActions from "./DashboardActions";
 import cruiseNames from "@/data/cruises.json";
 import '../style.css'; 
 
 const cruiseNameMap = cruiseNames as Record<string, string>;
+const PUBLIC_APP_ORIGIN = "https://cruisestack.ai";
 
 function formatDate(value: string | Date | null) {
   if (!value) return "Not available";
@@ -38,10 +40,40 @@ function formatValue(value: string | number | null | undefined) {
   return String(value);
 }
 
+function MaskedValue() {
+  return (
+    <span className="masked-value" aria-label="Hidden">
+      ••••
+    </span>
+  );
+}
+
 function getCruiseLineName(cruiselineId: string | number | null) {
   const id = String(cruiselineId || "");
 
   return cruiseNameMap[id] || (id ? `Cruiseline ${id}` : "Unknown cruiseline");
+}
+
+type DashboardForWhitelabel = {
+  agent: { token?: string | null };
+  company: { slug?: string | null };
+};
+
+function agentWhitelabelUrl(
+  agentDetails: Record<string, string | number | null>,
+  dashboard: DashboardForWhitelabel,
+) {
+  const agentSlug = String(agentDetails?.agency_code || dashboard.company.slug || "");
+
+  return `${PUBLIC_APP_ORIGIN}/agents/${encodeURIComponent(
+    agentSlug,
+  )}/whitelabel?token=${encodeURIComponent(String(dashboard.agent.token || ""))}`;
+}
+
+function agentPublicUrl(agentDetails: Record<string, string | number | null>, dashboard: DashboardForWhitelabel) {
+  const agentSlug = String(agentDetails?.agency_code || dashboard.company.slug || "");
+
+  return `${PUBLIC_APP_ORIGIN}/agents/${encodeURIComponent(agentSlug)}`;
 }
 
 export default async function DashboardPage() {
@@ -67,6 +99,8 @@ export default async function DashboardPage() {
   const subscription = dashboard.subscription;
   const commissionSummary = dashboard.commissionSummary;
   const agentDetails = dashboard.agentDetails || dashboard.agent;
+  const tripSummaryUrl = agentWhitelabelUrl(agentDetails, dashboard);
+  const b2cUrl = agentPublicUrl(agentDetails, dashboard);
 
   return (
     <main className="dashboard-page">
@@ -76,15 +110,7 @@ export default async function DashboardPage() {
           <h1>{dashboard.company.company_name}</h1>
         </div>
 
-        <nav className="dashboard-nav" aria-label="Dashboard sections">
-          <span className="active">Dashboard</span>
-          <span>Add agent</span>
-          <span>Create trip summary</span>
-          <span>Integrate cruisestack.ai</span>
-          <span>Subscription</span>
-          <span>Commissions</span>
-          <span>Billing</span>
-        </nav>
+        <DashboardActions b2bUrl={tripSummaryUrl} b2cUrl={b2cUrl} />
 
         <form action="/api/agent/logout" method="post">
           <button className="secondary-button" type="submit">
@@ -242,8 +268,8 @@ export default async function DashboardPage() {
               <h3>Loaded from agent commission table</h3>
             </div>
             <div className="summary-chips">
-              <span>Avg commission {formatPercent(commissionSummary?.average_commission || 0)}</span>
-              <span>Avg markup {formatPercent(commissionSummary?.average_markup || 0)}</span>
+              <span>Avg commission <MaskedValue /></span>
+              <span>Avg markup <MaskedValue /></span>
             </div>
           </div>
 
@@ -251,7 +277,7 @@ export default async function DashboardPage() {
             <div className="table-row header">
               <span>Cruiseline</span>
               <span>Commission</span>
-              <span>Discount</span>
+              <span>Commission</span>
               <span>Markup</span>
               <span>GMC discount</span>
             </div>
@@ -263,10 +289,10 @@ export default async function DashboardPage() {
                     <strong>{getCruiseLineName(row.cruiseline_id)}</strong>
                     <small>ID {row.cruiseline_id}</small>
                   </span>
-                  <span>{formatPercent(row.commission)}</span>
+                  <span><MaskedValue /></span>
                   <span>{formatPercent(row.discount)}</span>
-                  <span>{formatPercent(row.markup)}</span>
-                  <span>{formatPercent(row.gmc_discount)}</span>
+                  <span><MaskedValue /></span>
+                  <span><MaskedValue /></span>
                 </div>
               ))
             ) : (
