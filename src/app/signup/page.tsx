@@ -83,7 +83,7 @@ export default function CompanySignupPage() {
         <div className='container-nav'>
           <Link href="/" className="nav-logo">
             
-              <Image src={logoMain} alt="CruiseEngine" width={190}/>
+              <Image src={logoMain} alt="CruiseStack" width={190}/>
            
            
         </Link>
@@ -112,11 +112,11 @@ export default function CompanySignupPage() {
       <div className="login-page">
       <section className="login-intro">
         <p className="eyebrow">Company Signup</p>
-        <h1>Get Started with CruiseStack</h1>
+        <h1>Get started with cruiseStack</h1>
         <p style={{marginBottom:'28px'}}>
          Register your workspace and start managing your cruise business with a secure, centralized system.
         </p>
-        <Image src={signImg} alt="CruiseEngine" width={340}/>
+        <Image src={signImg} alt="CruiseStack" width={340}/>
       </section>
 
       <section className="signup-panel" aria-label="Company signup form">
@@ -175,7 +175,7 @@ export default function CompanySignupPage() {
         <div className="footer-top">
           <div className="footer-brand">
             <a href="#" className="nav-logo" style={{ textDecoration: 'none' }}>
-             <Image src={logoft} alt="CruiseEngine" width={190}/>
+             <Image src={logoft} alt="CruiseStack" width={190}/>
             </a>
             <p>The most complete cruise booking engine for travel companies worldwide.</p>
             <div className="social-links">
@@ -226,7 +226,7 @@ export default function CompanySignupPage() {
         </div>
 
         <div className="footer-bottom">
-          <span>© 2026 CruiseEngine. All rights reserved.</span>
+          <span>© 2026 CruiseStack. All rights reserved.</span>
           <div className="footer-bottom-links">
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>

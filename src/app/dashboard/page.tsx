@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAgentFromSession, getDashboardData } from "@/lib/agentAuth";
 import cruiseNames from "@/data/cruises.json";
+import '../style.css'; 
 
 const cruiseNameMap = cruiseNames as Record<string, string>;
 
@@ -77,6 +78,9 @@ export default async function DashboardPage() {
 
         <nav className="dashboard-nav" aria-label="Dashboard sections">
           <span className="active">Dashboard</span>
+          <span>Add agent</span>
+          <span>Create trip summary</span>
+          <span>Integrate cruisestack.ai</span>
           <span>Subscription</span>
           <span>Commissions</span>
           <span>Billing</span>

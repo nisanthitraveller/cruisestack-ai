@@ -65,7 +65,7 @@ function LoginContent() {
         <div className='container-nav'>
           <Link href="/" className="nav-logo">
             
-              <Image src={logoMain} alt="CruiseEngine" width={190}/>
+              <Image src={logoMain} alt="CruiseStack" width={190}/>
            
            
         </Link>
@@ -94,11 +94,11 @@ function LoginContent() {
       <div className="login-page ">
       <section className="login-intro">
         <p className="eyebrow">Company Agent Sign In</p>
-        <h1>Your Cruise Business, Connected</h1>
+        <h1>Your cruise business, connected</h1>
         <p style={{ marginBottom: "24px" }}>
           Enter your credentials to access your company portal and continue managing your cruise business seamlessly.
         </p>
-        <Image src={loginImg} alt="CruiseEngine" width={330}/>
+        <Image src={loginImg} alt="CruiseStack" width={330}/>
       </section>
 
       <section className="signup-panel login-panel" aria-label="Agent login form">
@@ -163,7 +163,7 @@ function LoginContent() {
         <div className="footer-top">
           <div className="footer-brand">
             <a href="#" className="nav-logo" style={{ textDecoration: 'none' }}>
-             <Image src={logoft} alt="CruiseEngine" width={190}/>
+             <Image src={logoft} alt="CruiseStack" width={190}/>
             </a>
             <p>The most complete cruise booking engine for travel companies worldwide.</p>
             <div className="social-links">
@@ -214,7 +214,7 @@ function LoginContent() {
         </div>
 
         <div className="footer-bottom">
-          <span>© 2026 CruiseEngine. All rights reserved.</span>
+          <span>© 2026 CruiseStack. All rights reserved.</span>
           <div className="footer-bottom-links">
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>

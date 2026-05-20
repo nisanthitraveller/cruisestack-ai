@@ -41,6 +41,7 @@ export default function CruiseCommercePage() {
   const sectionStyle = {
     backgroundImage: `url(${heroImg.src})`,
     backgroundSize: 'cover',
+    backgroundPosition: 'center',
     
   };
 const ftrimgsect = {
@@ -56,7 +57,7 @@ const ftrimgsect = {
         <div className='container-nav'>
           <a href="/" className="nav-logo">
             
-              <Image src={logoMain} alt="CruiseEngine" width={190}/>
+              <Image src={logoMain} alt="CruiseStack" width={190}/>
            
            
         </a>
@@ -88,8 +89,8 @@ const ftrimgsect = {
       <div className='container-hero'>
         <div className="hero-content">
           <span className="hero-badge">All-in-one Cruise Booking Engine</span>
-          <h1>The complete cruise commerce platform for modern travel businesses</h1>
-          <p>Power your brand with real-time inventory, instant quotations, secure bookings and end-to-end operations—across 32+ global cruise lines.</p>
+          <h1>Built for the next generation of cruise travel businesses</h1>
+          <p>Run your cruise business smarter with live inventory, instant pricing, secure booking workflows, and complete operational control across 32+ international cruise brands.</p>
           <div className="hero-btns">
             <button className="btn-primary" style={{ padding: '13px 28px', fontSize: '15px' }}>Book a Demo</button>
             <button className="btn-outline" style={{ padding: '11px 28px', fontSize: '15px' }}>View Pricing</button>
@@ -104,7 +105,7 @@ const ftrimgsect = {
 
         <div className="hero-right">
           {/* Search card */}
-          <div className="search-card">
+          {/* <div className="search-card">
             <h3>Search Cruises</h3>
             <div className="form-field">
               <label>Destination</label>
@@ -123,7 +124,7 @@ const ftrimgsect = {
               <select><option>2 Adults</option><option>1 Adult</option><option>2 Adults + 1 Child</option></select>
             </div>
             <button className="btn-primary">Search Cruises</button>
-          </div>
+          </div> */}
 
           {/* Deal card */}
           {/* <div className="deal-card">
@@ -219,7 +220,7 @@ const ftrimgsect = {
 
         <div className="dashboard-mockup">
           <div className="db-topbar">
-            <span className="db-logo">⚓ CruiseEngine</span>
+            <span className="db-logo">⚓ CruiseStack</span>
             <div className="db-dots"><div className="db-dot"></div><div className="db-dot"></div><div className="db-dot"></div></div>
           </div>
           <div className="db-body">
@@ -426,7 +427,7 @@ const ftrimgsect = {
       <section className="cta" style={ftrimgsect}>
         <div className="cta-content">
           <h2>Ready to grow your cruise business?</h2>
-          <p>Join hundreds of travel businesses that trust CruiseEngine to power their cruise commerce.</p>
+          <p>Join hundreds of travel businesses that trust CruiseStack to power their cruise commerce.</p>
           <div className="cta-btns">
             <button className="btn-white">Book a Demo</button>
             <button className="btn-outline-white">Talk to Sales</button>
@@ -439,7 +440,7 @@ const ftrimgsect = {
         <div className="footer-top">
           <div className="footer-brand">
             <a href="#" className="nav-logo" style={{ textDecoration: 'none' }}>
-             <Image src={logoft} alt="CruiseEngine" width={190}/>
+             <Image src={logoft} alt="CruiseStack" width={190}/>
             </a>
             <p>The most complete cruise booking engine for travel companies worldwide.</p>
             <div className="social-links">
@@ -490,7 +491,7 @@ const ftrimgsect = {
         </div>
 
         <div className="footer-bottom">
-          <span>© 2026 CruiseEngine. All rights reserved.</span>
+          <span>© 2026 CruiseStack. All rights reserved.</span>
           <div className="footer-bottom-links">
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
