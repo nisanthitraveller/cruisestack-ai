@@ -47,9 +47,9 @@ export default function DashboardActions({ b2bUrl, b2cUrl }: DashboardActionsPro
         <button type="button" onClick={openIntegrationModal}>
           Integrate cruisestack.ai
         </button>
-        <span>Subscription</span>
-        <span>Commissions</span>
-        <span>Billing</span>
+        <a href="#subscription">Subscription</a>
+        <a href="#commissions">Commissions</a>
+        <a href="#billing">Billing</a>
       </nav>
 
       {isAgentModalOpen ? (

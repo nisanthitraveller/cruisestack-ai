@@ -153,7 +153,7 @@ export default async function DashboardPage() {
           </article>
         </section>
 
-        <section className="dashboard-section">
+        <section className="dashboard-section" id="subscription">
           <div className="section-heading">
             <div>
               <p className="panel-kicker">Company</p>
@@ -189,7 +189,7 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        <section className="dashboard-section">
+        <section className="dashboard-section" id="commissions">
           <div className="section-heading">
             <div>
               <p className="panel-kicker">Agent</p>
@@ -233,7 +233,7 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        <section className="dashboard-section">
+        <section className="dashboard-section" id="billing">
           <div className="section-heading">
             <div>
               <p className="panel-kicker">Subscription</p>
@@ -277,9 +277,6 @@ export default async function DashboardPage() {
             <div className="table-row header">
               <span>Cruiseline</span>
               <span>Commission</span>
-              <span>Commission</span>
-              <span>Markup</span>
-              <span>GMC discount</span>
             </div>
 
             {commissionRows.length > 0 ? (
@@ -289,10 +286,7 @@ export default async function DashboardPage() {
                     <strong>{getCruiseLineName(row.cruiseline_id)}</strong>
                     <small>ID {row.cruiseline_id}</small>
                   </span>
-                  <span><MaskedValue /></span>
                   <span>{formatPercent(row.discount)}</span>
-                  <span><MaskedValue /></span>
-                  <span><MaskedValue /></span>
                 </div>
               ))
             ) : (

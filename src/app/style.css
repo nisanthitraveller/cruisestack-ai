@@ -1225,6 +1225,7 @@ h1 {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
   min-height: 100vh;
+  scroll-behavior: smooth;
 }
 
 .dashboard-sidebar {
@@ -1360,6 +1361,7 @@ h1 {
 
 .dashboard-section {
   overflow: hidden;
+  scroll-margin-top: 24px;
 }
 
 .section-heading {
@@ -1430,8 +1432,8 @@ h1 {
 .table-row {
   display: grid;
   gap: 14px;
-  grid-template-columns: 1.1fr repeat(4, minmax(110px, 0.8fr));
-  min-width: 680px;
+  grid-template-columns: minmax(220px, 1fr) minmax(120px, 180px);
+  min-width: 360px;
   padding: 13px 22px;
 }
 

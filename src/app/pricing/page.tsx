@@ -53,7 +53,7 @@ const plans = [
     stripePriceId: "price_1TXERoEmqvBXj5NHejeHS6Kk",
 
     features: {
-      "Less agency commissions": "Yes",
+      "Standard agency commissions": "Yes",
       "Iframe integration": "Yes",
       "Online-direct payments": "Yes",
       "Cabin blocking": "Yes",
@@ -87,7 +87,7 @@ const plans = [
     stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
     
     features: {
-      "Less agency commissions": "Yes",
+      "Highest agency commissions": "Yes",
       "Iframe integration": "Yes",
       "Online-direct payments": "Yes",
       "Cabin blocking": "Yes",
