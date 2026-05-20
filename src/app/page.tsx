@@ -35,6 +35,11 @@ import logoMain from "../assets/logo.png";
 import logoft from "../assets/logo-white.png";
 import Image from 'next/image';
 import Link from "next/link";
+import logoone from "../assets/aerticket.png";
+import logtwo from "../assets/Satguru.png";
+import logthree from "../assets/toptraveltrip.png";
+import logofour from "../assets/travelwings.png";
+import logofive from "../assets/travtips.png";
 
 export default function CruiseCommercePage() {
 
@@ -145,12 +150,22 @@ const ftrimgsect = {
       <section className="trust-bar">
         <p>Trusted by leading travel brands worldwide</p>
         <div className="trust-logos">
-          <span className="trust-logo script">Dream Vacations</span>
-          <span className="trust-logo blue">FLY CRUISE</span>
-          <span className="trust-logo">🧳 Travel Leaders</span>
-          <span className="trust-logo green">⚙ Nexion Travel Group</span>
-          <span className="trust-logo">🚢 Cruise Planners</span>
-          <span className="trust-logo blue">➕ Expedia TAAP</span>
+          <span className="trust-logo script">
+            <Image src={logoone} alt="Aerticket" width={180} />
+          </span>
+          <span className="trust-logo blue">
+             <Image src={logtwo} alt="Satguru" width={180} />
+          </span>
+          <span className="trust-logo">
+            <Image src={logthree} alt="Top Travel Trip" width={180} />
+          </span>
+          <span className="trust-logo green">
+            <Image src={logofour} alt="Travelwings" width={180} />
+          </span>
+          <span className="trust-logo">
+            <Image src={logofive} alt="Travtips" width={180} />
+          </span>
+         
         </div>
       </section>
 
