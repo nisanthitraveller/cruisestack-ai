@@ -2,11 +2,19 @@ import { NextResponse } from "next/server";
 import pool from "@/lib/db_mysql";
 import {
   AGENT_SESSION_COOKIE,
-  createAgentSession,
+  createAgentSessionRecord,
   findAgentByCredentials,
   findCompanyBySlug,
   getAgentCookieOptions,
 } from "@/lib/agentAuth";
+
+const PUBLIC_APP_ORIGIN = "https://cruisestack.ai";
+
+function agentWhitelabelUrl(agent, agentSession) {
+  return `${PUBLIC_APP_ORIGIN}/agents/${encodeURIComponent(
+    agent.slug,
+  )}/whitelabel?token=${encodeURIComponent(agentSession.token)}`;
+}
 
 export async function POST(request) {
   let connection;
@@ -49,10 +57,19 @@ export async function POST(request) {
       );
     }
 
-    const response = NextResponse.json({ ok: true });
+    const agentSession = await createAgentSessionRecord(
+      connection,
+      agent,
+      company
+    );
+
+    const response = NextResponse.json({
+      ok: true,
+      redirectUrl: agentWhitelabelUrl(agent, agentSession),
+    });
     response.cookies.set(
       AGENT_SESSION_COOKIE,
-      await createAgentSession(connection, agent, company),
+      agentSession.cookieValue,
       getAgentCookieOptions()
     );
 

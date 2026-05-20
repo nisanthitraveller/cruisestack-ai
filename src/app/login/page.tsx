@@ -45,8 +45,12 @@ function LoginContent() {
         throw new Error(data.message || "Unable to log in");
       }
 
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+        return;
+      }
+
       router.push("/dashboard");
-      router.refresh();
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : "Unable to log in");
     } finally {
@@ -59,12 +63,12 @@ function LoginContent() {
        {/* ───── NAV ───── */}
       <nav>
         <div className='container-nav'>
-          <a href="/" className="nav-logo">
+          <Link href="/" className="nav-logo">
             
               <Image src={logoMain} alt="CruiseEngine" width={190}/>
            
            
-        </a>
+        </Link>
         <ul className="nav-links">
           <li><a href="#">Product</a></li>
           <li><a href="#">Solutions </a></li>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
 import '../style.css'; 
@@ -33,6 +33,8 @@ const plans = [
   {
     name: "Low",
     colorClass: "beginner",
+    buyButtonId: "buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B",
+    stripePriceId: "price_1TXERSEmqvBXj5NHd0ImLbQk",
     features: {
       "Iframe integration": "Yes",
       "Online cruise-direct payments": "Yes",
@@ -53,6 +55,8 @@ const plans = [
   {
     name: "Medium",
     colorClass: "professional",
+    buyButtonId: "buy_btn_1TXFHhEmqvBXj5NHX68zHgJi",
+    stripePriceId: "price_1TXERoEmqvBXj5NHejeHS6Kk",
     features: {
       "Iframe integration": "Yes",
       "Online cruise-direct payments": "Yes",
@@ -73,6 +77,8 @@ const plans = [
   {
     name: "High",
     colorClass: "enterprise",
+    buyButtonId: "buy_btn_1TXFJjEmqvBXj5NHAMCe0CWw",
+    stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
     features: {
       "Iframe integration": "Yes",
       "Online cruise-direct payments": "Yes",
@@ -92,6 +98,93 @@ const plans = [
   },
 ];
 
+const stripePublishableKey = "pk_test_xQRIZXb6NdxLp0H7njlt4fcb009VCIPwSf";
+
+type AgentSummary = {
+  name: string;
+  email?: string | null;
+};
+
+function PricingNavActions() {
+  const [agent, setAgent] = useState<AgentSummary | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadAgent() {
+      try {
+        const response = await fetch("/api/agent/me", {
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        if (!active) return;
+
+        if (!response.ok) {
+          setAgent(null);
+          return;
+        }
+
+        const data = await response.json();
+        setAgent(data.authenticated ? data.agent : null);
+      } catch {
+        if (active) setAgent(null);
+      } finally {
+        if (active) setCheckingSession(false);
+      }
+    }
+
+    loadAgent();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function handleLogout(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoggingOut(true);
+
+    await fetch("/api/agent/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    window.location.href = "/login";
+  }
+
+  if (checkingSession) {
+    return (
+      <div className="nav-actions">
+        <span className="nav-user-skeleton">Checking session...</span>
+      </div>
+    );
+  }
+
+  if (!agent) {
+    return (
+      <div className="nav-actions">
+        <Link href="/login" className="btn-ghost">Login</Link>
+        <Link href="/signup" className="btn-ghost">Sign Up</Link>
+        <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="nav-actions">
+      <span className="nav-user-name">{agent.name}</span>
+      <form className="nav-logout-form" onSubmit={handleLogout}>
+        <button className="btn-ghost" type="submit" disabled={loggingOut}>
+          {loggingOut ? "Logging out..." : "Logout"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function PricingContent() {
   const searchParams = useSearchParams();
   const companySlug = searchParams?.get("company") || undefined;
@@ -100,9 +193,9 @@ function PricingContent() {
      <main className="cruise-page-body">
       <nav>
         <div className='container-nav'>
-          <a href="/" className="nav-logo">
+          <Link href="/" className="nav-logo">
               <Image src={logoMain} alt="CruiseEngine" width={190}/>
-          </a>
+          </Link>
           <ul className="nav-links">
             <li><a href="#">Product</a></li>
             <li><a href="#">Solutions </a></li>
@@ -110,13 +203,15 @@ function PricingContent() {
             <li><a href="#">Company </a></li>
           </ul>
           
-          <div className="nav-actions">
-            <Link href="/login" className="btn-ghost">Login</Link>
-            <Link href="/signup" className="btn-ghost">Sign Up</Link>
-            <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
-          </div>
+          <PricingNavActions />
         </div>
       </nav>
+
+      <Script
+        async
+        src="https://js.stripe.com/v3/buy-button.js"
+        strategy="afterInteractive"
+      />
 
       <div className="pricing-page">
         <section className="pricing-hero">
@@ -152,15 +247,24 @@ function PricingContent() {
                 </div>
               </div>
 
-              {/* Action Button Area */}
               <div style={{ marginTop: 'auto', paddingTop: '1rem', padding:'8px' }}>
-                <Link 
-                  href={`/signup?plan=${plan.name.toLowerCase()}${companySlug ? `&company=${companySlug}` : ''}`} 
-                  className="btn-primary"
-                  style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.75rem 0', textDecoration: 'none' }}
-                >
-                  Start Trial
-                </Link>
+                {plan.buyButtonId ? (
+                  <div className="stripe-button-wrapper">
+                    <stripe-buy-button
+                      buy-button-id={plan.buyButtonId}
+                      publishable-key={stripePublishableKey}
+                      client-reference-id={companySlug}
+                    ></stripe-buy-button>
+                  </div>
+                ) : (
+                  <Link
+                    href={`/signup?plan=${plan.name.toLowerCase()}${companySlug ? `&company=${companySlug}` : ''}`}
+                    className="btn-primary"
+                    style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.75rem 0', textDecoration: 'none' }}
+                  >
+                    Start Trial
+                  </Link>
+                )}
               </div>
             </article>
           ))}

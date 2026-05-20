@@ -80,7 +80,7 @@ function decodeSessionCookie(value) {
   return { companySlug, token };
 }
 
-export async function createAgentSession(connection, agent, company) {
+export async function createAgentSessionRecord(connection, agent, company) {
   const token = crypto.randomBytes(32).toString("hex");
   const expiresAt = createSessionExpiry();
   const sessionTable = getWhitelabelSessionTable(company.slug);
@@ -95,7 +95,16 @@ export async function createAgentSession(connection, agent, company) {
     [token, agent.id, expiresAt]
   );
 
-  return encodeSessionCookie(company.slug, token);
+  return {
+    token,
+    cookieValue: encodeSessionCookie(company.slug, token),
+  };
+}
+
+export async function createAgentSession(connection, agent, company) {
+  const session = await createAgentSessionRecord(connection, agent, company);
+
+  return session.cookieValue;
 }
 
 export async function getAgentFromSession(source) {
@@ -201,6 +210,7 @@ export async function findAgentByCredentials(connection, company, identifier, pa
 
   return {
     ...agents[0],
+    slug: agents[0].agency_code || company.slug,
     company_slug: company.slug,
   };
 }
@@ -225,6 +235,7 @@ export async function findFirstCompanyAgent(connection, company) {
 
   return {
     ...agents[0],
+    slug: agents[0].agency_code || company.slug,
     company_slug: company.slug,
   };
 }

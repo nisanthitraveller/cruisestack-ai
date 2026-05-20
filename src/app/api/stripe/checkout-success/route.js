@@ -1,19 +1,33 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { appUrl } from "@/lib/appUrl";
 import pool from "@/lib/db_mysql";
 import {
   AGENT_SESSION_COOKIE,
-  createAgentSession,
+  createAgentSessionRecord,
   findCompanyBySlug,
   findFirstCompanyAgent,
   getAgentCookieOptions,
 } from "@/lib/agentAuth";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const PUBLIC_APP_ORIGIN = "https://cruisestack.ai";
 
-function dashboardRedirect(request, path) {
-  return NextResponse.redirect(appUrl(request, path));
+function publicUrl(path) {
+  return new URL(path, PUBLIC_APP_ORIGIN);
+}
+
+function dashboardRedirect(_request, path) {
+  return NextResponse.redirect(publicUrl(path));
+}
+
+function agentWhitelabelPath(agent, agentSession) {
+  return `/agents/${encodeURIComponent(
+    agent.slug,
+  )}/whitelabel?token=${encodeURIComponent(agentSession.token)}`;
+}
+
+function wantsJsonResponse(searchParams) {
+  return searchParams.get("format") === "json";
 }
 
 export async function GET(request) {
@@ -22,6 +36,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get("session_id");
+    const jsonResponse = wantsJsonResponse(searchParams);
 
     if (!sessionId) {
       return dashboardRedirect(request, "/login?checkout=missing-session");
@@ -62,14 +77,23 @@ export async function GET(request) {
       );
     }
 
-    //const response = dashboardRedirect(request, "/dashboard");
-    const response = dashboardRedirect(
-      request,
-      `/agents/${agent.slug}/api/company/whitelabel?token=${agent.token}`,
+    const agentSession = await createAgentSessionRecord(
+      connection,
+      agent,
+      company,
     );
+
+    const redirectPath = agentWhitelabelPath(agent, agentSession);
+    const response = jsonResponse
+      ? NextResponse.json({
+          ok: true,
+          redirectUrl: publicUrl(redirectPath).toString(),
+        })
+      : dashboardRedirect(request, redirectPath);
+
     response.cookies.set(
       AGENT_SESSION_COOKIE,
-      await createAgentSession(connection, agent, company),
+      agentSession.cookieValue,
       getAgentCookieOptions(),
     );
 
