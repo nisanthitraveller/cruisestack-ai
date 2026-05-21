@@ -8,6 +8,14 @@ import {
   getAgentCookieOptions,
 } from "@/lib/agentAuth";
 
+function whitelabelPath(company, agent, token) {
+  const agentSlug = String(agent?.agency_code || company.slug || "");
+
+  return `/agents/${encodeURIComponent(agentSlug)}/whitelabel?token=${encodeURIComponent(
+    String(token || ""),
+  )}`;
+}
+
 export async function POST(request) {
   let connection;
 
@@ -57,7 +65,7 @@ export async function POST(request) {
 
     const response = NextResponse.json({
       ok: true,
-      redirectUrl: "/dashboard",
+      redirectUrl: whitelabelPath(company, agent, agentSession.token),
     });
     response.cookies.set(
       AGENT_SESSION_COOKIE,
