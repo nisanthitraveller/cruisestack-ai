@@ -1,0 +1,193 @@
+/* ─────────────────────────────────────────────
+   Footer.module.css
+   All classes camelCase, no global selectors
+   ───────────────────────────────────────────── */
+
+.footer {
+  background: var(--navy, #0f2447);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 60px 48px 32px;
+}
+
+.footerTop {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 1fr 1.8fr;
+  gap: 40px;
+  max-width: 1320px;
+  margin: 0 auto 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ── Brand ── */
+.footerBrand p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 14px 0 20px;
+}
+
+.footerLogo {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.socialLinks {
+  display: flex;
+  gap: 12px;
+}
+
+.socialLink {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: white;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.socialLink:hover {
+  background: var(--blue, #2563eb);
+}
+
+/* ── Columns ── */
+.footerCol h4 {
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+
+.footerCol ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footerCol ul a {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  transition: color 0.2s;
+}
+
+.footerCol ul a:hover {
+  color: white;
+}
+
+/* ── Contact column ── */
+.footerContact h4 {
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+
+.footerContact p {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+.footerContactBtns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btnPrimary {
+  font-size: 13px;
+  padding: 9px 18px;
+  text-align: center;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btnPrimary:hover {
+  background: #1d4ed8;
+}
+
+.btnOutlineWhite {
+  font-size: 13px;
+  padding: 9px 18px;
+  text-align: center;
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.btnOutlineWhite:hover {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ── Bottom bar ── */
+.footerBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1320px;
+  margin: 0 auto;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.footerBottomLinks {
+  display: flex;
+  gap: 20px;
+}
+
+.footerBottomLinks a {
+  color: rgba(255, 255, 255, 0.4);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footerBottomLinks a:hover {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .footerTop {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .footerBrand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer {
+    padding: 40px 24px 24px;
+  }
+
+  .footerTop {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .footerBottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+}
