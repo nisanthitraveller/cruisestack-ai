@@ -42,8 +42,13 @@ function SuccessContent() {
         <h1>Thanks for subscribing</h1>
         <p>
           Your CruiseStack AI workspace is being prepared. We are signing you in
-          and loading your subscription, billing, and commission dashboard.
+          and opening your trip summary workspace.
         </p>
+
+        <div className="success-countdown" aria-live="polite">
+          <strong>{sessionId ? secondsLeft : "-"}</strong>
+          <span>Redirecting in seconds</span>
+        </div>
 
         <div className="success-details">
           <div>
@@ -51,13 +56,13 @@ function SuccessContent() {
             <strong>Completed</strong>
           </div>
           <div>
-            <span>Dashboard</span>
+            <span>Trip summary</span>
             <strong>{sessionId ? `Opening in ${secondsLeft}s` : "Session missing"}</strong>
           </div>
         </div>
 
         <a className="success-button" href={checkoutUrl}>
-          Continue to dashboard
+          Continue to trip summary
         </a>
       </section>
     </main>
