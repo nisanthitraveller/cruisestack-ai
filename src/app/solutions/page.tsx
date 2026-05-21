@@ -189,7 +189,7 @@ const partners: string[] = ["Aerticket", "GetMyCruise", "seascanner", "CRUISE", 
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function SolutionsPage(): JSX.Element {
+export default function SolutionsPage() {
   return (
     <div className={styles.page}>
         <Header/>

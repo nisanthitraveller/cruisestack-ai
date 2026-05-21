@@ -164,7 +164,7 @@ const cruiseResults = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function Product(): JSX.Element {
+export default function Product() {
   return (
     <div className={styles.page}>
         <Header />

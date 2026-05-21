@@ -146,7 +146,7 @@ function tagColor(tag: string): string {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function ResourcesPage(): JSX.Element {
+export default function ResourcesPage(){
 
 
   const sectionStyle = {
