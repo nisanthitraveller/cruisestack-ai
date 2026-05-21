@@ -45,6 +45,11 @@ function SuccessContent() {
           and loading your subscription, billing, and commission dashboard.
         </p>
 
+        <div className="success-countdown" aria-live="polite">
+          <strong>{sessionId ? secondsLeft : "-"}</strong>
+          <span>Redirecting in seconds</span>
+        </div>
+
         <div className="success-details">
           <div>
             <span>Payment</span>

@@ -20,6 +20,14 @@ function dashboardRedirect(_request, path) {
   return NextResponse.redirect(publicUrl(path));
 }
 
+function tripSummaryPath(company, agent, token) {
+  const agentSlug = String(agent?.agency_code || company.slug || "");
+
+  return `/agents/${encodeURIComponent(agentSlug)}/whitelabel?token=${encodeURIComponent(
+    String(token || ""),
+  )}`;
+}
+
 export async function GET(request) {
   let connection;
 
@@ -72,7 +80,10 @@ export async function GET(request) {
       company,
     );
 
-    const response = dashboardRedirect(request, "/dashboard");
+    const response = dashboardRedirect(
+      request,
+      tripSummaryPath(company, agent, agentSession.token),
+    );
     response.cookies.set(
       AGENT_SESSION_COOKIE,
       agentSession.cookieValue,

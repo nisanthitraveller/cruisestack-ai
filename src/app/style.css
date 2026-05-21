@@ -1100,6 +1100,32 @@ h1 {
   max-width: 470px;
 }
 
+.success-countdown {
+  align-items: center;
+  background: var(--blue-light);
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  color: var(--blue);
+  display: inline-grid;
+  gap: 4px;
+  justify-self: center;
+  min-width: 150px;
+  padding: 16px 18px;
+}
+
+.success-countdown strong {
+  color: var(--blue);
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+.success-countdown span {
+  color: var(--navy);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
 .success-details {
   border: 1px solid var(--gray-200);
   border-radius: 8px;
