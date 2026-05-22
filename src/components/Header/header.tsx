@@ -3,11 +3,23 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import logoMain from "../../assets/logo.png";
 import styles from "./Header.module.css";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const navLinks = [
+    { href: "/product", label: "Product" },
+    { href: "/solutions", label: "Solutions" },
+    { href: "/resources", label: "Resources" },
+    { href: "/company", label: "Company" },
+  ];
+
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const getLinkClass = (href: string) => (isActive(href) ? styles.active : "theme");
 
   return (
     <nav className={styles.nav}>
@@ -19,11 +31,15 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav links */}
+
         <ul className={styles.navLinks}>
-          <li><Link href="/product">Product</Link></li>
-          <li><Link href="/solutions">Solutions</Link></li>
-          <li><Link href="/resources">Resources</Link></li>
-          <li><Link href="/company">Company</Link></li>
+          {navLinks.map(({ href, label }) => (
+            <li key={href}>
+              <Link href={href} className={getLinkClass(href)} style={{ color: isActive(href) ? "#006cea" : "#475569" }}>
+                {label}
+              </Link>
+            </li>
+          ))}
         </ul>
 
         {/* Desktop actions */}
@@ -66,10 +82,11 @@ export default function Header() {
       {/* Mobile dropdown menu */}
       <div className={`${styles.mobileMenu} ${menuOpen ? styles.mobileMenuOpen : ""}`}>
         <ul className={styles.mobileNavLinks}>
-          <li><Link href="/product"   onClick={() => setMenuOpen(false)}>Product</Link></li>
-          <li><Link href="/solutions" onClick={() => setMenuOpen(false)}>Solutions</Link></li>
-          <li><Link href="/resources" onClick={() => setMenuOpen(false)}>Resources</Link></li>
-          <li><Link href="/company"   onClick={() => setMenuOpen(false)}>Company</Link></li>
+          {navLinks.map(({ href, label }) => (
+            <li key={href} className={isActive(href) ? styles.active : ""}>
+              <Link href={href} onClick={() => setMenuOpen(false)}>{label}</Link>
+            </li>
+          ))}
         </ul>
         <div className={styles.mobileMenuActions}>
           <Link href="/login"   className={styles.mobileMenuGhost} onClick={() => setMenuOpen(false)}>Login</Link>

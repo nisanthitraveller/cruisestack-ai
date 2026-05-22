@@ -3,7 +3,13 @@ import Link from "next/link";
 import styles from "./Solutions.module.css";
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
-
+import heroImg from '../../assets/solutions.webp';
+import logoone from "../../assets/aerticket.png";
+import logtwo from "../../assets/Satguru.png";
+import logthree from "../../assets/toptraveltrip.png";
+import logofour from "../../assets/travelwings.png";
+import logofive from "../../assets/travtips.png";
+import Image from "next/image";
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface Solution {
@@ -190,6 +196,14 @@ const partners: string[] = ["Aerticket", "GetMyCruise", "seascanner", "CRUISE", 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function SolutionsPage() {
+
+    const heroImagePlaceholder = {
+    backgroundImage: `url(${heroImg.src})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    
+  };
+
   return (
     <div className={styles.page}>
         <Header/>
@@ -204,19 +218,13 @@ export default function SolutionsPage() {
               cruisestack provides the tools you need to grow and operate efficiently.
             </p>
             <div className={styles.heroActions}>
-              <button className={styles.btnPrimary}>Book a Demo</button>
-              <button className={styles.btnGhost}>Talk to an Expert →</button>
+              <Link href="/bookdemo" className={styles.btnPrimary}>Book a Demo</Link>
+              
             </div>
           </div>
           <div className={styles.heroImageWrap}>
-            <div className={styles.heroImagePlaceholder}>
-              <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.25">
-                <rect x="5" y="8" width="70" height="44" rx="4" stroke="#1a3a6b" strokeWidth="2"/>
-                <circle cx="28" cy="28" r="9" stroke="#1a3a6b" strokeWidth="2"/>
-                <circle cx="54" cy="28" r="9" stroke="#1a3a6b" strokeWidth="2"/>
-                <path d="M10 52 Q28 40 40 44 Q54 48 70 40" stroke="#1a3a6b" strokeWidth="1.5" fill="none"/>
-              </svg>
-              <p style={{ color: "#1a3a6b", opacity: 0.35, fontSize: "12px", marginTop: "8px" }}>Team photo</p>
+            <div className={styles.heroImagePlaceholder} style={heroImagePlaceholder}>
+              
             </div>
           </div>
         </div>
@@ -256,7 +264,7 @@ export default function SolutionsPage() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section className={styles.ctaBannerSection}>
+      {/* <section className={styles.ctaBannerSection}>
         <div className={styles.container}>
           <div className={styles.ctaBanner}>
             <div className={styles.ctaBannerLeft}>
@@ -276,10 +284,10 @@ export default function SolutionsPage() {
             <button className={styles.btnPrimaryWhite}>Talk to an Expert</button>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ── Testimonials ── */}
-      <section className={styles.testimonialsSection}>
+      {/* <section className={styles.testimonialsSection}>
         <div className={styles.container}>
           <h2 className={styles.centeredTitle}>Loved by cruise businesses worldwide</h2>
           <div className={styles.testimonialsGrid}>
@@ -319,7 +327,7 @@ export default function SolutionsPage() {
             <span className={styles.dot} />
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ── Bottom CTA ── */}
       <section className={styles.bottomCtaSection}>
@@ -340,8 +348,8 @@ export default function SolutionsPage() {
               </p>
             </div>
             <div className={styles.bottomCtaActions}>
-              <button className={styles.btnPrimary}>Book a Demo</button>
-              <a href="#" className={styles.exploreLink}>Explore Features →</a>
+              <Link href="/bookdemo" className={styles.btnPrimary}>Book a Demo</Link>
+           
             </div>
           </div>
         </div>
@@ -352,9 +360,24 @@ export default function SolutionsPage() {
         <div className={styles.container}>
           <p className={styles.partnersLabel}>Trusted by leading travel brands worldwide</p>
           <div className={styles.partnersGrid}>
-            {partners.map((p) => (
-              <div key={p} className={styles.partnerLogo}>{p}</div>
-            ))}
+            <div className="trust-logos" style={{gap:'38px',display:'flex',alignItems:'center'}}>
+          <span className="trust-logo script">
+            <Image src={logoone} alt="Aerticket" width={180} />
+          </span>
+          <span className="trust-logo blue">
+             <Image src={logtwo} alt="Satguru" width={180} />
+          </span>
+          <span className="trust-logo">
+            <Image src={logthree} alt="Top Travel Trip" width={180} />
+          </span>
+          <span className="trust-logo green">
+            <Image src={logofour} alt="Travelwings" width={180} />
+          </span>
+          <span className="trust-logo">
+            <Image src={logofive} alt="Travtips" width={180} />
+          </span>
+         
+        </div>
           </div>
         </div>
       </section>

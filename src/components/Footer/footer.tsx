@@ -24,34 +24,33 @@ export default function Footer() {
 
         {/* Product */}
         <div className={styles.footerCol}>
-          <h4>Product</h4>
+          
           <ul>
-            <li><Link href="#">Features</Link></li>
+            {/* <li><Link href="#">Features</Link></li>
             <li><Link href="#">Integrations</Link></li>
+            
+            <li><Link href="#">API</Link></li> */}
             <li><Link href="/pricing">Pricing</Link></li>
-            <li><Link href="#">API</Link></li>
+            <li><Link href="/resources">Resources</Link></li>
           </ul>
         </div>
 
         {/* Solutions */}
         <div className={styles.footerCol}>
-          <h4>Solutions</h4>
+         
           <ul>
-            <li><Link href="#">Travel Agencies</Link></li>
-            <li><Link href="#">OTAs</Link></li>
-            <li><Link href="#">Enterprises</Link></li>
-            <li><Link href="#">Host Agencies</Link></li>
+            <li><Link href="/product">Product</Link></li>
+            <li><Link href="/solutions">Solutions</Link></li>
+            
           </ul>
         </div>
 
         {/* Resources */}
         <div className={styles.footerCol}>
-          <h4>Resources</h4>
+         
           <ul>
-            <li><Link href="#">Documentation</Link></li>
-            <li><Link href="#">Help Center</Link></li>
-            <li><Link href="#">Blog</Link></li>
-            <li><Link href="#">Case Studies</Link></li>
+            <li><Link href="/company">Company</Link></li>
+            
           </ul>
         </div>
 
@@ -59,9 +58,9 @@ export default function Footer() {
         <div className={`${styles.footerCol} ${styles.footerContact}`}>
           <h4>Have Questions? Let&apos;s Talk.</h4>
           <p>Our experts are ready to help you choose the right plan and grow your cruise business.</p>
-          <div className={styles.footerContactBtns}>
-            <button className={styles.btnPrimary}>Book a Demo</button>
-            <button className={styles.btnOutlineWhite}>Contact Sales</button>
+          <div className={styles.footerContactBtns} style={{display:'flex'}}>
+            <Link href="/bookdemo" className={styles.btnPrimary}>Book a Demo</Link>
+            {/* <button className={styles.btnOutlineWhite}>Contact Sales</button> */}
           </div>
         </div>
 

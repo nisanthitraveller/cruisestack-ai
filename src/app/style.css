@@ -151,6 +151,9 @@ body{
   cursor: pointer;
   font-family: inherit;
   transition: background .2s, transform .15s;
+  display: flex;
+  align-items: center;
+  justify-self: center;
 }
 .cruise-page-body .btn-primary:hover { background: var(--blue-bright); transform: translateY(-1px); }
 
@@ -605,7 +608,7 @@ body{
   background: linear-gradient(135deg, var(--navy) 0%, #1a3a7e 100%);
   padding: 80px 48px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 40px;
   align-items: center;
   position: relative;

@@ -6,6 +6,8 @@ import Image from 'next/image';
 import Link from "next/link";
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
+import heroImg from '../../assets/Company.webp'
+import mission from '../../assets/mission.png'
 
 // ─── Icon Components ────────────────────────────────────────────────────────
 
@@ -152,11 +154,11 @@ const team = [
 const teamColors = ["#c7d8f5", "#d6e8f0", "#d1e7dd", "#fde8cc", "#e8d5f5"];
 
 const journey = [
-  { icon: <IconFlag />, year: "2018", title: "Founded", desc: "cruisestack was founded with a vision to modernize cruise distribution." },
-  { icon: <IconRocket />, year: "2019", title: "First Platform Launch", desc: "Launched our first platform with real-time inventory and booking capabilities." },
-  { icon: <IconGlobe />, year: "2021", title: "Global Expansion", desc: "Expanded globally and integrated with major cruise lines." },
-  { icon: <IconPeople />, year: "2023", title: "1M+ Bookings", desc: "Reached 1 million+ bookings processed on our platform." },
-  { icon: <IconStar />, year: "2024+", title: "Future Forward", desc: "Continuing to innovate and deliver more value to our partners." },
+  { icon: <IconFlag />, year: "2024 Feb", title: "Founded", desc: "cruisestack was founded with a vision to modernize cruise distribution." },
+  { icon: <IconRocket />, year: "2024 Oct", title: "First Platform Launch", desc: "Launched our first platform with real-time inventory and booking capabilities." },
+  { icon: <IconGlobe />, year: "2025 Jun", title: "Global Expansion", desc: "Expanded globally and integrated with major cruise lines." },
+  { icon: <IconPeople />, year: "2026 Jan", title: "1K+ Bookings", desc: "Reached 1 million+ bookings processed on our platform." },
+  { icon: <IconStar />, year: "2026 Apr", title: "Future Forward", desc: "Continuing to innovate and deliver more value to our partners." },
 ];
 
 const partners = ["Aerticket", "GetMyCruise", "seascanner", "CRUISE", "Travel Legends", "TripFactory"];
@@ -164,6 +166,21 @@ const partners = ["Aerticket", "GetMyCruise", "seascanner", "CRUISE", "Travel Le
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function Company() {
+
+ const heroImagePlaceholder = {
+    backgroundImage: `url(${heroImg.src})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    
+  };
+const missionImagePlaceholder = {
+    backgroundImage: `url(${mission.src})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    
+  };
+
+
   return (
     <div className={styles.page}>
 
@@ -181,20 +198,14 @@ export default function Company() {
                 innovation and unmatched inventory access.
               </p>
               <div className={styles.heroActions}>
-                <button className={styles.btnPrimary}>Book a Demo</button>
-                <button className={styles.btnGhost}>Contact Us →</button>
+                <Link href="/bookdemo" className={styles.btnPrimary}>Book a Demo</Link>
+                
               </div>
             </div>
             <div className={styles.heroImageWrap}>
-              <div className={styles.heroImagePlaceholder}>
+              <div className={styles.heroImagePlaceholder} style={heroImagePlaceholder}>
                 <div className={styles.heroImageInner}>
-                  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.3">
-                    <rect x="5" y="10" width="70" height="40" rx="4" stroke="#1a3a6b" strokeWidth="2" />
-                    <circle cx="25" cy="27" r="8" stroke="#1a3a6b" strokeWidth="2" />
-                    <circle cx="55" cy="27" r="8" stroke="#1a3a6b" strokeWidth="2" />
-                    <path d="M10 50 Q25 38 40 42 Q55 46 70 38" stroke="#1a3a6b" strokeWidth="1.5" fill="none" />
-                  </svg>
-                  <p style={{ color: "#1a3a6b", opacity: 0.4, fontSize: "12px", marginTop: "8px" }}>Team photo</p>
+                  
                 </div>
               </div>
             </div>
@@ -202,20 +213,7 @@ export default function Company() {
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section className={styles.statsSection}>
-        <div className={styles.container}>
-          <div className={styles.statsGrid}>
-            {stats.map((s) => (
-              <div key={s.label} className={styles.statItem}>
-                <div className={styles.statIcon}>{s.icon}</div>
-                <div className={styles.statValue}>{s.value}</div>
-                <div className={styles.statLabel}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+    
 
       {/* ── Values ── */}
       <section className={styles.valuesSection}>
@@ -241,7 +239,7 @@ export default function Company() {
       </section>
 
       {/* ── Team ── */}
-      <section className={styles.teamSection}>
+      <section className={styles.teamSection} style={{display:'none'}}>
         <div className={styles.container}>
           <div className={styles.teamLayout}>
             <div className={styles.teamSidebar}>
@@ -306,13 +304,8 @@ export default function Company() {
         <div className={styles.container}>
           <div className={styles.missionCard}>
             <div className={styles.missionImageWrap}>
-              <div className={styles.missionImagePlaceholder}>
-                <svg width="80" height="50" viewBox="0 0 80 50" fill="none" opacity="0.3">
-                  <ellipse cx="40" cy="38" rx="35" ry="6" stroke="white" strokeWidth="1.5" />
-                  <path d="M10 30 Q25 10 40 14 Q55 18 70 30" stroke="white" strokeWidth="2" fill="none" />
-                  <path d="M20 28 Q35 15 50 22 Q60 27 65 30" stroke="white" strokeWidth="1.5" fill="none" />
-                </svg>
-                <p style={{ color: "white", opacity: 0.4, fontSize: "12px", marginTop: "8px" }}>Cruise ship image</p>
+              <div className={styles.missionImagePlaceholder} style={missionImagePlaceholder}>
+               
               </div>
             </div>
             <div className={styles.missionContent}>
@@ -325,8 +318,8 @@ export default function Company() {
                 tools, data and support they need to grow.
               </p>
               <div className={styles.missionActions}>
-                <button className={styles.btnPrimary}>Book a Demo</button>
-                <a href="#" className={styles.btnGhostBlue}>Learn more about our platform →</a>
+                <Link href="/bookdemo" className={styles.btnPrimary}>Book a Demo</Link>
+                
               </div>
             </div>
           </div>

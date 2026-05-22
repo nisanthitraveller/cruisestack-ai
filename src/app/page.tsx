@@ -71,8 +71,9 @@ const ftrimgsect = {
           <h1>Built for the next generation of cruise travel businesses</h1>
           <p>Run your cruise business smarter with live inventory, instant pricing, secure booking workflows, and complete operational control across 30+ international cruise brands.</p>
           <div className="hero-btns">
-            <button className="btn-primary" style={{ padding: '13px 28px', fontSize: '15px' }}>Book a Demo</button>
-            <button className="btn-outline" style={{ padding: '11px 28px', fontSize: '15px' }}>View Pricing</button>
+            <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
+            <Link href="/pricing" className="btn-outline" style={{ padding: '11px 28px', fontSize: '15px' }}>View Pricing</Link>
+            
           </div>
           <div className="hero-stats">
             <div className="stat"><span className="num">30+</span><span className="label">Cruise Lines</span></div>
@@ -418,11 +419,11 @@ const ftrimgsect = {
 
       {/* ───── CTA ───── */}
       <section className="cta" style={ftrimgsect}>
-        <div className="cta-content">
+        <div className="cta-content" style={{maxWidth:'1320px',marginRight:'auto',width:'100%'}}>
           <h2>Ready to grow your cruise business?</h2>
           <p>Join hundreds of travel businesses that trust cruisestack to power their cruise commerce.</p>
           <div className="cta-btns">
-            <button className="btn-white">Book a Demo</button>
+            <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
             <button className="btn-outline-white">Talk to Sales</button>
           </div>
         </div>

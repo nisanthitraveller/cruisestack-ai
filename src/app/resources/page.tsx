@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./Resources.module.css";
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
-import heroImg from '../../assets/hero.png'
+import heroImg from '../../assets/Resources.webp'
 import Link from "next/link";
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -199,7 +199,7 @@ export default function ResourcesPage(){
       </div>
     </section>
       {/* ── Filter Tabs ── */}
-      <section className={styles.tabsSection}>
+      {/* <section className={styles.tabsSection}>
         <div className={styles.container}>
           <nav className={styles.tabs}>
             {tabs.map((tab, i) => (
@@ -209,10 +209,10 @@ export default function ResourcesPage(){
             ))}
           </nav>
         </div>
-      </section>
+      </section> */}
 
       {/* ── Featured Resources ── */}
-      <section className={styles.featuredSection}>
+      <section className={styles.featuredSection} style={{paddingTop:"50px"}}>
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Featured resources</h2>
@@ -313,17 +313,7 @@ export default function ResourcesPage(){
         </div>
       </section>
 
-      {/* ── Partners ── */}
-      <section className={styles.partnersSection}>
-        <div className={styles.container}>
-          <p className={styles.partnersLabel}>TRUSTED BY LEADING TRAVEL BRANDS WORLDWIDE</p>
-          <div className={styles.partnersGrid}>
-            {partners.map((p) => (
-              <div key={p} className={styles.partnerLogo}>{p}</div>
-            ))}
-          </div>
-        </div>
-      </section>
+    
 <Footer />
     </div>
   );

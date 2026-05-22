@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./Product.module.css";
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
+import Link from "next/link";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -143,8 +144,8 @@ const features: Feature[] = [
 
 const stats: StatItem[] = [
   { icon: <IcoCruise />,   value: "30+",   label: "Global Cruise Lines" },
-  { icon: <IcoPartners />, value: "10K+",  label: "Travel Partners" },
-  { icon: <IcoBookings />, value: "1M+",   label: "Bookings Processed" },
+  { icon: <IcoPartners />, value: "10+",  label: "Travel Partners" },
+  { icon: <IcoBookings />, value: "1K+",   label: "Bookings Processed" },
   { icon: <IcoUptime />,   value: "99.9%", label: "Platform Uptime" },
 ];
 
@@ -179,8 +180,8 @@ export default function Product() {
               operations in one unified platform built for modern travel businesses.
             </p>
             <div className={styles.heroActions}>
-              <button className={styles.btnPrimary}>Book a Demo</button>
-              <button className={styles.btnGhost}>Explore Features →</button>
+              <Link href="/bookdemo" className={styles.btnPrimary}>Book a Demo</Link>
+              
             </div>
           </div>
 
@@ -304,7 +305,9 @@ export default function Product() {
                   </li>
                 ))}
               </ul>
-              <button className={styles.btnPrimary} style={{ marginTop: "8px" }}>Book a Demo</button>
+              <Link href="/bookdemo" className={styles.btnPrimary} style={{ width:'100px', marginTop: "8px" }}>
+                Book a Demo
+              </Link>
             </div>
 
             {/* Right — search results UI mock */}
