@@ -1,27 +1,18 @@
 "use client";
-import { FormEvent, Suspense, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { FormEvent, Suspense, useState } from "react";
+import { useRouter } from "next/navigation";
 import '../style.css'; 
-import logoMain from "../../assets/logo.png";
-import logoft from "../../assets/logo-white.png";
 import loginImg from "../../assets/pana.svg";
 import Image from 'next/image';
-import Link from "next/link";
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
 
 function LoginContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [companySlug, setCompanySlug] = useState(searchParams?.get("company") || "");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const defaultUserId = useMemo(
-    () => (companySlug.trim() ? `${companySlug.trim().toLowerCase()}_test` : ""),
-    [companySlug]
-  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,7 +26,6 @@ function LoginContent() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          companySlug,
           identifier,
           password,
         }),
@@ -88,22 +78,12 @@ function LoginContent() {
 
         <form className="signup-form" onSubmit={handleSubmit}>
           <label>
-            <span>Company slug</span>
-            <input
-              required
-              value={companySlug}
-              onChange={(event) => setCompanySlug(event.target.value)}
-              placeholder="Company name"
-            />
-          </label>
-
-          <label>
             <span>Email or user ID</span>
             <input
               required
               value={identifier}
               onChange={(event) => setIdentifier(event.target.value)}
-              placeholder={defaultUserId || "support@company.com"}
+              placeholder="support@company.com"
             />
           </label>
 
@@ -122,15 +102,6 @@ function LoginContent() {
             {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
-
-        <div className="agent-login-hint">
-          <span>Default admin pattern</span>
-          <strong>{defaultUserId || "company-slug_test"}</strong>
-          <p>
-            During company signup, the default admin uses this value as user ID
-            and password unless changed later.
-          </p>
-        </div>
       </section>
       </div>
        {/* ───── FOOTER ───── */}

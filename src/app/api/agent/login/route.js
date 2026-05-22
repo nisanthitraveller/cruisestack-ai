@@ -4,6 +4,7 @@ import {
   AGENT_SESSION_COOKIE,
   createAgentSessionRecord,
   findAgentByCredentials,
+  findCompaniesByAgentIdentifier,
   findCompanyBySlug,
   getAgentCookieOptions,
 } from "@/lib/agentAuth";
@@ -27,21 +28,42 @@ export async function POST(request) {
     const identifier = body.identifier?.trim().toLowerCase();
     const password = body.password || "";
 
-    if (!companySlug || !identifier || !password) {
+    if (!identifier || !password) {
       return NextResponse.json(
-        { message: "Company slug, email/user ID, and password are required" },
+        { message: "Email/user ID and password are required" },
         { status: 400 }
       );
     }
 
     connection = await pool.getConnection();
 
-    const company = await findCompanyBySlug(connection, companySlug);
+    let company = null;
+
+    if (companySlug) {
+      company = await findCompanyBySlug(connection, companySlug);
+    } else {
+      const companies = await findCompaniesByAgentIdentifier(
+        connection,
+        identifier
+      );
+
+      if (companies.length > 1) {
+        return NextResponse.json(
+          {
+            message:
+              "Multiple workspaces found for this user. Please contact support.",
+          },
+          { status: 409 }
+        );
+      }
+
+      company = companies[0] || null;
+    }
 
     if (!company) {
       return NextResponse.json(
-        { message: "Company workspace was not found" },
-        { status: 404 }
+        { message: "Invalid agent credentials" },
+        { status: 401 }
       );
     }
 

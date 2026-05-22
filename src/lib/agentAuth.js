@@ -189,6 +189,48 @@ export async function findCompanyBySlug(connection, slug) {
   return companies[0] || null;
 }
 
+export async function findCompaniesByAgentIdentifier(connection, identifier) {
+  const [companies] = await connection.query(
+    `
+    SELECT id, company_name, slug, logo, primary_color, secondary_color, support_email, currency, plan_type, status
+    FROM companies
+    WHERE status = 1
+    ORDER BY id ASC
+    `
+  );
+
+  const matches = [];
+
+  for (const company of companies) {
+    const tablePrefix = tableSafePrefix(company.slug);
+    const agentTable = `${tablePrefix}_agent`;
+
+    try {
+      const [agents] = await connection.query(
+        `
+        SELECT id
+        FROM \`${agentTable}\`
+        WHERE company_id = ?
+          AND status = 1
+          AND (email = ? OR user_id = ?)
+        LIMIT 1
+        `,
+        [company.id, identifier, identifier]
+      );
+
+      if (agents[0]) {
+        matches.push(company);
+      }
+    } catch (error) {
+      if (error?.code !== "ER_NO_SUCH_TABLE") {
+        throw error;
+      }
+    }
+  }
+
+  return matches;
+}
+
 export async function findAgentByCredentials(connection, company, identifier, password) {
   const tablePrefix = tableSafePrefix(company.slug);
   const agentTable = `${tablePrefix}_agent`;
