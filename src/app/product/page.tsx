@@ -131,7 +131,7 @@ const IcoUptime = () => (
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const features: Feature[] = [
-  { icon: <IcoInventory />, title: "Live Inventory",        desc: "Real-time access to 32+ cruise lines with live availability and fares." },
+  { icon: <IcoInventory />, title: "Live Inventory",        desc: "Real-time access to 30+ cruise lines with live availability and fares." },
   { icon: <IcoSearch />,    title: "Smart Search",          desc: "Advanced search and filters to find the perfect cruise for your customers." },
   { icon: <IcoQuotes />,    title: "Instant Quotes",        desc: "Create branded quotations in seconds and close deals faster." },
   { icon: <IcoPayments />,  title: "Bookings & Payments",   desc: "Seamless booking flow with multiple payment options and security." },
@@ -142,7 +142,7 @@ const features: Feature[] = [
 ];
 
 const stats: StatItem[] = [
-  { icon: <IcoCruise />,   value: "32+",   label: "Global Cruise Lines" },
+  { icon: <IcoCruise />,   value: "30+",   label: "Global Cruise Lines" },
   { icon: <IcoPartners />, value: "10K+",  label: "Travel Partners" },
   { icon: <IcoBookings />, value: "1M+",   label: "Bookings Processed" },
   { icon: <IcoUptime />,   value: "99.9%", label: "Platform Uptime" },
@@ -175,7 +175,7 @@ export default function Product() {
             <span className={styles.eyebrow}>PRODUCT</span>
             <h1 className={styles.heroTitle}>Everything you need to sell, manage, and scale cruise bookings</h1>
             <p className={styles.heroDesc}>
-              CruiseStack brings together inventory, pricing, booking, payments, and
+              cruisestack brings together inventory, pricing, booking, payments, and
               operations in one unified platform built for modern travel businesses.
             </p>
             <div className={styles.heroActions}>
@@ -288,7 +288,7 @@ export default function Product() {
               <span className={styles.eyebrowGreen}>BUILT FOR GROWTH</span>
               <h2 className={styles.growthTitle}>One platform.<br />Endless possibilities.</h2>
               <p className={styles.growthDesc}>
-                From search to settlement, CruiseStack streamlines your entire cruise
+                From search to settlement, cruisestack streamlines your entire cruise
                 commerce workflow so you can focus on growth.
               </p>
               <ul className={styles.checkList}>

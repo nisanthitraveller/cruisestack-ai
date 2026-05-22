@@ -139,7 +139,7 @@ export default function DashboardActions({ b2bUrl, b2cUrl }: DashboardActionsPro
               <div>
                 <p className="panel-kicker">Integration</p>
                 <h2 id="integration-title">Integrate cruisestack.ai</h2>
-                <small>Use these URLs to connect your CruiseStack workspace.</small>
+                <small>Use these URLs to connect your cruisestack workspace.</small>
               </div>
               <button
                 aria-label="Close integration popup"

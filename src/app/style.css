@@ -1087,9 +1087,10 @@ h1 {
 .success-card h1 {
   color: var(--navy);
   font-size: clamp(2.2rem, 5vw, 3.8rem);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.06;
   margin: 0;
+  font-size: 36px;
 }
 
 .success-card p:not(.eyebrow) {
@@ -1160,14 +1161,17 @@ h1 {
   border-radius: 8px;
   color: var(--white);
   display: inline-flex;
-  font-weight: 800;
+  font-weight: 500;
   justify-content: center;
   justify-self: center;
   margin-top: 4px;
   min-height: 48px;
-  padding: 15px 22px;
+  padding: 10px 20px;
   text-decoration: none;
   transition: background 0.2s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .success-button:hover {
@@ -1758,12 +1762,12 @@ h1 {
     align-items: center;
     gap: 4px;
 }
-.pricing-detail-item:nth-of-type(2) .pricing-detail-value {
+.pricing-detail-item:nth-of-type(1) .pricing-detail-value {
     font-size: 24px !important;
     font-weight: 700 !important;
     color: #000;
 }
-.pricing-detail-item:nth-of-type(1) .pricing-detail-value {
+.pricing-detail-item:nth-of-type(2) .pricing-detail-value {
     font-size: 12px !important;
     
 }
@@ -1783,9 +1787,12 @@ h1 {
     background: #006CEA;
     font-size: 15px;
     color: #fff;
-    left: 20%;
+    left: 0;
+    right: 0;
     border-radius: 4px;
     padding: 4px 6px;
+    width: 130px;
+    justify-content: center;
 }
 .pricing-card-header {
   color: #000;

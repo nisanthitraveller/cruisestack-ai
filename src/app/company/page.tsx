@@ -128,7 +128,7 @@ const IconStar = () => (
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const stats = [
-  { icon: <IconCruiseLines />, value: "32+", label: "Global Cruise Lines" },
+  { icon: <IconCruiseLines />, value: "30+", label: "Global Cruise Lines" },
   { icon: <IconPartners />, value: "10K+", label: "Travel Partners" },
   { icon: <IconBookings />, value: "1M+", label: "Bookings Processed" },
   { icon: <IconUptime />, value: "99.9%", label: "Platform Uptime" },
@@ -152,7 +152,7 @@ const team = [
 const teamColors = ["#c7d8f5", "#d6e8f0", "#d1e7dd", "#fde8cc", "#e8d5f5"];
 
 const journey = [
-  { icon: <IconFlag />, year: "2018", title: "Founded", desc: "CruiseStack was founded with a vision to modernize cruise distribution." },
+  { icon: <IconFlag />, year: "2018", title: "Founded", desc: "cruisestack was founded with a vision to modernize cruise distribution." },
   { icon: <IconRocket />, year: "2019", title: "First Platform Launch", desc: "Launched our first platform with real-time inventory and booking capabilities." },
   { icon: <IconGlobe />, year: "2021", title: "Global Expansion", desc: "Expanded globally and integrated with major cruise lines." },
   { icon: <IconPeople />, year: "2023", title: "1M+ Bookings", desc: "Reached 1 million+ bookings processed on our platform." },
@@ -177,7 +177,7 @@ export default function Company() {
               <span className={styles.eyebrow}>COMPANY</span>
               <h1 className={styles.heroTitle}>Building the future of cruise commerce</h1>
               <p className={styles.heroDesc}>
-                CruiseStack is on a mission to empower travel businesses with technology,
+                cruisestack is on a mission to empower travel businesses with technology,
                 innovation and unmatched inventory access.
               </p>
               <div className={styles.heroActions}>

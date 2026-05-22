@@ -31,6 +31,7 @@ import lg26 from "../assets/26-Celestyal.svg";
 import lg27 from "../assets/27-AMA.svg";
 import lg28 from "../assets/28-Virgin.svg";
 import lg29 from "../assets/29-Croisi.svg";
+import lg30 from "../assets/emerald-cruises.svg";
 import logoMain from "../assets/logo.png";
 import logoft from "../assets/logo-white.png";
 import Image from 'next/image';
@@ -68,13 +69,13 @@ const ftrimgsect = {
         <div className="hero-content">
           <span className="hero-badge">All-in-one Cruise Booking Engine</span>
           <h1>Built for the next generation of cruise travel businesses</h1>
-          <p>Run your cruise business smarter with live inventory, instant pricing, secure booking workflows, and complete operational control across 32+ international cruise brands.</p>
+          <p>Run your cruise business smarter with live inventory, instant pricing, secure booking workflows, and complete operational control across 30+ international cruise brands.</p>
           <div className="hero-btns">
             <button className="btn-primary" style={{ padding: '13px 28px', fontSize: '15px' }}>Book a Demo</button>
             <button className="btn-outline" style={{ padding: '11px 28px', fontSize: '15px' }}>View Pricing</button>
           </div>
           <div className="hero-stats">
-            <div className="stat"><span className="num">32+</span><span className="label">Cruise Lines</span></div>
+            <div className="stat"><span className="num">30+</span><span className="label">Cruise Lines</span></div>
             <div className="stat"><span className="num">500+</span><span className="label">Travel Partners</span></div>
             <div className="stat"><span className="num">99.9%</span><span className="label">Uptime</span></div>
             <div className="stat"><span className="num">4.9/5</span><span className="label">Customer Rating</span></div>
@@ -152,7 +153,7 @@ const ftrimgsect = {
           <div className="feature-card">
             <div className="feat-icon">📡</div>
             <h4>Real-time Inventory</h4>
-            <p>Access live availability from 32+ cruise lines.</p>
+            <p>Access live availability from 30+ cruise lines.</p>
           </div>
           <div className="feature-card">
             <div className="feat-icon">💬</div>
@@ -208,7 +209,7 @@ const ftrimgsect = {
 
         <div className="dashboard-mockup">
           <div className="db-topbar">
-            <span className="db-logo">⚓ CruiseStack</span>
+            <span className="db-logo">⚓ cruisestack</span>
             <div className="db-dots"><div className="db-dot"></div><div className="db-dot"></div><div className="db-dot"></div></div>
           </div>
           <div className="db-body">
@@ -284,7 +285,7 @@ const ftrimgsect = {
       {/* ───── CRUISE LINES ───── */}
       <section className="cruise-lines">
         <div className="section-header">
-          <h2>Integrated with 32+ leading cruise lines</h2>
+          <h2>Integrated with 30+ leading cruise lines</h2>
           <p>Connect, compare and book from the world&apos;s best cruise brands.</p>
         </div>
         <div className="cruise-grid">
@@ -382,6 +383,10 @@ const ftrimgsect = {
                   <div className="col lgs">
                     <Image src={lg29} alt="" />
                   </div>
+                 
+                  <div className="col lgs">
+                    <Image src={lg30} alt="" />
+                  </div>
                 </div>
               
           {/* <div className="cruise-logo-cell"><span>NCL<br />NORWEGIAN</span></div>
@@ -415,7 +420,7 @@ const ftrimgsect = {
       <section className="cta" style={ftrimgsect}>
         <div className="cta-content">
           <h2>Ready to grow your cruise business?</h2>
-          <p>Join hundreds of travel businesses that trust CruiseStack to power their cruise commerce.</p>
+          <p>Join hundreds of travel businesses that trust cruisestack to power their cruise commerce.</p>
           <div className="cta-btns">
             <button className="btn-white">Book a Demo</button>
             <button className="btn-outline-white">Talk to Sales</button>

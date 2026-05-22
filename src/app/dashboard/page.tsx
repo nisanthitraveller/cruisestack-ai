@@ -106,7 +106,7 @@ export default async function DashboardPage() {
     <main className="dashboard-page">
       <aside className="dashboard-sidebar">
         <div>
-          <p className="panel-kicker">CruiseStack AI</p>
+          <p className="panel-kicker">cruisestack AI</p>
           <h1>{dashboard.company.company_name}</h1>
         </div>
 

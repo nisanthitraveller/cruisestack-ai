@@ -41,13 +41,13 @@ function SuccessContent() {
         <p className="eyebrow">Subscription confirmed</p>
         <h1>Thanks for subscribing</h1>
         <p>
-          Your CruiseStack AI workspace is being prepared. We are signing you in
+          Your cruisestack AI workspace is being prepared. We are signing you in
           and loading your subscription, billing, and commission dashboard.
         </p>
 
         <div className="success-countdown" aria-live="polite">
           <strong>{sessionId ? secondsLeft : "-"}</strong>
-          <span>Redirecting in seconds</span>
+          <span>Redirecting to dashboard</span>
         </div>
 
         <div className="success-details">

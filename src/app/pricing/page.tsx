@@ -18,14 +18,16 @@ const plans = [
     buyButtonId: "buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B",
     stripePriceId: "price_1TXERSEmqvBXj5NHd0ImLbQk",
     features: {
-      "Less agency commissions": "Yes",
-      "Iframe integration": "Yes",
+      "Standard agency commissions": "Yes",
       "Online-direct payments": "Yes",
       "Cabin blocking": "Yes",
       "PDF quotations": "Yes",
       "Leads CRM dashboard": "Yes",
       "Ops support": "Yes",
       "Backend ops system": "Yes",
+      "Iframe integration": "Yes",
+      "B2C integration": "Yes",
+      "B2B integration": "No",
       "User login integration": "No",
       "Payment gateway integration": "No",
       "Brand theme customisation": "No",
@@ -33,35 +35,37 @@ const plans = [
       "Sales support": "No",
       "Marketing support": "No",
       "Cruise line & GSA/PSA connects": "No",
-      "One-time integration: $1000": "Yes",
-      "Monthly fee: $1000": "Yes",
-      "$4/booking": "Yes",
-      "$1/trip summary": "Yes",
-      "$0.04/API scan fees": "Yes",
+      //"One-time integration: $1000": "Yes",
+      //"Monthly fee: $499": "Yes",
+      "$5/booking": "Yes",
+      "Upto 1000 trip summaries": "Yes",
+      //"$0.04/API scan fees": "Yes",
     },
     pricingdetails: {
-      "Estimate month": "Estimated monthly billing",
-      "Monthly fee": "~$1300",
+      
+      "Monthly fee": "$499/month",
       "Upto bookings": "up to 50 bookings",
     }
   },
 
   { 
-    recommended: "cruisestack Recommended",
+    recommended: "Recommended",
     name: "Professional",
     colorClass: "professional",
     buyButtonId: "buy_btn_1TXFHhEmqvBXj5NHX68zHgJi",
     stripePriceId: "price_1TXERoEmqvBXj5NHejeHS6Kk",
 
     features: {
-      "Standard agency commissions": "Yes",
-      "Iframe integration": "Yes",
+      "Best agency commissions": "Yes",
       "Online-direct payments": "Yes",
       "Cabin blocking": "Yes",
       "PDF quotations": "Yes",
       "Leads CRM dashboard": "Yes",
       "Ops support": "Yes",
       "Backend ops system": "Yes",
+      "Iframe integration": "Yes",
+      "B2C integration": "Yes",
+      "B2B integration": "Yes",
       "User login integration": "Yes",
       "Payment gateway integration": "Yes",
       "Brand theme customisation": "Yes",
@@ -69,16 +73,16 @@ const plans = [
       "Sales support": "No",
       "Marketing support": "No",
       "Cruise line & GSA/PSA connects": "No",
-      "One-time integration: $2000": "Yes",
-      "Monthly fee: $1400": "Yes",
-      "$3/booking": "Yes",
-      "$0.4/trip summary": "Yes",
-      "$0.03/API scan fees": "Yes",
+      //"One-time integration: $2000": "Yes",
+     // "Monthly fee: $999": "Yes",
+      "$4/booking": "Yes",
+      "Upto 2000 trip summaries": "Yes",
+     // "$0.03/API scan fees": "Yes",
     },
      pricingdetails: {
-      "Estimate month": "Estimated monthly billing",
-      "Monthly fee": "~$1800",
-      "Upto bookings": "up to 100 bookings",
+     
+      "Monthly fee": "$999/month",
+      "Upto bookings": "up to 200 bookings",
     }
   },
   {
@@ -89,13 +93,15 @@ const plans = [
     
     features: {
       "Highest agency commissions": "Yes",
-      "Iframe integration": "Yes",
       "Online-direct payments": "Yes",
       "Cabin blocking": "Yes",
       "PDF quotations": "Yes",
       "Leads CRM dashboard": "Yes",
       "Ops support": "Yes",
       "Backend ops system": "Yes",
+      "Iframe integration": "Yes",
+      "B2C integration": "Yes",
+      "B2B integration": "Yes",
       "User login integration": "Yes",
       "Payment gateway integration": "Yes",
       "Brand theme customisation": "Yes",
@@ -103,16 +109,16 @@ const plans = [
       "Sales support": "Yes",
       "Marketing support": "Yes",
       "Cruise line & GSA/PSA connects": "Yes",
-      "One-time integration: $3000": "Yes",
-      "Monthly fee: $2200": "Yes",
-      "$2/booking": "Yes",
-      "$0.1/trip summary": "Yes",
-      "$0.02/API scan fees": "Yes",
+      // "One-time integration: $3000": "Yes",
+      //"Monthly fee: $2199": "Yes",
+      "$3/booking": "Yes",
+      "Upto 5000 trip summaries": "Yes",
+      //"$0.02/API scan fees": "Yes",
     },
      pricingdetails: {
-      "Estimate month": "Estimated monthly billing",
-      "Monthly fee": "~$2700",
-      "Upto bookings": "up to 200 bookings",
+      
+      "Monthly fee": "$2199/month",
+      "Upto bookings": "up to 300 bookings",
     }
   },
 ];
@@ -209,6 +215,7 @@ function PricingContent() {
   const companySlug = searchParams?.get("company") || undefined;
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
   const boldFeatures = new Set([
+    "B2B integration",
     "User login integration",
     "Payment gateway integration",
     "Brand theme customisation",
@@ -223,7 +230,7 @@ function PricingContent() {
       <nav>
         <div className='container-nav'>
           <Link href="/" className="nav-logo">
-              <Image src={logoMain} alt="CruiseStack" width={190}/>
+              <Image src={logoMain} alt="cruisestack" width={190}/>
           </Link>
           <ul className="nav-links">
             <li><a href="/product">Product</a></li>
@@ -243,13 +250,13 @@ function PricingContent() {
       />
 
       <div className="pricing-page">
-        <section className="pricing-hero">
+        <section className="pricing-hero" style={{marginBottom:'85px'}}>
          
-          <h1>Simple, Transparent & Scalable Tiers</h1>
+          <h1>Simple, transparent & scalable tiers</h1>
           <p>Choose the feature landscape that matches your business scale.</p>
 
         </section>
-  <div 
+  {/* <div 
   className="billing-toggle" 
   style={{ 
     width: '100%', 
@@ -262,7 +269,7 @@ function PricingContent() {
     
   }}
 >
-  {/* Monthly Label */}
+ 
   <span 
     onClick={() => setBillingCycle("monthly")}
     style={{ 
@@ -276,13 +283,13 @@ function PricingContent() {
     Monthly
   </span>
 
-  {/* Toggle Switch Container */}
+ 
   <div 
     onClick={() => setBillingCycle(billingCycle === "monthly" ? "annual" : "monthly")}
     style={{
       width: '40px',
       height: '22px',
-      backgroundColor: '#4d82f3', // Matches the bright blue in the screenshot
+      backgroundColor: '#4d82f3', 
       borderRadius: '20px',
       position: 'relative',
       cursor: 'pointer',
@@ -290,7 +297,7 @@ function PricingContent() {
       transition: 'background-color 0.2s ease'
     }}
   >
-    {/* Moving Thumb */}
+   
     <div 
       style={{
         width: '18px',
@@ -306,7 +313,7 @@ function PricingContent() {
     />
   </div>
 
-  {/* Annual Label */}
+  
   <span 
     onClick={() => setBillingCycle("annual")}
     style={{ 
@@ -320,7 +327,7 @@ function PricingContent() {
     Annual
   </span>
   <span className="save_badge">Save 20%</span>
-</div>
+</div> */}
 
         <section className="pricing-grid structural-four-columns">
         

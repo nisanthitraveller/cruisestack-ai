@@ -12,7 +12,7 @@ export default function Footer() {
         {/* Brand */}
         <div className={styles.footerBrand}>
           <Link href="/" className={styles.footerLogo}>
-            <Image src={logoft} alt="CruiseStack" width={190} height={25} />
+            <Image src={logoft} alt="cruisestack" width={190} height={25} />
           </Link>
           <p>The most complete cruise booking engine for travel companies worldwide.</p>
           <div className={styles.socialLinks}>
@@ -68,7 +68,7 @@ export default function Footer() {
       </div>
 
       <div className={styles.footerBottom}>
-        <span>© 2026 CruiseStack. All rights reserved.</span>
+        <span>© 2026 cruisestack. All rights reserved.</span>
         <div className={styles.footerBottomLinks}>
           <Link href="#">Privacy Policy</Link>
           <Link href="#">Terms of Service</Link>

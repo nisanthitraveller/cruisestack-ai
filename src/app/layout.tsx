@@ -4,8 +4,11 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "CruiseStack AI",
-  description: "Dummy Next.js project scaffolded with TypeScript and the App Router."
+  title: "cruisestack AI",
+  description: "Dummy Next.js project scaffolded with TypeScript and the App Router.",
+  icons: {
+    icon: "/favicon.ico"
+  }
 };
 
 export default function RootLayout({
@@ -15,6 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+
       <body className={inter.className}>{children}</body>
     </html>
   );

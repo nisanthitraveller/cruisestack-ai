@@ -85,11 +85,11 @@ export default function CompanySignupPage() {
       <div className="login-page">
       <section className="login-intro">
         <p className="eyebrow">Company Signup</p>
-        <h1>Get started with cruiseStack</h1>
+        <h1>Get started with cruisestack</h1>
         <p style={{marginBottom:'28px'}}>
          Register your workspace and start managing your cruise business with a secure, centralized system.
         </p>
-        <Image src={signImg} alt="CruiseStack" width={340}/>
+        <Image src={signImg} alt="cruisestack" width={340}/>
       </section>
 
       <section className="signup-panel" aria-label="Company signup form">
@@ -109,7 +109,7 @@ export default function CompanySignupPage() {
               required
               value={form.companyName}
               onChange={(event) => updateField("companyName", event.target.value)}
-              placeholder="Aerticket"
+              placeholder="Your company name"
             />
           </label>
 

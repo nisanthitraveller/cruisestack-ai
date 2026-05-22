@@ -15,7 +15,7 @@ export default function Header() {
 
         {/* Logo */}
         <Link href="/" className={styles.navLogo}>
-          <Image src={logoMain} alt="CruiseStack" width={190} height={25} />
+          <Image src={logoMain} alt="cruisestack" width={190} height={25} />
         </Link>
 
         {/* Desktop nav links */}

@@ -67,7 +67,7 @@ const topics: TopicItem[] = [
       </svg>
     ),
     title: "How-to Guides",
-    desc: "Step-by-step guides to help you make the most of CruiseStack.",
+    desc: "Step-by-step guides to help you make the most of cruisestack.",
   },
   {
     icon: (
@@ -113,7 +113,7 @@ const topics: TopicItem[] = [
 
 const popular: PopularItem[] = [
   { tag: "BLOG",           title: "Real-time Inventory: The Key to More Bookings",              date: "May 10, 2024", readTime: "5 min read" },
-  { tag: "CASE STUDY",     title: "How TravelCo Increased Bookings by 40% with CruiseStack",    date: "Apr 28, 2024", readTime: "7 min read" },
+  { tag: "CASE STUDY",     title: "How TravelCo Increased Bookings by 40% with cruisestack",    date: "Apr 28, 2024", readTime: "7 min read" },
   { tag: "WEBINAR",        title: "Maximizing Revenue with Dynamic Pricing Strategies",          date: "Apr 15, 2024", readTime: "45 min watch" },
   { tag: "GUIDE",          title: "API Integrations: Connect and Scale Seamlessly",             date: "Apr 05, 2024", readTime: "6 min read" },
   { tag: "PRODUCT UPDATE", title: "What's New: Latest Features and Enhancements",              date: "Mar 22, 2024", readTime: "3 min read" },
@@ -165,35 +165,31 @@ export default function ResourcesPage(){
       <div className={styles.container}>
  
         <div className={styles.heroContent}>
-          <span className={styles.heroBadge}>All-in-one Cruise Booking Engine</span>
-          <h1>Built for the next generation of cruise travel businesses</h1>
+          <span className={styles.heroBadge}>Resources</span>
+          <h1>Insights, guides and <br/> latest updates</h1>
           <p>
-            Run your cruise business smarter with live inventory, instant pricing,
-            secure booking workflows, and complete operational control across 32+
-            international cruise brands.
+           Explore the latest industry insights, product updates, guides and best practices to grow your cruise business.
           </p>
           <div className={styles.heroBtns}>
-            <Link href="/bookdemo" className={styles.btnPrimary}>Book a Demo</Link>
-            <Link href="/pricing" className={styles.btnOutline}>View Pricing</Link>
-          </div>
-          <div className={styles.heroStats}>
-            <div className={styles.stat}>
-              <span className={styles.num}>32+</span>
-              <span className={styles.label}>Cruise Lines</span>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.num}>500+</span>
-              <span className={styles.label}>Travel Partners</span>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.num}>99.9%</span>
-              <span className={styles.label}>Uptime</span>
-            </div>
-            <div className={styles.stat}>
-              <span className={styles.num}>4.9/5</span>
-              <span className={styles.label}>Customer Rating</span>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: '#ffffff',
+              borderRadius: 6,
+              minHeight: 48,
+              padding: '0 16px',
+              width: '100%',
+              maxWidth: 460,
+              boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
+            }}>
+              <span style={{ color: '#334155', fontSize: 16 }}>Search resources</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm7.707 1.707-3.82-3.82" stroke="#475569" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
             </div>
           </div>
+          
         </div>
  
         <div className={styles.heroRight}>
