@@ -18,7 +18,7 @@ export default function Header() {
     { href: "/company", label: "Company" },
   ];
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = (href: string) => pathname ? (pathname === href || pathname.startsWith(`${href}/`)) : false;
   const getLinkClass = (href: string) => (isActive(href) ? styles.active : "theme");
 
   return (
