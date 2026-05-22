@@ -10,10 +10,12 @@ import {
 
 function whitelabelPath(company, agent, token) {
   const agentSlug = String(agent?.agency_code || company.slug || "");
+  const params = new URLSearchParams({
+    token: String(token || ""),
+    next: "admin/dashboard",
+  });
 
-  return `/agents/${encodeURIComponent(agentSlug)}/whitelabel?token=${encodeURIComponent(
-    String(token || ""),
-  )}`;
+  return `/agents/${encodeURIComponent(agentSlug)}/api/company/whitelabel?${params.toString()}`;
 }
 
 export async function POST(request) {
