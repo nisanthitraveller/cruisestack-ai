@@ -129,6 +129,21 @@
   transform: translateY(-1px);
 }
 
+.userName {
+  color: var(--gray-800);
+  font-size: 14px;
+  font-weight: 700;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logoutForm {
+  display: inline-flex;
+  margin: 0;
+}
+
 /* ══════════════════════════════════════════════
    MOBILE RIGHT CLUSTER  (hidden on desktop)
 ══════════════════════════════════════════════ */
@@ -152,6 +167,16 @@
 }
 
 .mobileIconBtn:hover { background: var(--gray-100); }
+
+.mobileUserName {
+  color: var(--gray-800);
+  font-size: 12px;
+  font-weight: 700;
+  max-width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* Compact "Book a Demo" pill */
 .mobileDemoBtn {
@@ -251,6 +276,25 @@
   padding: 16px 20px 0;
 }
 
+.mobileMenuUser {
+  color: var(--gray-800);
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  padding: 8px 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobileLogoutForm {
+  display: flex;
+  margin: 0;
+}
+
+.mobileLogoutForm button {
+  width: 100%;
+}
+
 .mobileMenuGhost {
   display: flex;
   align-items: center;
@@ -306,4 +350,3 @@
     padding: 7px 10px;
   }
 }
-

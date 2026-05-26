@@ -1,22 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import styles from "./BookDemo.module.css";
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
 import mission from '../../assets/book.webp';
 export default function BookDemoPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e: React.MouseEvent<HTMLButtonElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!form.name || !form.email) return;
-    setSubmitted(true);
+
+    setError("");
+    setSending(true);
+
+    try {
+      const response = await fetch("/api/demo-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+      const data = await response.json();
+
+      if (!response.ok || data.status !== "success") {
+        throw new Error(data.message || "Unable to schedule demo");
+      }
+
+      setSubmitted(true);
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "Unable to schedule demo",
+      );
+    } finally {
+      setSending(false);
+    }
   }
 
  const heroImagePlaceholder = {
@@ -65,6 +94,7 @@ export default function BookDemoPage() {
                 Fill out the form and our team will get in touch to schedule your demo.
               </p>
 
+              <form onSubmit={handleSubmit}>
               <div className={styles.fields}>
                 <div className={styles.fieldGroup}>
                   <label className={styles.label} htmlFor="name">Full Name</label>
@@ -74,6 +104,7 @@ export default function BookDemoPage() {
                     type="text"
                     placeholder="Enter your full name"
                     className={styles.input}
+                    required
                     value={form.name}
                     onChange={handleChange}
                   />
@@ -87,6 +118,7 @@ export default function BookDemoPage() {
                     type="email"
                     placeholder="Enter your work email"
                     className={styles.input}
+                    required
                     value={form.email}
                     onChange={handleChange}
                   />
@@ -106,9 +138,12 @@ export default function BookDemoPage() {
                 </div>
               </div>
 
-              <button className={styles.submitBtn} onClick={handleSubmit}>
-                Schedule Demo
+              {error ? <p className={styles.errorText}>{error}</p> : null}
+
+              <button className={styles.submitBtn} disabled={sending} type="submit">
+                {sending ? "Scheduling..." : "Schedule Demo"}
               </button>
+              </form>
             </>
           )}
         </div>
