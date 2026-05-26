@@ -45,6 +45,7 @@
   margin: 0 auto;
   padding: 0 0px;
   height: 64px;
+  box-sizing: border-box;
 }
 
 /* ── Logo ── */
@@ -54,7 +55,9 @@
   text-decoration: none;
   flex-shrink: 0;
 }
-
+@media (max-width: 768px) {
+  .navLogo img { width: 120px;height: auto;}
+}
 /* ══════════════════════════════════════════════
    DESKTOP NAV  (≥ 769px)
 ══════════════════════════════════════════════ */
@@ -303,3 +306,4 @@
     padding: 7px 10px;
   }
 }
+

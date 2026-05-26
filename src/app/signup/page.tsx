@@ -87,7 +87,7 @@ export default function CompanySignupPage() {
         <p className="eyebrow">Company Signup</p>
         <h1>Get started with cruisestack</h1>
         <p style={{marginBottom:'28px'}}>
-         Register your workspace and start managing your cruise business with a secure, centralized system.
+         Register your company and start managing your cruise business with a secure, centralized system.
         </p>
         <Image src={signImg} alt="cruisestack" width={340}/>
       </section>

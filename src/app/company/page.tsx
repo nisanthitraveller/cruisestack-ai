@@ -8,7 +8,11 @@ import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
 import heroImg from '../../assets/Company.webp'
 import mission from '../../assets/mission.png'
-
+import logoone from "../../assets/aerticket.png";
+import logtwo from "../../assets/Satguru.png";
+import logthree from "../../assets/toptraveltrip.png";
+import logofour from "../../assets/travelwings.png";
+import logofive from "../../assets/travtips.png";
 // ─── Icon Components ────────────────────────────────────────────────────────
 
 const IconCruiseLines = () => (
@@ -331,9 +335,24 @@ const missionImagePlaceholder = {
         <div className={styles.container}>
           <p className={styles.partnersLabel}>Trusted by leading travel brands worldwide</p>
           <div className={styles.partnersGrid}>
-            {partners.map((p) => (
-              <div key={p} className={styles.partnerLogo}>{p}</div>
-            ))}
+                    <div className="trust-logos" style={{display:'flex', gap:'24px', flexWrap:'wrap', justifyContent:'center', alignItems:'center'}}  >
+          <span className="trust-logo script">
+            <Image src={logoone} alt="Aerticket" width={180} />
+          </span>
+          <span className="trust-logo blue">
+             <Image src={logtwo} alt="Satguru" width={180} />
+          </span>
+          <span className="trust-logo">
+            <Image src={logthree} alt="Top Travel Trip" width={180} />
+          </span>
+          <span className="trust-logo green">
+            <Image src={logofour} alt="Travelwings" width={180} />
+          </span>
+          <span className="trust-logo">
+            <Image src={logofive} alt="Travtips" width={180} />
+          </span>
+         
+        </div>
           </div>
         </div>
       </section>

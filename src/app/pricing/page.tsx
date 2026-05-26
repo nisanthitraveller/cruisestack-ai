@@ -92,7 +92,7 @@ const plans = [
     stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
     
     features: {
-      "Highest agency commissions": "Yes",
+      "Confidential agency commissions": "Yes",
       "Online-direct payments": "Yes",
       "Cabin blocking": "Yes",
       "PDF quotations": "Yes",
