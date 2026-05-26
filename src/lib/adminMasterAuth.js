@@ -1,9 +1,11 @@
 import crypto from "crypto";
+import { createRequire } from "module";
 import pool from "./db_mysql";
 
 export const ADMINMASTER_SESSION_COOKIE = "cruisestack_adminmaster_session";
 
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 12;
+const requireOptional = createRequire(import.meta.url);
 
 function getCookieValue(source, name) {
   if (!source) return null;
@@ -78,25 +80,87 @@ export function getAdminMasterCookieOptions() {
   };
 }
 
+async function getAgentsColumns(connection) {
+  const [columns] = await connection.query(
+    `
+    SELECT COLUMN_NAME
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'agents'
+    `,
+  );
+
+  return new Set(columns.map((column) => column.COLUMN_NAME));
+}
+
+function loadBcrypt() {
+  try {
+    return requireOptional("bcryptjs");
+  } catch {
+    try {
+      return requireOptional("bcrypt");
+    } catch {
+      return null;
+    }
+  }
+}
+
+async function passwordMatches(inputPassword, storedPassword) {
+  if (!storedPassword) return false;
+
+  const storedValue = String(storedPassword);
+  const isBcryptHash = /^\$2[aby]\$\d{2}\$/.test(storedValue);
+
+  if (!isBcryptHash) {
+    return storedValue === inputPassword;
+  }
+
+  const bcrypt = loadBcrypt();
+
+  if (!bcrypt?.compare) {
+    throw new Error(
+      "bcrypt is required to verify master admin passwords. Install bcryptjs or bcrypt on the server.",
+    );
+  }
+
+  return bcrypt.compare(inputPassword, storedValue);
+}
+
 export async function findAdminMasterByCredentials(connection, identifier, password) {
   const normalizedIdentifier = String(identifier || "").trim().toLowerCase();
 
   if (!normalizedIdentifier || !password) return null;
 
+  const columns = await getAgentsColumns(connection);
+  const selectUserId = columns.has("user_id") ? "user_id" : "NULL AS user_id";
+  const selectStatus = columns.has("status") ? "status" : "1 AS status";
+  const statusCondition = columns.has("status") ? "AND status = 1" : "";
+  const userIdCondition = columns.has("user_id") ? "OR LOWER(user_id) = ?" : "";
+  const params = columns.has("user_id")
+    ? [normalizedIdentifier, normalizedIdentifier]
+    : [normalizedIdentifier];
+
   const [agents] = await connection.query(
     `
-    SELECT id, name, email, user_id, type, status
+    SELECT id, name, email, password, ${selectUserId}, type, ${selectStatus}
     FROM agents
-    WHERE status = 1
-      AND type = 'Admin'
-      AND (LOWER(email) = ? OR LOWER(user_id) = ?)
-      AND password = ?
+    WHERE LOWER(type) = 'admin'
+      ${statusCondition}
+      AND (LOWER(email) = ? ${userIdCondition})
     LIMIT 1
     `,
-    [normalizedIdentifier, normalizedIdentifier, password],
+    params.slice(0, columns.has("user_id") ? 2 : 1),
   );
 
-  return agents[0] || null;
+  const agent = agents[0] || null;
+
+  if (!agent || !(await passwordMatches(password, agent.password))) {
+    return null;
+  }
+
+  delete agent.password;
+
+  return agent;
 }
 
 export function createAdminMasterSessionCookie(agent) {
@@ -113,13 +177,18 @@ export async function getAdminMasterFromSession(source) {
   const connection = await pool.getConnection();
 
   try {
+    const columns = await getAgentsColumns(connection);
+    const selectUserId = columns.has("user_id") ? "user_id" : "NULL AS user_id";
+    const selectStatus = columns.has("status") ? "status" : "1 AS status";
+    const statusCondition = columns.has("status") ? "AND status = 1" : "";
+
     const [agents] = await connection.query(
       `
-      SELECT id, name, email, user_id, type, status
+      SELECT id, name, email, ${selectUserId}, type, ${selectStatus}
       FROM agents
       WHERE id = ?
-        AND status = 1
-        AND type = 'Admin'
+        ${statusCondition}
+        AND LOWER(type) = 'admin'
       LIMIT 1
       `,
       [session.agentId],

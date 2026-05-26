@@ -52,7 +52,7 @@ export async function POST(request) {
     console.error("Adminmaster login error:", error);
 
     return NextResponse.json(
-      { message: "Unable to log in" },
+      { message: error.message || "Unable to log in" },
       { status: 500 },
     );
   } finally {
