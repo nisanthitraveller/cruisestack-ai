@@ -276,6 +276,11 @@
   background: #dc2626;
 }
 
+.adminmaster-button.delete {
+  background: #7f1d1d;
+  width: 100%;
+}
+
 .adminmaster-button.update {
   background: #006cea;
 }

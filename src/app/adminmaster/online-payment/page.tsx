@@ -272,6 +272,7 @@ export default async function AdminMasterOnlinePaymentPage() {
                             <SubscriptionActions
                               allowBillingCycle={false}
                               billingCycle={subscription.billing_cycle}
+                              companyName={subscription.company_name || subscription.slug}
                               companyStatus={subscription.company_status}
                               subscriptionId={subscription.subscription_id}
                               subscriptionStatus={subscription.subscription_status}

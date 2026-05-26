@@ -6,6 +6,7 @@ import { useState } from "react";
 type SubscriptionActionsProps = {
   allowBillingCycle?: boolean;
   billingCycle: string | null;
+  companyName?: string | null;
   companyStatus: number;
   subscriptionId: number;
   subscriptionStatus: number;
@@ -14,6 +15,7 @@ type SubscriptionActionsProps = {
 export default function SubscriptionActions({
   allowBillingCycle = true,
   billingCycle,
+  companyName,
   companyStatus,
   subscriptionId,
   subscriptionStatus,
@@ -26,7 +28,15 @@ export default function SubscriptionActions({
 
   const isActive = Number(companyStatus) === 1 && Number(subscriptionStatus) === 1;
 
-  async function runAction(action: "activate" | "block" | "update_cycle") {
+  async function runAction(action: "activate" | "block" | "delete_user" | "update_cycle") {
+    if (action === "delete_user") {
+      const confirmed = window.confirm(
+        `Delete ${companyName || "this user"} and all tenant tables? This cannot be undone.`,
+      );
+
+      if (!confirmed) return;
+    }
+
     setBusyAction(action);
 
     try {
@@ -72,7 +82,7 @@ export default function SubscriptionActions({
           onClick={() => runAction("block")}
           type="button"
         >
-          {busyAction === "block" ? "Saving..." : "Block"}
+          {busyAction === "block" ? "Saving..." : "Suspend"}
         </button>
       </div>
 
@@ -97,6 +107,15 @@ export default function SubscriptionActions({
           </button>
         </div>
       ) : null}
+
+      <button
+        className="adminmaster-button delete"
+        disabled={busyAction !== null}
+        onClick={() => runAction("delete_user")}
+        type="button"
+      >
+        {busyAction === "delete_user" ? "Deleting..." : "Delete user"}
+      </button>
     </div>
   );
 }

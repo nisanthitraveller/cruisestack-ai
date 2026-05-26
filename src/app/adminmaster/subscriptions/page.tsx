@@ -263,6 +263,7 @@ export default async function AdminMasterSubscriptionsPage() {
                           <td>
                             <SubscriptionActions
                               billingCycle={subscription.billing_cycle}
+                              companyName={subscription.company_name || subscription.slug}
                               companyStatus={subscription.company_status}
                               subscriptionId={subscription.subscription_id}
                               subscriptionStatus={subscription.subscription_status}
