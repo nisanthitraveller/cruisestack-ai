@@ -1930,6 +1930,73 @@ h1 {
   justify-content: center;
 }
 
+.pricing-subscription-card {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  box-shadow: 0 14px 35px rgba(10, 31, 68, 0.08);
+  display: grid;
+  gap: 8px;
+  margin: -48px auto 52px;
+  max-width: 620px;
+  padding: 22px;
+  text-align: center;
+}
+
+.pricing-subscription-card.active {
+  border-color: #86efac;
+}
+
+.pricing-subscription-card.warning {
+  border-color: #fed7aa;
+}
+
+.pricing-subscription-card span {
+  color: #006cea;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.pricing-subscription-card strong {
+  color: #0a1f44;
+  font-size: 20px;
+}
+
+.pricing-subscription-card p {
+  color: #64748b;
+  margin: 0;
+}
+
+.pricing-dashboard-button {
+  align-items: center;
+  background: #006cea;
+  border-radius: 8px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 800;
+  justify-content: center;
+  justify-self: center;
+  margin-top: 6px;
+  min-height: 44px;
+  padding: 10px 18px;
+  text-decoration: none;
+}
+
+.pricing-plan-active-note {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 800;
+  margin: 16px;
+  padding: 12px;
+  text-align: center;
+}
+
 .manual-payment-section {
   margin: 30px auto 0;
   max-width: 420px;

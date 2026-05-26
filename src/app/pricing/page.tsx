@@ -130,6 +130,21 @@ type AgentSummary = {
   email?: string | null;
 };
 
+type CompanySubscriptionStatus = {
+  billingCycle?: string | null;
+  companyFound: boolean;
+  companyName?: string | null;
+  currentPeriodEnd?: string | null;
+  currentPeriodStart?: string | null;
+  dashboardUrl?: string | null;
+  hasSubscription?: boolean;
+  isActive: boolean;
+  paymentMethod?: string | null;
+  paymentStatus?: string | null;
+  planName?: string | null;
+  stripeStatus?: string | null;
+};
+
 function PricingNavActions() {
   const [agent, setAgent] = useState<AgentSummary | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
@@ -214,6 +229,9 @@ function PricingContent() {
   const searchParams = useSearchParams();
   const companySlug = searchParams?.get("company") || undefined;
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+  const [subscriptionStatus, setSubscriptionStatus] =
+    useState<CompanySubscriptionStatus | null>(null);
+  const [checkingSubscription, setCheckingSubscription] = useState(Boolean(companySlug));
   const manualPaymentUrl = (cycle: "monthly" | "yearly") => {
     const params = new URLSearchParams({
       manual: "1",
@@ -226,6 +244,7 @@ function PricingContent() {
 
     return `/success?${params.toString()}`;
   };
+  const paymentsHidden = Boolean(subscriptionStatus?.isActive);
   const boldFeatures = new Set([
     "B2B integration",
     "User login integration",
@@ -236,6 +255,46 @@ function PricingContent() {
     "Marketing support",
     "Cruise line & GSA/PSA connects",
   ]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadSubscriptionStatus() {
+      if (!companySlug) {
+        setCheckingSubscription(false);
+        setSubscriptionStatus(null);
+        return;
+      }
+
+      setCheckingSubscription(true);
+
+      try {
+        const response = await fetch(
+          `/api/company-subscription-status?company=${encodeURIComponent(companySlug)}`,
+          { cache: "no-store" },
+        );
+
+        if (!active) return;
+
+        if (!response.ok) {
+          setSubscriptionStatus(null);
+          return;
+        }
+
+        setSubscriptionStatus(await response.json());
+      } catch {
+        if (active) setSubscriptionStatus(null);
+      } finally {
+        if (active) setCheckingSubscription(false);
+      }
+    }
+
+    loadSubscriptionStatus();
+
+    return () => {
+      active = false;
+    };
+  }, [companySlug]);
 
   return (
      <main className="cruise-page-body">
@@ -268,6 +327,44 @@ function PricingContent() {
           <p>Choose the feature landscape that matches your business scale.</p>
 
         </section>
+
+        {companySlug && checkingSubscription ? (
+          <section className="pricing-subscription-card">
+            <span>Checking subscription</span>
+            <strong>Please wait...</strong>
+          </section>
+        ) : null}
+
+        {companySlug && subscriptionStatus?.companyFound === false ? (
+          <section className="pricing-subscription-card warning">
+            <span>Company not found</span>
+            <strong>{companySlug}</strong>
+            <p>Please create the company account before choosing a plan.</p>
+            <Link href="/signup" className="pricing-dashboard-button">
+              Create company
+            </Link>
+          </section>
+        ) : null}
+
+        {subscriptionStatus?.isActive ? (
+          <section className="pricing-subscription-card active">
+            <span>Subscription active</span>
+            <strong>
+              {subscriptionStatus.companyName || companySlug} -{" "}
+              {subscriptionStatus.planName || "Active plan"}
+            </strong>
+            <p>
+              Payment: {subscriptionStatus.paymentMethod || "stripe"} /{" "}
+              {subscriptionStatus.paymentStatus || subscriptionStatus.stripeStatus || "active"}
+            </p>
+            <Link
+              href={subscriptionStatus.dashboardUrl || `/api/company-dashboard?company=${companySlug}`}
+              className="pricing-dashboard-button"
+            >
+              Continue to dashboard
+            </Link>
+          </section>
+        ) : null}
   {/* <div 
   className="billing-toggle" 
   style={{ 
@@ -383,7 +480,11 @@ function PricingContent() {
               </div>
 
               <div style={{ marginTop: 'auto', paddingTop: '1rem', padding:'8px' }}>
-                {plan.buyButtonId ? (
+                {paymentsHidden ? (
+                  <div className="pricing-plan-active-note">
+                    Current subscription is active
+                  </div>
+                ) : plan.buyButtonId ? (
                   <div className="stripe-button-wrapper">
                     <stripe-buy-button
                       buy-button-id={plan.buyButtonId}
@@ -405,6 +506,7 @@ function PricingContent() {
           ))}
         </section>
 
+        {!paymentsHidden ? (
         <section className="manual-payment-section">
           <div className="manual-payment-box">
             <div className="manual-payment-divider">
@@ -428,6 +530,7 @@ function PricingContent() {
             )}
           </div>
         </section>
+        ) : null}
       </div>
 
      <Footer/>
