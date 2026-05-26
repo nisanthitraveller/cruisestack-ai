@@ -6,9 +6,12 @@ import {
   findCompanyBySlug,
   findFirstCompanyAgent,
   getAgentCookieOptions,
+  tableSafePrefix,
 } from "@/lib/agentAuth";
 
 const PUBLIC_APP_ORIGIN = "https://cruisestack.ai";
+const MASTER_PREFIX = "cruisestack_";
+const excludedTemplateTables = ["cruisestack_logs", "cruisestack_migrations"];
 const billingCycles = new Set(["monthly", "yearly"]);
 
 function publicUrl(path) {
@@ -86,6 +89,60 @@ async function ensureManualColumns(connection) {
   }
 }
 
+async function ensureWhitelabelSessionsTable(connection, tableName) {
+  await connection.query(
+    `
+    CREATE TABLE IF NOT EXISTS \`${tableName}\` (
+      id bigint(20) NOT NULL AUTO_INCREMENT,
+      token varchar(128) NOT NULL,
+      agent_id bigint(20) NOT NULL,
+      expires_at datetime NOT NULL,
+      created_at datetime DEFAULT current_timestamp(),
+      PRIMARY KEY (id),
+      UNIQUE KEY token (token),
+      KEY token_2 (token),
+      KEY agent_id (agent_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `,
+  );
+}
+
+async function ensureTenantTables(connection, company) {
+  const tablePrefix = tableSafePrefix(company.slug);
+
+  if (!tablePrefix) {
+    throw new Error("Company slug is invalid for tenant table creation");
+  }
+
+  const [tables] = await connection.query(
+    `SHOW TABLES LIKE '${MASTER_PREFIX}%'`,
+  );
+
+  const templateTables = tables
+    .map((row) => Object.values(row)[0])
+    .filter((table) => !excludedTemplateTables.includes(table));
+
+  if (templateTables.length === 0) {
+    throw new Error("No cruisestack master template tables found");
+  }
+
+  for (const templateTable of templateTables) {
+    const newTable = templateTable.replace(MASTER_PREFIX, `${tablePrefix}_`);
+
+    await connection.query(
+      `
+      CREATE TABLE IF NOT EXISTS \`${newTable}\`
+      LIKE \`${templateTable}\`
+      `,
+    );
+  }
+
+  await ensureWhitelabelSessionsTable(
+    connection,
+    `${tablePrefix}_whitelabel_sessions`,
+  );
+}
+
 async function upsertManualSubscription(connection, company, billingCycle) {
   const plan = await findProfessionalPlan(connection);
 
@@ -146,7 +203,7 @@ async function upsertManualSubscription(connection, company, billingCycle) {
       ],
     );
 
-    return;
+    return plan;
   }
 
   await connection.query(
@@ -187,6 +244,81 @@ async function upsertManualSubscription(connection, company, billingCycle) {
       billingCycle,
     ],
   );
+
+  return plan;
+}
+
+async function copyProfessionalCommissionToCompany(connection, company, planId) {
+  if (!company?.id || !company?.slug || !planId) {
+    return;
+  }
+
+  const tablePrefix = tableSafePrefix(company.slug);
+  const agentTable = `${tablePrefix}_agent`;
+  const commissionTable = `${tablePrefix}_agent_commission`;
+
+  const [agents] = await connection.query(
+    `
+    SELECT id
+    FROM \`${agentTable}\`
+    WHERE company_id = ?
+    ORDER BY type = 'Admin' DESC, id ASC
+    LIMIT 1
+    `,
+    [company.id],
+  );
+
+  if (!agents[0]?.id) {
+    throw new Error(`No agent found in ${agentTable}`);
+  }
+
+  const agentId = agents[0].id;
+  const [existing] = await connection.query(
+    `
+    SELECT id
+    FROM \`${commissionTable}\`
+    WHERE tour_agent_id = ?
+      AND company_id = ?
+    LIMIT 1
+    `,
+    [agentId, company.id],
+  );
+
+  if (existing[0]?.id) {
+    return;
+  }
+
+  await connection.query(
+    `
+    INSERT INTO \`${commissionTable}\`
+      (
+        tour_agent_id,
+        cruiseline_id,
+        commission,
+        discount,
+        markup,
+        gmc_discount,
+        created_at,
+        updated_at,
+        status,
+        company_id
+      )
+    SELECT
+      ?,
+      cruiseline_id,
+      commission,
+      discount,
+      markup,
+      gmc_discount,
+      NOW(),
+      NOW(),
+      status,
+      ?
+    FROM cruisestack_master_commission
+    WHERE subscription_plan_id = ?
+    `,
+    [agentId, company.id, planId],
+  );
 }
 
 export async function GET(request) {
@@ -212,13 +344,26 @@ export async function GET(request) {
       return dashboardRedirect("/login?manual=company-not-found");
     }
 
+    await ensureTenantTables(connection, company);
+
     const agent = await findFirstCompanyAgent(connection, company);
 
     if (!agent) {
       return dashboardRedirect(`/login?company=${company.slug}&manual=agent-not-found`);
     }
 
-    await upsertManualSubscription(connection, company, billingCycle);
+    const plan = await upsertManualSubscription(connection, company, billingCycle);
+
+    await copyProfessionalCommissionToCompany(connection, company, plan.id);
+
+    await connection.query(
+      `
+      UPDATE companies
+      SET plan_type = ?
+      WHERE id = ?
+      `,
+      [plan.plan_name, company.id],
+    );
 
     const agentSession = await createAgentSessionRecord(
       connection,
