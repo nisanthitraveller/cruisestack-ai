@@ -212,6 +212,22 @@
   font-size: 12px;
 }
 
+.adminmaster-stripe-ids {
+  display: grid;
+  gap: 5px;
+  max-width: 185px;
+}
+
+.adminmaster-stripe-ids span {
+  color: #64748b;
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .adminmaster-pill {
   border-radius: 999px;
   display: inline-flex;
@@ -300,6 +316,63 @@
   color: #64748b;
   padding: 28px;
   text-align: center;
+}
+
+.commission-control-panel {
+  display: grid;
+  gap: 0;
+}
+
+.commission-add-form {
+  border-bottom: 1px solid #e2e8f0;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(8, minmax(90px, 1fr));
+  padding: 18px;
+}
+
+.commission-add-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.commission-add-form span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.commission-add-form input,
+.commission-add-form select,
+.commission-control-table input,
+.commission-control-table select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #0f172a;
+  font: inherit;
+  min-height: 36px;
+  padding: 8px;
+  width: 100%;
+}
+
+.commission-control-table {
+  min-width: 1180px;
+}
+
+.commission-control-table td {
+  min-width: 105px;
+}
+
+.commission-control-table td:first-child {
+  min-width: 55px;
+}
+
+.commission-row-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+  min-width: 180px;
 }
 
 .adminmaster-login-page {
@@ -393,6 +466,10 @@
   .adminmaster-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .commission-add-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 560px) {
@@ -406,6 +483,10 @@
   }
 
   .adminmaster-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .commission-add-form {
     grid-template-columns: 1fr;
   }
 }

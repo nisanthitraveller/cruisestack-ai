@@ -157,6 +157,9 @@ export default async function AdminMasterSubscriptionsPage() {
             <Link href="/adminmaster/online-payment">
               Online payments
             </Link>
+            <Link href="/adminmaster/commission-control">
+              Commission Control
+            </Link>
             <form action="/api/adminmaster/logout" method="post">
               <button type="submit">Logout</button>
             </form>

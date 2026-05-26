@@ -161,6 +161,9 @@ export default async function AdminMasterOnlinePaymentPage() {
             <Link className="active" href="/adminmaster/online-payment">
               Online payments
             </Link>
+            <Link href="/adminmaster/commission-control">
+              Commission Control
+            </Link>
             <form action="/api/adminmaster/logout" method="post">
               <button type="submit">Logout</button>
             </form>
@@ -249,10 +252,16 @@ export default async function AdminMasterOnlinePaymentPage() {
                             <span className="adminmaster-pill online">Online</span>
                           </td>
                           <td>
-                            <div className="adminmaster-agent">
-                              <span>{subscription.stripe_customer_id || "No customer ID"}</span>
-                              <span>{subscription.stripe_subscription_id || "No subscription ID"}</span>
-                              <span>{subscription.stripe_checkout_session_id || "No checkout session"}</span>
+                            <div className="adminmaster-stripe-ids">
+                              <span title={subscription.stripe_customer_id || "No customer ID"}>
+                                {subscription.stripe_customer_id || "No customer ID"}
+                              </span>
+                              <span title={subscription.stripe_subscription_id || "No subscription ID"}>
+                                {subscription.stripe_subscription_id || "No subscription ID"}
+                              </span>
+                              <span title={subscription.stripe_checkout_session_id || "No checkout session"}>
+                                {subscription.stripe_checkout_session_id || "No checkout session"}
+                              </span>
                             </div>
                           </td>
                           <td>
