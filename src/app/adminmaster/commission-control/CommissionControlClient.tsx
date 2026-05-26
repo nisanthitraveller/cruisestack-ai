@@ -233,8 +233,7 @@ export default function CommissionControlClient({
             ))}
           </select>
         </label>
-        <label>
-          <span>Discount</span>
+        <label className="commission-hidden-field">
           <input
             onChange={(event) => updateForm("commission", event.target.value)}
             required
@@ -287,10 +286,8 @@ export default function CommissionControlClient({
         <table className="adminmaster-table commission-control-table">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Plan</th>
               <th>Cruiseline</th>
-              <th>Discount</th>
               <th>Commission</th>
               <th>Markup</th>
               <th>GMC</th>
@@ -301,7 +298,7 @@ export default function CommissionControlClient({
           <tbody>
             {visibleRows.map((row) => (
               <tr key={row.id}>
-                <td>{row.id}</td>
+                <td className="commission-hidden-field">{row.id}</td>
                 <td>
                   <select name="subscription_plan_id" form={`commission-${row.id}`} defaultValue={String(row.subscription_plan_id)}>
                     {planMap.has(String(row.subscription_plan_id)) ? null : (
@@ -334,7 +331,7 @@ export default function CommissionControlClient({
                     ID {row.cruiseline_id}
                   </small>
                 </td>
-                <td>
+                <td className="commission-hidden-field">
                   <input name="commission" form={`commission-${row.id}`} defaultValue={row.commission} />
                 </td>
                 <td>
@@ -380,7 +377,7 @@ export default function CommissionControlClient({
             ))}
             {visibleRows.length === 0 ? (
               <tr>
-                <td colSpan={9}>
+                <td colSpan={7}>
                   <div className="adminmaster-empty">
                     No commission rows found for {planMap.get(selectedPlan) || "this plan"}.
                   </div>

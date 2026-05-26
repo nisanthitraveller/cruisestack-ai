@@ -63,6 +63,38 @@ async function getMasterCommissionRow(connection, id) {
   return rows[0] || null;
 }
 
+async function getDuplicateCommissionRow(connection, payload, excludeId = 0) {
+  const [rows] = await connection.query(
+    `
+    SELECT id
+    FROM cruisestack_master_commission
+    WHERE subscription_plan_id = ?
+      AND cruiseline_id = ?
+      AND id <> ?
+    LIMIT 1
+    `,
+    [payload.subscription_plan_id, payload.cruiseline_id, excludeId],
+  );
+
+  return rows[0] || null;
+}
+
+async function assertUniquePlanCruiseline(connection, payload, excludeId = 0) {
+  const duplicate = await getDuplicateCommissionRow(
+    connection,
+    payload,
+    excludeId,
+  );
+
+  if (duplicate) {
+    const error = new Error(
+      "Commission for this plan and cruiseline already exists. You can delete or update the existing row.",
+    );
+    error.statusCode = 409;
+    throw error;
+  }
+}
+
 async function upsertTenantCommissionRow(connection, tableName, row) {
   await connection.query(
     `
@@ -225,6 +257,8 @@ export async function POST(request) {
     validateCommissionPayload(payload);
 
     if (action === "add") {
+      await assertUniquePlanCruiseline(connection, payload);
+
       const [result] = await connection.query(
         `
         INSERT INTO cruisestack_master_commission
@@ -264,6 +298,8 @@ export async function POST(request) {
       if (!id) {
         throw new Error("Commission row ID is required");
       }
+
+      await assertUniquePlanCruiseline(connection, payload, id);
 
       await connection.query(
         `
@@ -316,7 +352,7 @@ export async function POST(request) {
 
     return NextResponse.json(
       { message: error.message || "Unable to update master commission" },
-      { status: 500 },
+      { status: error.statusCode || 500 },
     );
   } finally {
     if (connection) connection.release();

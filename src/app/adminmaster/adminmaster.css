@@ -397,6 +397,10 @@
   min-width: 180px;
 }
 
+.commission-hidden-field {
+  display: none;
+}
+
 .adminmaster-login-page {
   align-items: center;
   display: grid;
