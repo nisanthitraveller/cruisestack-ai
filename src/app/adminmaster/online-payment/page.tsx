@@ -175,14 +175,14 @@ export default async function AdminMasterOnlinePaymentPage() {
             <div>
               <p className="adminmaster-kicker">Stripe subscription control</p>
               <h1>Online payment users</h1>
-              <p>
-                Logged in as {admin.name || admin.email}. Review Stripe users and control
-                workspace access.
-              </p>
+              <p>Review Stripe users and control workspace access.</p>
             </div>
-            <Link className="adminmaster-refresh" href="/adminmaster/online-payment">
-              Refresh
-            </Link>
+            <div className="adminmaster-header-actions">
+              <span className="adminmaster-user">Logged in as {admin.name || admin.email}</span>
+              <Link className="adminmaster-refresh" href="/adminmaster/online-payment">
+                Refresh
+              </Link>
+            </div>
           </header>
 
           <section className="adminmaster-metrics" aria-label="Online payment summary">

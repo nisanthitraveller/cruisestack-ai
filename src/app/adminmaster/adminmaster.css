@@ -101,6 +101,24 @@
   margin: 8px 0 0;
 }
 
+.adminmaster-header-actions {
+  align-items: flex-end;
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.adminmaster-user {
+  background: #e0f2fe;
+  border: 1px solid #bae6fd;
+  border-radius: 999px;
+  color: #075985;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 7px 11px;
+}
+
 .adminmaster-refresh {
   background: #fff;
   border: 1px solid #dbe3ef;
@@ -371,15 +389,36 @@
 }
 
 .commission-control-table {
-  min-width: 1320px;
+  min-width: 1040px;
 }
 
 .commission-control-table td {
-  min-width: 105px;
+  min-width: 92px;
 }
 
+.commission-control-table th:first-child,
 .commission-control-table td:first-child {
-  min-width: 55px;
+  min-width: 150px;
+}
+
+.commission-control-table th:nth-child(2),
+.commission-control-table td:nth-child(2) {
+  min-width: 230px;
+}
+
+.commission-control-table th:last-child,
+.commission-control-table td:last-child {
+  background: #fff;
+  box-shadow: -10px 0 18px rgba(15, 23, 42, 0.08);
+  min-width: 185px;
+  position: sticky;
+  right: 0;
+  z-index: 2;
+}
+
+.commission-control-table th:last-child {
+  background: #f8fafc;
+  z-index: 3;
 }
 
 .commission-muted-id {

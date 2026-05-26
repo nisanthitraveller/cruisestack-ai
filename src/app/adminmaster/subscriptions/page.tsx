@@ -171,14 +171,13 @@ export default async function AdminMasterSubscriptionsPage() {
             <div>
               <p className="adminmaster-kicker">Manual subscription control</p>
               <h1>Manual payment users</h1>
-              <p>
-                Logged in as {admin.name || admin.email}. Activate, block, and update billing
-                cycles for manually enabled workspaces.
-              </p>
             </div>
-            <Link className="adminmaster-refresh" href="/adminmaster/subscriptions">
-              Refresh
-            </Link>
+            <div className="adminmaster-header-actions">
+              <span className="adminmaster-user">Logged in as {admin.name || admin.email}</span>
+              <Link className="adminmaster-refresh" href="/adminmaster/subscriptions">
+                Refresh
+              </Link>
+            </div>
           </header>
 
           <section className="adminmaster-metrics" aria-label="Manual payment summary">

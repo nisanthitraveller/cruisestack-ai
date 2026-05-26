@@ -129,7 +129,7 @@ export default function CommissionControlClient({
 
   async function handleDelete(row: CommissionRow) {
     const confirmed = window.confirm(
-      `Delete commission row ID ${row.id} from master and all tenant master commission tables?`,
+      `Delete commission row ID ${row.id} from master and all tenant agent commission tables?`,
     );
 
     if (!confirmed) return;
@@ -151,7 +151,7 @@ export default function CommissionControlClient({
 
   async function handleSyncAll() {
     const confirmed = window.confirm(
-      "Sync all master commission rows to every tenant master commission table? This replaces tenant master commission data.",
+      "Sync all master commission rows to every tenant agent commission table?",
     );
 
     if (!confirmed) return;
