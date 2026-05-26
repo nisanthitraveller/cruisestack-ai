@@ -4,12 +4,12 @@ import { redirect } from "next/navigation";
 import pool from "@/lib/db_mysql";
 import { getAdminMasterFromSession } from "@/lib/adminMasterAuth";
 import { tableSafePrefix } from "@/lib/agentAuth";
-import SubscriptionActions from "./SubscriptionActions";
+import SubscriptionActions from "../subscriptions/SubscriptionActions";
 import "../adminmaster.css";
 
 export const dynamic = "force-dynamic";
 
-type ManualSubscriptionRow = {
+type OnlineSubscriptionRow = {
   agent_email: string | null;
   agent_name: string | null;
   agent_user_id: string | null;
@@ -19,12 +19,14 @@ type ManualSubscriptionRow = {
   company_status: number;
   current_period_end: string | Date | null;
   current_period_start: string | Date | null;
-  end_date: string | Date | null;
   payment_method: string | null;
   payment_status: string | null;
   plan_name: string | null;
   slug: string;
+  stripe_checkout_session_id: string | null;
+  stripe_customer_id: string | null;
   stripe_status: string | null;
+  stripe_subscription_id: string | null;
   subscription_id: number;
   subscription_status: number;
   support_email: string | null;
@@ -40,7 +42,7 @@ function formatDate(value: string | Date | null) {
   }).format(new Date(value));
 }
 
-async function getPrimaryAgent(connection: Awaited<ReturnType<typeof pool.getConnection>>, row: ManualSubscriptionRow) {
+async function getPrimaryAgent(connection: Awaited<ReturnType<typeof pool.getConnection>>, row: OnlineSubscriptionRow) {
   const tablePrefix = tableSafePrefix(row.slug);
   const agentTable = `${tablePrefix}_agent`;
 
@@ -77,7 +79,7 @@ async function getPrimaryAgent(connection: Awaited<ReturnType<typeof pool.getCon
   }
 }
 
-async function getManualSubscriptions() {
+async function getOnlineSubscriptions() {
   const connection = await pool.getConnection();
 
   try {
@@ -90,10 +92,12 @@ async function getManualSubscriptions() {
         cs.stripe_status,
         cs.current_period_start,
         cs.current_period_end,
-        cs.end_date,
         cs.status AS subscription_status,
         cs.payment_method,
         cs.billing_cycle,
+        cs.stripe_customer_id,
+        cs.stripe_subscription_id,
+        cs.stripe_checkout_session_id,
         c.company_name,
         c.slug,
         c.support_email,
@@ -102,12 +106,12 @@ async function getManualSubscriptions() {
       FROM company_subscriptions cs
       INNER JOIN companies c ON c.id = cs.company_id
       LEFT JOIN subscription_plans sp ON sp.id = cs.plan_id
-      WHERE cs.payment_method = 'manual'
+      WHERE COALESCE(cs.payment_method, 'stripe') <> 'manual'
       ORDER BY cs.id DESC
       `,
     );
 
-    const subscriptions = rows as ManualSubscriptionRow[];
+    const subscriptions = rows as OnlineSubscriptionRow[];
 
     return Promise.all(
       subscriptions.map((subscription) => getPrimaryAgent(connection, subscription)),
@@ -117,7 +121,7 @@ async function getManualSubscriptions() {
   }
 }
 
-function getSummary(rows: ManualSubscriptionRow[]) {
+function getSummary(rows: OnlineSubscriptionRow[]) {
   return {
     active: rows.filter(
       (row) => Number(row.company_status) === 1 && Number(row.subscription_status) === 1,
@@ -125,12 +129,12 @@ function getSummary(rows: ManualSubscriptionRow[]) {
     blocked: rows.filter(
       (row) => Number(row.company_status) !== 1 || Number(row.subscription_status) !== 1,
     ).length,
-    monthly: rows.filter((row) => row.billing_cycle !== "yearly").length,
-    yearly: rows.filter((row) => row.billing_cycle === "yearly").length,
+    paid: rows.filter((row) => row.payment_status === "Paid").length,
+    stripeActive: rows.filter((row) => row.stripe_status === "active").length,
   };
 }
 
-export default async function AdminMasterSubscriptionsPage() {
+export default async function AdminMasterOnlinePaymentPage() {
   const cookieStore = await cookies();
   const admin = await getAdminMasterFromSession(cookieStore);
 
@@ -138,7 +142,7 @@ export default async function AdminMasterSubscriptionsPage() {
     redirect("/adminmaster/login");
   }
 
-  const subscriptions = await getManualSubscriptions();
+  const subscriptions = await getOnlineSubscriptions();
   const summary = getSummary(subscriptions);
 
   return (
@@ -151,10 +155,10 @@ export default async function AdminMasterSubscriptionsPage() {
           </div>
 
           <nav className="adminmaster-nav" aria-label="Master admin navigation">
-            <Link className="active" href="/adminmaster/subscriptions">
+            <Link href="/adminmaster/subscriptions">
               Manual payments
             </Link>
-            <Link href="/adminmaster/online-payment">
+            <Link className="active" href="/adminmaster/online-payment">
               Online payments
             </Link>
             <form action="/api/adminmaster/logout" method="post">
@@ -166,43 +170,41 @@ export default async function AdminMasterSubscriptionsPage() {
         <section className="adminmaster-content">
           <header className="adminmaster-header">
             <div>
-              <p className="adminmaster-kicker">Manual subscription control</p>
-              <h1>Manual payment users</h1>
+              <p className="adminmaster-kicker">Stripe subscription control</p>
+              <h1>Online payment users</h1>
               <p>
-                Logged in as {admin.name || admin.email}. Activate, block, and update billing
-                cycles for manually enabled workspaces.
+                Logged in as {admin.name || admin.email}. Review Stripe users and control
+                workspace access.
               </p>
             </div>
-            <Link className="adminmaster-refresh" href="/adminmaster/subscriptions">
+            <Link className="adminmaster-refresh" href="/adminmaster/online-payment">
               Refresh
             </Link>
           </header>
 
-          <section className="adminmaster-metrics" aria-label="Manual payment summary">
+          <section className="adminmaster-metrics" aria-label="Online payment summary">
             <article className="adminmaster-metric-card">
-              <span>Total manual</span>
+              <span>Total online</span>
               <strong>{subscriptions.length}</strong>
             </article>
             <article className="adminmaster-metric-card">
-              <span>Active</span>
+              <span>Active access</span>
               <strong>{summary.active}</strong>
             </article>
             <article className="adminmaster-metric-card">
-              <span>Blocked</span>
+              <span>Blocked access</span>
               <strong>{summary.blocked}</strong>
             </article>
             <article className="adminmaster-metric-card">
-              <span>Yearly</span>
-              <strong>{summary.yearly}</strong>
+              <span>Stripe active</span>
+              <strong>{summary.stripeActive}</strong>
             </article>
           </section>
 
           <section className="adminmaster-panel">
             <div className="adminmaster-panel-header">
-              <h2>Manual payment subscriptions</h2>
-              <span>
-                Monthly {summary.monthly} / Yearly {summary.yearly}
-              </span>
+              <h2>Online payment subscriptions</h2>
+              <span>Paid {summary.paid} / Stripe active {summary.stripeActive}</span>
             </div>
 
             {subscriptions.length > 0 ? (
@@ -213,7 +215,7 @@ export default async function AdminMasterSubscriptionsPage() {
                       <th>Company</th>
                       <th>Admin agent</th>
                       <th>Plan</th>
-                      <th>Billing</th>
+                      <th>Stripe IDs</th>
                       <th>Period</th>
                       <th>Status</th>
                       <th>Control</th>
@@ -242,14 +244,20 @@ export default async function AdminMasterSubscriptionsPage() {
                             </div>
                           </td>
                           <td>
-                            <strong>{subscription.plan_name || "Professional"}</strong>
+                            <strong>{subscription.plan_name || "Not selected"}</strong>
                             <br />
-                            <span className="adminmaster-pill manual">Manual</span>
+                            <span className="adminmaster-pill online">Online</span>
                           </td>
-                          <td>{subscription.billing_cycle === "yearly" ? "Yearly" : "Monthly"}</td>
+                          <td>
+                            <div className="adminmaster-agent">
+                              <span>{subscription.stripe_customer_id || "No customer ID"}</span>
+                              <span>{subscription.stripe_subscription_id || "No subscription ID"}</span>
+                              <span>{subscription.stripe_checkout_session_id || "No checkout session"}</span>
+                            </div>
+                          </td>
                           <td>
                             {formatDate(subscription.current_period_start)} -{" "}
-                            {formatDate(subscription.current_period_end || subscription.end_date)}
+                            {formatDate(subscription.current_period_end)}
                           </td>
                           <td>
                             <span className={`adminmaster-pill ${isActive ? "active" : "blocked"}`}>
@@ -258,10 +266,11 @@ export default async function AdminMasterSubscriptionsPage() {
                             <br />
                             {subscription.payment_status || "Pending"}
                             <br />
-                            {subscription.stripe_status || "manual"}
+                            {subscription.stripe_status || "No Stripe status"}
                           </td>
                           <td>
                             <SubscriptionActions
+                              allowBillingCycle={false}
                               billingCycle={subscription.billing_cycle}
                               companyStatus={subscription.company_status}
                               subscriptionId={subscription.subscription_id}
@@ -276,7 +285,7 @@ export default async function AdminMasterSubscriptionsPage() {
               </div>
             ) : (
               <div className="adminmaster-empty">
-                No manual payment subscriptions found.
+                No online payment subscriptions found.
               </div>
             )}
           </section>

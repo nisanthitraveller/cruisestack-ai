@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db_mysql";
+import { getAdminMasterFromSession } from "@/lib/adminMasterAuth";
 
 const allowedActions = new Set(["activate", "block", "update_cycle"]);
 const billingCycles = new Set(["monthly", "yearly"]);
@@ -20,6 +21,15 @@ export async function POST(request) {
   let connection;
 
   try {
+    const admin = await getAdminMasterFromSession(request);
+
+    if (!admin) {
+      return NextResponse.json(
+        { message: "Master admin login required" },
+        { status: 401 },
+      );
+    }
+
     const body = await request.json();
     const subscriptionId = Number(body.subscriptionId || 0);
     const action = String(body.action || "");
@@ -57,27 +67,38 @@ export async function POST(request) {
       );
     }
 
-    if (subscription.payment_method !== "manual") {
+    if (action === "update_cycle" && subscription.payment_method !== "manual") {
       await connection.rollback();
 
       return NextResponse.json(
-        { message: "Only manual payment subscriptions can be controlled here" },
+        { message: "Billing cycle can only be changed for manual payment subscriptions" },
         { status: 400 },
       );
     }
 
     if (action === "block") {
-      await connection.query(
-        `
-        UPDATE company_subscriptions
-        SET
-          status = 0,
-          payment_status = 'Cancelled',
-          stripe_status = 'manual_blocked'
-        WHERE id = ?
-        `,
-        [subscriptionId],
-      );
+      if (subscription.payment_method === "manual") {
+        await connection.query(
+          `
+          UPDATE company_subscriptions
+          SET
+            status = 0,
+            payment_status = 'Cancelled',
+            stripe_status = 'manual_blocked'
+          WHERE id = ?
+          `,
+          [subscriptionId],
+        );
+      } else {
+        await connection.query(
+          `
+          UPDATE company_subscriptions
+          SET status = 0
+          WHERE id = ?
+          `,
+          [subscriptionId],
+        );
+      }
 
       await connection.query(
         `
@@ -90,17 +111,28 @@ export async function POST(request) {
     }
 
     if (action === "activate") {
-      await connection.query(
-        `
-        UPDATE company_subscriptions
-        SET
-          status = 1,
-          payment_status = 'Paid',
-          stripe_status = 'manual_active'
-        WHERE id = ?
-        `,
-        [subscriptionId],
-      );
+      if (subscription.payment_method === "manual") {
+        await connection.query(
+          `
+          UPDATE company_subscriptions
+          SET
+            status = 1,
+            payment_status = 'Paid',
+            stripe_status = 'manual_active'
+          WHERE id = ?
+          `,
+          [subscriptionId],
+        );
+      } else {
+        await connection.query(
+          `
+          UPDATE company_subscriptions
+          SET status = 1
+          WHERE id = ?
+          `,
+          [subscriptionId],
+        );
+      }
 
       await connection.query(
         `

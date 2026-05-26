@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type SubscriptionActionsProps = {
+  allowBillingCycle?: boolean;
   billingCycle: string | null;
   companyStatus: number;
   subscriptionId: number;
@@ -11,6 +12,7 @@ type SubscriptionActionsProps = {
 };
 
 export default function SubscriptionActions({
+  allowBillingCycle = true,
   billingCycle,
   companyStatus,
   subscriptionId,
@@ -74,25 +76,27 @@ export default function SubscriptionActions({
         </button>
       </div>
 
-      <div className="adminmaster-action-row">
-        <select
-          className="adminmaster-select"
-          disabled={busyAction !== null}
-          onChange={(event) => setSelectedCycle(event.target.value)}
-          value={selectedCycle}
-        >
-          <option value="monthly">Monthly</option>
-          <option value="yearly">Yearly</option>
-        </select>
-        <button
-          className="adminmaster-button update"
-          disabled={busyAction !== null}
-          onClick={() => runAction("update_cycle")}
-          type="button"
-        >
-          {busyAction === "update_cycle" ? "Saving..." : "Update"}
-        </button>
-      </div>
+      {allowBillingCycle ? (
+        <div className="adminmaster-action-row">
+          <select
+            className="adminmaster-select"
+            disabled={busyAction !== null}
+            onChange={(event) => setSelectedCycle(event.target.value)}
+            value={selectedCycle}
+          >
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+          <button
+            className="adminmaster-button update"
+            disabled={busyAction !== null}
+            onClick={() => runAction("update_cycle")}
+            type="button"
+          >
+            {busyAction === "update_cycle" ? "Saving..." : "Update"}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }
