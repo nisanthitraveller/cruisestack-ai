@@ -14,7 +14,19 @@ type CommissionRow = {
   subscription_plan_id: number;
 };
 
+type CruiseOption = {
+  id: number;
+  name: string;
+};
+
+type PlanOption = {
+  id: number;
+  plan_name: string;
+};
+
 type CommissionControlClientProps = {
+  cruises: CruiseOption[];
+  plans: PlanOption[];
   rows: CommissionRow[];
 };
 
@@ -48,11 +60,22 @@ async function postCommissionAction(body: Record<string, string | number>) {
 }
 
 export default function CommissionControlClient({
+  cruises,
+  plans,
   rows,
 }: CommissionControlClientProps) {
   const router = useRouter();
   const [form, setForm] = useState(emptyForm);
   const [busyAction, setBusyAction] = useState<BusyAction>(null);
+  const [selectedPlan, setSelectedPlan] = useState(
+    plans[0]?.id ? String(plans[0].id) : "all",
+  );
+  const cruiseMap = new Map(cruises.map((cruise) => [String(cruise.id), cruise.name]));
+  const planMap = new Map(plans.map((plan) => [String(plan.id), plan.plan_name]));
+  const visibleRows =
+    selectedPlan === "all"
+      ? rows
+      : rows.filter((row) => String(row.subscription_plan_id) === selectedPlan);
 
   function updateForm(field: keyof typeof emptyForm, value: string) {
     setForm((current) => ({
@@ -147,38 +170,71 @@ export default function CommissionControlClient({
   return (
     <section className="adminmaster-panel commission-control-panel">
       <div className="adminmaster-panel-header">
-        <h2>Master commission table</h2>
-        <button
-          className="adminmaster-button update"
-          disabled={busyAction !== null}
-          onClick={handleSyncAll}
-          type="button"
-        >
-          {busyAction === "sync_all" ? "Syncing..." : "Sync all tenants"}
-        </button>
+        <div>
+          <h2>Master commission table</h2>
+          <span>
+            Showing {visibleRows.length} of {rows.length} rows
+          </span>
+        </div>
+        <div className="commission-toolbar">
+          <label>
+            <span>Filter plan</span>
+            <select
+              onChange={(event) => setSelectedPlan(event.target.value)}
+              value={selectedPlan}
+            >
+              <option value="all">All plans</option>
+              {plans.map((plan) => (
+                <option key={plan.id} value={plan.id}>
+                  {plan.plan_name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            className="adminmaster-button update"
+            disabled={busyAction !== null}
+            onClick={handleSyncAll}
+            type="button"
+          >
+            {busyAction === "sync_all" ? "Syncing..." : "Sync all tenants"}
+          </button>
+        </div>
       </div>
 
       <form className="commission-add-form" onSubmit={handleAdd}>
         <label>
-          <span>Plan ID</span>
-          <input
-            inputMode="numeric"
+          <span>Plan</span>
+          <select
             onChange={(event) => updateForm("subscription_plan_id", event.target.value)}
             required
             value={form.subscription_plan_id}
-          />
+          >
+            <option value="">Select plan</option>
+            {plans.map((plan) => (
+              <option key={plan.id} value={plan.id}>
+                {plan.plan_name}
+              </option>
+            ))}
+          </select>
         </label>
         <label>
-          <span>Cruiseline ID</span>
-          <input
-            inputMode="numeric"
+          <span>Cruiseline</span>
+          <select
             onChange={(event) => updateForm("cruiseline_id", event.target.value)}
             required
             value={form.cruiseline_id}
-          />
+          >
+            <option value="">Select cruiseline</option>
+            {cruises.map((cruise) => (
+              <option key={cruise.id} value={cruise.id}>
+                {cruise.name}
+              </option>
+            ))}
+          </select>
         </label>
         <label>
-          <span>Commission</span>
+          <span>Discount</span>
           <input
             onChange={(event) => updateForm("commission", event.target.value)}
             required
@@ -186,7 +242,7 @@ export default function CommissionControlClient({
           />
         </label>
         <label>
-          <span>Discount</span>
+          <span>Commission</span>
           <input
             onChange={(event) => updateForm("discount", event.target.value)}
             required
@@ -234,8 +290,8 @@ export default function CommissionControlClient({
               <th>ID</th>
               <th>Plan</th>
               <th>Cruiseline</th>
-              <th>Commission</th>
               <th>Discount</th>
+              <th>Commission</th>
               <th>Markup</th>
               <th>GMC</th>
               <th>Status</th>
@@ -243,14 +299,40 @@ export default function CommissionControlClient({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {visibleRows.map((row) => (
               <tr key={row.id}>
                 <td>{row.id}</td>
                 <td>
-                  <input name="subscription_plan_id" form={`commission-${row.id}`} defaultValue={row.subscription_plan_id} />
+                  <select name="subscription_plan_id" form={`commission-${row.id}`} defaultValue={String(row.subscription_plan_id)}>
+                    {planMap.has(String(row.subscription_plan_id)) ? null : (
+                      <option value={row.subscription_plan_id}>
+                        Unknown plan ID {row.subscription_plan_id}
+                      </option>
+                    )}
+                    {plans.map((plan) => (
+                      <option key={plan.id} value={plan.id}>
+                        {plan.plan_name}
+                      </option>
+                    ))}
+                  </select>
+                  <small className="commission-muted-id">ID {row.subscription_plan_id}</small>
                 </td>
                 <td>
-                  <input name="cruiseline_id" form={`commission-${row.id}`} defaultValue={row.cruiseline_id} />
+                  <select name="cruiseline_id" form={`commission-${row.id}`} defaultValue={String(row.cruiseline_id)}>
+                    {cruiseMap.has(String(row.cruiseline_id)) ? null : (
+                      <option value={row.cruiseline_id}>
+                        Unknown cruiseline ID {row.cruiseline_id}
+                      </option>
+                    )}
+                    {cruises.map((cruise) => (
+                      <option key={cruise.id} value={cruise.id}>
+                        {cruise.name}
+                      </option>
+                    ))}
+                  </select>
+                  <small className="commission-muted-id">
+                    ID {row.cruiseline_id}
+                  </small>
                 </td>
                 <td>
                   <input name="commission" form={`commission-${row.id}`} defaultValue={row.commission} />
@@ -296,6 +378,15 @@ export default function CommissionControlClient({
                 </td>
               </tr>
             ))}
+            {visibleRows.length === 0 ? (
+              <tr>
+                <td colSpan={9}>
+                  <div className="adminmaster-empty">
+                    No commission rows found for {planMap.get(selectedPlan) || "this plan"}.
+                  </div>
+                </td>
+              </tr>
+            ) : null}
           </tbody>
         </table>
       </div>

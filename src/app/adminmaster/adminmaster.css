@@ -327,8 +327,20 @@
   border-bottom: 1px solid #e2e8f0;
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(8, minmax(90px, 1fr));
+  grid-template-columns: minmax(170px, 1.3fr) minmax(220px, 2fr) repeat(5, minmax(90px, 1fr)) minmax(90px, 0.8fr);
   padding: 18px;
+}
+
+.commission-toolbar {
+  align-items: end;
+  display: flex;
+  gap: 12px;
+}
+
+.commission-toolbar label {
+  display: grid;
+  gap: 5px;
+  min-width: 190px;
 }
 
 .commission-add-form label {
@@ -336,6 +348,7 @@
   gap: 6px;
 }
 
+.commission-toolbar span,
 .commission-add-form span {
   color: #64748b;
   font-size: 11px;
@@ -345,6 +358,7 @@
 
 .commission-add-form input,
 .commission-add-form select,
+.commission-toolbar select,
 .commission-control-table input,
 .commission-control-table select {
   border: 1px solid #cbd5e1;
@@ -357,7 +371,7 @@
 }
 
 .commission-control-table {
-  min-width: 1180px;
+  min-width: 1320px;
 }
 
 .commission-control-table td {
@@ -366,6 +380,14 @@
 
 .commission-control-table td:first-child {
   min-width: 55px;
+}
+
+.commission-muted-id {
+  color: #94a3b8;
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 4px;
 }
 
 .commission-row-actions {
@@ -469,6 +491,11 @@
 
   .commission-add-form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .commission-toolbar {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 

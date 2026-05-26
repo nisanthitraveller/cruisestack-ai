@@ -19,6 +19,16 @@ type CommissionRow = {
   subscription_plan_id: number;
 };
 
+type CruiseOption = {
+  id: number;
+  name: string;
+};
+
+type PlanOption = {
+  id: number;
+  plan_name: string;
+};
+
 async function getCommissionRows() {
   const connection = await pool.getConnection();
 
@@ -40,6 +50,42 @@ async function getCommissionRows() {
     );
 
     return rows as CommissionRow[];
+  } finally {
+    connection.release();
+  }
+}
+
+async function getCruiseOptions() {
+  const connection = await pool.getConnection();
+
+  try {
+    const [rows] = await connection.query(
+      `
+      SELECT id, name
+      FROM cruises
+      ORDER BY name ASC
+      `,
+    );
+
+    return rows as CruiseOption[];
+  } finally {
+    connection.release();
+  }
+}
+
+async function getPlanOptions() {
+  const connection = await pool.getConnection();
+
+  try {
+    const [rows] = await connection.query(
+      `
+      SELECT id, plan_name
+      FROM subscription_plans
+      ORDER BY id ASC
+      `,
+    );
+
+    return rows as PlanOption[];
   } finally {
     connection.release();
   }
@@ -73,7 +119,9 @@ export default async function AdminMasterCommissionControlPage() {
     redirect("/adminmaster/login");
   }
 
-  const [rows, tenantTableCount] = await Promise.all([
+  const [cruises, plans, rows, tenantTableCount] = await Promise.all([
+    getCruiseOptions(),
+    getPlanOptions(),
     getCommissionRows(),
     getTenantMasterCommissionCount(),
   ]);
@@ -138,7 +186,7 @@ export default async function AdminMasterCommissionControlPage() {
             </article>
           </section>
 
-          <CommissionControlClient rows={rows} />
+          <CommissionControlClient cruises={cruises} plans={plans} rows={rows} />
         </section>
       </div>
     </main>
