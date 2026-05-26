@@ -384,39 +384,13 @@ function PricingContent() {
 
               <div style={{ marginTop: 'auto', paddingTop: '1rem', padding:'8px' }}>
                 {plan.buyButtonId ? (
-                  <>
-                    <div className="stripe-button-wrapper">
-                      <stripe-buy-button
-                        buy-button-id={plan.buyButtonId}
-                        publishable-key={stripePublishableKey}
-                        client-reference-id={companySlug}
-                      ></stripe-buy-button>
-                    </div>
-
-                    {plan.name === "Professional" && (
-                      <div className="manual-payment-box">
-                        <div className="manual-payment-divider">
-                          <span>OR</span>
-                        </div>
-                        <p>Manual Payment</p>
-
-                        {companySlug ? (
-                          <div className="manual-payment-actions">
-                            <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
-                              Monthly
-                            </Link>
-                            <Link href={manualPaymentUrl("yearly")} className="manual-payment-button">
-                              Yearly
-                            </Link>
-                          </div>
-                        ) : (
-                          <Link href="/signup?plan=professional" className="manual-payment-button manual-payment-wide">
-                            Create company first
-                          </Link>
-                        )}
-                      </div>
-                    )}
-                  </>
+                  <div className="stripe-button-wrapper">
+                    <stripe-buy-button
+                      buy-button-id={plan.buyButtonId}
+                      publishable-key={stripePublishableKey}
+                      client-reference-id={companySlug}
+                    ></stripe-buy-button>
+                  </div>
                 ) : (
                   <Link
                     href={`/signup?plan=${plan.name.toLowerCase()}${companySlug ? `&company=${companySlug}` : ''}`}
@@ -429,6 +403,30 @@ function PricingContent() {
               </div>
             </article>
           ))}
+        </section>
+
+        <section className="manual-payment-section">
+          <div className="manual-payment-box">
+            <div className="manual-payment-divider">
+              <span>OR</span>
+            </div>
+            <p>Manual Payment</p>
+
+            {companySlug ? (
+              <div className="manual-payment-actions">
+                <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
+                  Monthly
+                </Link>
+                <Link href={manualPaymentUrl("yearly")} className="manual-payment-button">
+                  Yearly
+                </Link>
+              </div>
+            ) : (
+              <Link href="/signup?plan=professional" className="manual-payment-button manual-payment-wide">
+                Create company first
+              </Link>
+            )}
+          </div>
         </section>
       </div>
 
