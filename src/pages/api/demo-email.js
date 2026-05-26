@@ -77,7 +77,8 @@ export default async function handler(req, res) {
 
   const mailOptions = {
     from: process.env.AWS_SES_FROM,
-    to: "sudipkv@gmail.com",
+    to: "sr@getmycruise.com,tanisha.bajaj@getmycruise.com",
+    cc: "sudipkv@gmail.com",
     subject: "New CruiseStack Book Demo Request",
     html: `
       <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.5;">
