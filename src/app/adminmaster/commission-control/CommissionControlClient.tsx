@@ -92,6 +92,7 @@ export default function CommissionControlClient({
       await postCommissionAction({
         action: "add",
         ...form,
+        commission: form.commission || "0",
       });
       setForm(emptyForm);
       router.refresh();
@@ -232,13 +233,6 @@ export default function CommissionControlClient({
               </option>
             ))}
           </select>
-        </label>
-        <label className="commission-hidden-field">
-          <input
-            onChange={(event) => updateForm("commission", event.target.value)}
-            required
-            value={form.commission}
-          />
         </label>
         <label>
           <span>Commission</span>

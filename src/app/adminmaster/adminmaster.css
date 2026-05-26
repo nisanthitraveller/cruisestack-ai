@@ -327,7 +327,7 @@
   border-bottom: 1px solid #e2e8f0;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(170px, 1.3fr) minmax(220px, 2fr) repeat(5, minmax(90px, 1fr)) minmax(90px, 0.8fr);
+  grid-template-columns: minmax(170px, 1.3fr) minmax(220px, 2fr) repeat(4, minmax(90px, 1fr)) minmax(90px, 0.8fr);
   padding: 18px;
 }
 
