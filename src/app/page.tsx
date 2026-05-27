@@ -424,7 +424,7 @@ const ftrimgsect = {
           <p>Join hundreds of travel businesses that trust cruisestack to power their cruise commerce.</p>
           <div className="cta-btns">
             <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
-            <button className="btn-outline-white">Talk to Sales</button>
+            
           </div>
         </div>
       </section>
