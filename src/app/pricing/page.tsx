@@ -15,7 +15,8 @@ const plans = [
   {
     name: "Beginner",
     colorClass: "beginner",
-    buyButtonId: "buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B",
+    // Test buy button: buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B
+    buyButtonId: "buy_btn_1Tc2w8EmqvBXj5NHLYhkv3Sd",
     stripePriceId: "price_1TXERSEmqvBXj5NHd0ImLbQk",
     features: {
       "Standard agency commissions": "Yes",
@@ -52,7 +53,8 @@ const plans = [
     recommended: "Recommended",
     name: "Professional",
     colorClass: "professional",
-    buyButtonId: "buy_btn_1TXFHhEmqvBXj5NHX68zHgJi",
+    // Test buy button: buy_btn_1TXFHhEmqvBXj5NHX68zHgJi
+    buyButtonId: "buy_btn_1Tc2xMEmqvBXj5NHgUanmIGl",
     stripePriceId: "price_1TXERoEmqvBXj5NHejeHS6Kk",
 
     features: {
@@ -88,7 +90,8 @@ const plans = [
   {
     name: "Enterprise",
     colorClass: "enterprise",
-    buyButtonId: "buy_btn_1TXFJjEmqvBXj5NHAMCe0CWw",
+    // Test buy button: buy_btn_1TXFJjEmqvBXj5NHAMCe0CWw
+    buyButtonId: "buy_btn_1Tc2z7EmqvBXj5NHUQVP4Rwx",
     stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
     
     features: {
@@ -123,7 +126,8 @@ const plans = [
   },
 ];
 
-const stripePublishableKey = "pk_test_xQRIZXb6NdxLp0H7njlt4fcb009VCIPwSf";
+// Test publishable key: pk_test_xQRIZXb6NdxLp0H7njlt4fcb009VCIPwSf
+const stripePublishableKey = "pk_live_51GJbyfEmqvBXj5NHMQL7JwIH8XpeW0PnZn4LvhWKI2ZntEo3gcsorswHdiwWTGcKB8dG8ICB8lCPirX2DEq1U5n400CCAPWkPb";
 
 type AgentSummary = {
   name: string;
