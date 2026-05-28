@@ -1,11 +1,10 @@
 import crypto from "crypto";
-import { createRequire } from "module";
+import bcrypt from "bcryptjs";
 import pool from "./db_mysql";
 
 export const ADMINMASTER_SESSION_COOKIE = "cruisestack_adminmaster_session";
 
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 12;
-const requireOptional = createRequire(import.meta.url);
 
 function getCookieValue(source, name) {
   if (!source) return null;
@@ -93,18 +92,6 @@ async function getAgentsColumns(connection) {
   return new Set(columns.map((column) => column.COLUMN_NAME));
 }
 
-function loadBcrypt() {
-  try {
-    return requireOptional("bcryptjs");
-  } catch {
-    try {
-      return requireOptional("bcrypt");
-    } catch {
-      return null;
-    }
-  }
-}
-
 async function passwordMatches(inputPassword, storedPassword) {
   if (!storedPassword) return false;
 
@@ -115,11 +102,9 @@ async function passwordMatches(inputPassword, storedPassword) {
     return storedValue === inputPassword;
   }
 
-  const bcrypt = loadBcrypt();
-
   if (!bcrypt?.compare) {
     throw new Error(
-      "bcrypt is required to verify master admin passwords. Install bcryptjs or bcrypt on the server.",
+      "bcryptjs is required to verify master admin passwords. Install bcryptjs on the server.",
     );
   }
 
