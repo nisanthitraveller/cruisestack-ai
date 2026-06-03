@@ -9,8 +9,17 @@ import styles from "./Header.module.css";
 
 type AgentSummary = {
   email?: string | null;
+  companySlug?: string | null;
   name: string;
 };
+
+const DASHBOARD_ORIGIN = "https://cruisestack.ai";
+
+function agentDashboardHref(agent: AgentSummary) {
+  if (!agent.companySlug) return "/dashboard";
+
+  return `${DASHBOARD_ORIGIN}/agents/${encodeURIComponent(agent.companySlug)}/admin/dashboard`;
+}
 
 export default function Header() {
   const [agent, setAgent] = useState<AgentSummary | null>(null);
@@ -47,7 +56,14 @@ export default function Header() {
         }
 
         const data = await response.json();
-        setAgent(data.authenticated ? data.agent : null);
+        setAgent(
+          data.authenticated
+            ? {
+                ...data.agent,
+                companySlug: data.company?.slug || null,
+              }
+            : null,
+        );
       } catch {
         if (active) setAgent(null);
       } finally {
@@ -101,7 +117,9 @@ export default function Header() {
             <span className={styles.userName}>Checking session...</span>
           ) : agent ? (
             <>
-              <span className={styles.userName}>{agent.name}</span>
+              <Link className={styles.userName} href={agentDashboardHref(agent)}>
+                {agent.name}
+              </Link>
               <form className={styles.logoutForm} onSubmit={handleLogout}>
                 <button className={styles.btnGhost} disabled={loggingOut} type="submit">
                   {loggingOut ? "Logging out..." : "Logout"}
@@ -120,7 +138,9 @@ export default function Header() {
         {/* Mobile right side */}
         <div className={styles.mobileRight}>
           {agent ? (
-            <span className={styles.mobileUserName}>{agent.name}</span>
+            <Link className={styles.mobileUserName} href={agentDashboardHref(agent)}>
+              {agent.name}
+            </Link>
           ) : (
             <Link href="/login" className={styles.mobileIconBtn} aria-label="Login">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -164,7 +184,9 @@ export default function Header() {
             <span className={styles.mobileMenuUser}>Checking session...</span>
           ) : agent ? (
             <>
-              <span className={styles.mobileMenuUser}>{agent.name}</span>
+              <Link className={styles.mobileMenuUser} href={agentDashboardHref(agent)} onClick={() => setMenuOpen(false)}>
+                {agent.name}
+              </Link>
               <form className={styles.mobileLogoutForm} onSubmit={handleLogout}>
                 <button className={styles.mobileMenuGhost} disabled={loggingOut} type="submit">
                   {loggingOut ? "Logging out..." : "Logout"}

@@ -130,9 +130,18 @@ const plans = [
 const stripePublishableKey = "pk_live_51GJbyfEmqvBXj5NHMQL7JwIH8XpeW0PnZn4LvhWKI2ZntEo3gcsorswHdiwWTGcKB8dG8ICB8lCPirX2DEq1U5n400CCAPWkPb";
 
 type AgentSummary = {
+  companySlug?: string | null;
   name: string;
   email?: string | null;
 };
+
+const dashboardOrigin = "https://cruisestack.ai";
+
+function agentDashboardHref(agent: AgentSummary) {
+  if (!agent.companySlug) return "/dashboard";
+
+  return `${dashboardOrigin}/agents/${encodeURIComponent(agent.companySlug)}/admin/dashboard`;
+}
 
 type CompanySubscriptionStatus = {
   billingCycle?: string | null;
@@ -172,7 +181,14 @@ function PricingNavActions() {
         }
 
         const data = await response.json();
-        setAgent(data.authenticated ? data.agent : null);
+        setAgent(
+          data.authenticated
+            ? {
+                ...data.agent,
+                companySlug: data.company?.slug || null,
+              }
+            : null,
+        );
       } catch {
         if (active) setAgent(null);
       } finally {
@@ -219,7 +235,9 @@ function PricingNavActions() {
 
   return (
     <div className="nav-actions">
-      <span className="nav-user-name">{agent.name}</span>
+      <Link href={agentDashboardHref(agent)} className="nav-user-name">
+        {agent.name}
+      </Link>
       <form className="nav-logout-form" onSubmit={handleLogout}>
         <button className="btn-ghost" type="submit" disabled={loggingOut}>
           {loggingOut ? "Logging out..." : "Logout"}

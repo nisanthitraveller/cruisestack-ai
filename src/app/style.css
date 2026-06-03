@@ -1930,6 +1930,65 @@ h1 {
   justify-content: center;
 }
 
+.test-page {
+  align-items: center;
+  background: #f6f8fb;
+  color: #0f172a;
+  display: flex;
+  min-height: 100vh;
+  padding: 32px 18px;
+}
+
+.test-page-panel {
+  background: #fff;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  box-shadow: 0 18px 42px rgba(10, 31, 68, 0.1);
+  margin: 0 auto;
+  max-width: 620px;
+  padding: 32px;
+  text-align: center;
+  width: 100%;
+}
+
+.test-page-kicker {
+  color: #006cea;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.test-page-panel h1 {
+  font-size: 32px;
+  line-height: 1.15;
+  margin: 0 0 12px;
+}
+
+.test-page-panel p {
+  color: #64748b;
+  margin: 0 auto;
+  max-width: 440px;
+}
+
+.test-page-button-slot {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+  min-height: 56px;
+}
+
+.test-page-empty-state {
+  background: #f8fafc;
+  border: 1px dashed #b8c7dc;
+  border-radius: 8px;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.55;
+  padding: 18px;
+}
+
 .pricing-subscription-card {
   align-items: center;
   background: #fff;
