@@ -534,7 +534,7 @@ function PricingContent() {
             <div className="manual-payment-divider">
               <span>OR</span>
             </div>
-            <p>Manual Payment</p>
+            <p>Need a longer 21-day free trial?</p>
 
             {companySlug ? (
               <div className="manual-payment-actions">
@@ -547,7 +547,7 @@ function PricingContent() {
               </div>
             ) : (
               <Link href="/signup?plan=professional" className="manual-payment-button manual-payment-wide">
-                Create company first
+                Start trial
               </Link>
             )}
           </div>
