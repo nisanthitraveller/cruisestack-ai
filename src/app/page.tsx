@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Metadata } from "next";
 import './style.css'; // Adjust this path based on where you save the CSS file
 import heroImg from '../assets/hero.png'
 import ftrImg from '../assets/ftr.png'
@@ -43,6 +44,11 @@ import logofour from "../assets/travelwings.png";
 import logofive from "../assets/travtips.png";
 import Footer from '@/components/Footer/footer';
 import Header from '@/components/Header/header';
+
+export const metadata: Metadata = {
+  title: "cruisestack - all-in-one cruise booking & management platform",
+  description: "Power your cruise business with live inventory, instant quotes, and secure bookings across 30+ cruise lines. Built for travel agencies, OTAs & enterprises."
+};
 
 export default function CruiseCommercePage() {
 
