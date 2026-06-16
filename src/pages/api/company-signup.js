@@ -62,6 +62,51 @@ async function ensureWhitelabelSessionsTable(connection, tableName) {
   );
 }
 
+async function ensureActivityLogsTable(connection, tableName) {
+  await connection.query(
+    `
+    CREATE TABLE IF NOT EXISTS \`${tableName}\` (
+      id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+      package_url VARCHAR(255) NULL,
+      activity_type VARCHAR(100) NOT NULL,
+      activity_name VARCHAR(150) NOT NULL,
+      source_page VARCHAR(150) NULL,
+      api_endpoint VARCHAR(255) NULL,
+      http_method VARCHAR(20) NULL,
+      agent_id VARCHAR(100) NULL,
+      agent_name VARCHAR(255) NULL,
+      agent_email VARCHAR(255) NULL,
+      user_id VARCHAR(100) NULL,
+      user_name VARCHAR(255) NULL,
+      user_email VARCHAR(255) NULL,
+      user_role VARCHAR(100) NULL,
+      customer_id VARCHAR(100) NULL,
+      customer_email VARCHAR(255) NULL,
+      tracking_token VARCHAR(255) NULL,
+      action_by VARCHAR(255) NULL,
+      request_payload JSON NULL,
+      response_payload JSON NULL,
+      metadata JSON NULL,
+      status_code INT NULL,
+      is_success TINYINT(1) NULL,
+      error_message TEXT NULL,
+      duration_ms INT NULL,
+      ip_address VARCHAR(100) NULL,
+      user_agent TEXT NULL,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id),
+      INDEX idx_activity_package_url (package_url),
+      INDEX idx_activity_type (activity_type),
+      INDEX idx_activity_name (activity_name),
+      INDEX idx_activity_agent_id (agent_id),
+      INDEX idx_activity_customer_id (customer_id),
+      INDEX idx_activity_tracking_token (tracking_token),
+      INDEX idx_activity_created_at (created_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `,
+  );
+}
+
 export default async function handler(req, res) {
   let connection;
 
@@ -188,11 +233,17 @@ export default async function handler(req, res) {
     const companyId = result.insertId;
     const agentTable = `${tablePrefix}_agent`;
     const whitelabelSessionsTable = `${tablePrefix}_whitelabel_sessions`;
+    const activityLogsTable = `${tablePrefix}_activity_logs`;
 
     await ensureWhitelabelSessionsTable(connection, whitelabelSessionsTable);
+    await ensureActivityLogsTable(connection, activityLogsTable);
 
     if (!createdTables.includes(whitelabelSessionsTable)) {
       createdTables.push(whitelabelSessionsTable);
+    }
+
+    if (!createdTables.includes(activityLogsTable)) {
+      createdTables.push(activityLogsTable);
     }
 
     const insertAgentSql = `
