@@ -563,7 +563,7 @@ function PricingContent() {
             <p>Need a longer 21-day free trial?</p>
 
             {companySlug ? (
-              <div className="manual-payment-actions" style={{display:'flex',justifyContent:'centers'}}>
+              <div className="manual-payment-actions" style={{display:'flex',justifyContent:'center'}}>
                  <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
                    Start trial
                 </Link>
