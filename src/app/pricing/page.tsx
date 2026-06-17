@@ -547,7 +547,7 @@ function PricingContent() {
               </div>
             ) : (
               <Link href="/signup?plan=professional" className="manual-payment-button manual-payment-wide">
-                Start trial
+              Start free trial
               </Link>
             )}
           </div>

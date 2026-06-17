@@ -1782,7 +1782,7 @@ h1 {
 }
 
 .pricing-grid {
-  max-width: 980px;
+  max-width: 1070px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
