@@ -114,16 +114,15 @@ const plans = [
       "Cruise line & GSA/PSA connects": "Yes",
       // "One-time integration: $3000": "Yes",
       //"Monthly fee: $2199": "Yes",
-      "$3/booking": "Yes",
+      "$3/booking": "No",
       "Upto 5000 trip summaries": "Yes",
       //"$0.02/API scan fees": "Yes",
     },
      pricingdetails: {
       
-      // "Monthly fee": "$2199/month",
-      // "Upto bookings": "up to 300 bookings",
-       "Monthly fee": "",
+      "Monthly fee": "Write to us",
       "Upto bookings": "",
+      
     }
   },
 ];
@@ -514,24 +513,25 @@ function PricingContent() {
                     Current subscription is active
                   </div>
                 ) : (
-                  <>
-                    {plan.buyButtonId && plan.name !== "Enterprise" ? (
-                      <div className="stripe-button-wrapper">
+                  <> <div className="stripe-button-wrapper">
                         <stripe-buy-button
                           buy-button-id={plan.buyButtonId}
                           publishable-key={stripePublishableKey}
                           client-reference-id={companySlug}
                         ></stripe-buy-button>
                       </div>
-                    ) : plan.name !== "Enterprise" ? (
-                      <Link
-                        href={`/signup?plan=${plan.name.toLowerCase()}${companySlug ? `&company=${companySlug}` : ''}`}
-                        className="btn-primary"
-                        style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.75rem 0', textDecoration: 'none' }}
-                      >
-                        Start 14 days trial
-                      </Link>
-                    ) : null}
+                    {/*{plan.buyButtonId && plan.name !== "Enterprise" ? (
+                      ) : null}
+
+                      // ) : plan.name !== "Enterprise" ? (
+                    //   <Link
+                    //     href={`/signup?plan=${plan.name.toLowerCase()}${companySlug ? `&company=${companySlug}` : ''}`}
+                    //     className="btn-primary"
+                    //     style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.75rem 0', textDecoration: 'none' }}
+                    //   >
+                    //     Start 14 days trial
+                    //   </Link>
+                    // ) : null}
                     
                     {plan.name === "Enterprise" && (
                       <button
@@ -542,7 +542,7 @@ function PricingContent() {
                       >
                         Get in touch with us
                       </button>
-                    )}
+                    )} */}
                   </>
                 )}
               </div>
@@ -560,12 +560,15 @@ function PricingContent() {
 
             {companySlug ? (
               <div className="manual-payment-actions">
-                <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
+                {/* <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
                   Monthly
                 </Link>
                 <Link href={manualPaymentUrl("yearly")} className="manual-payment-button">
                   Yearly
-                </Link>
+                </Link> */}
+                <Link href="/signup?plan=professional" className="manual-payment-button manual-payment-wide">
+              Start trial
+              </Link>
               </div>
             ) : (
               <Link href="/signup?plan=professional" className="manual-payment-button manual-payment-wide">
