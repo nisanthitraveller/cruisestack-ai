@@ -36,6 +36,7 @@ const plans = [
       "Sales support": "No",
       "Marketing support": "No",
       "Cruise line & GSA/PSA connects": "No",
+      "AI bot (on web and WhatsApp)": "No",
       //"One-time integration: $1000": "Yes",
       //"Monthly fee: $499": "Yes",
       "$5/booking": "Yes",
@@ -75,6 +76,7 @@ const plans = [
       "Sales support": "No",
       "Marketing support": "No",
       "Cruise line & GSA/PSA connects": "No",
+      "AI bot (on web and WhatsApp)": "No",
       //"One-time integration: $2000": "Yes",
      // "Monthly fee: $999": "Yes",
       "$4/booking": "Yes",
@@ -112,6 +114,7 @@ const plans = [
       "Sales support": "Yes",
       "Marketing support": "Yes",
       "Cruise line & GSA/PSA connects": "Yes",
+      "AI bot (on web and WhatsApp)": "Yes",
       // "One-time integration: $3000": "Yes",
       //"Monthly fee: $2199": "Yes",
       "$3/booking": "No",
@@ -281,6 +284,7 @@ function PricingContent() {
     "Sales support",
     "Marketing support",
     "Cruise line & GSA/PSA connects",
+    "AI bot (on web and WhatsApp)",
   ]);
 
   useEffect(() => {
