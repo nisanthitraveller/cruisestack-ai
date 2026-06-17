@@ -2127,7 +2127,8 @@ h1 {
 }
 
 .manual-payment-wide {
-  width: 100%;
+  width: 120px;
+  margin: 0 auto;
 }
 
 @media (max-width: 900px) {

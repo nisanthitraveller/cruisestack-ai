@@ -120,8 +120,10 @@ const plans = [
     },
      pricingdetails: {
       
-      "Monthly fee": "$2199/month",
-      "Upto bookings": "up to 300 bookings",
+      // "Monthly fee": "$2199/month",
+      // "Upto bookings": "up to 300 bookings",
+       "Monthly fee": "",
+      "Upto bookings": "",
     }
   },
 ];
@@ -254,6 +256,10 @@ function PricingContent() {
   const [subscriptionStatus, setSubscriptionStatus] =
     useState<CompanySubscriptionStatus | null>(null);
   const [checkingSubscription, setCheckingSubscription] = useState(Boolean(companySlug));
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactMobile, setContactMobile] = useState("");
   const manualPaymentUrl = (cycle: "monthly" | "yearly") => {
     const params = new URLSearchParams({
       manual: "1",
@@ -502,26 +508,42 @@ function PricingContent() {
               </div>
 
               <div style={{ marginTop: 'auto', paddingTop: '1rem', padding:'8px' }}>
+
                 {paymentsHidden ? (
                   <div className="pricing-plan-active-note">
                     Current subscription is active
                   </div>
-                ) : plan.buyButtonId ? (
-                  <div className="stripe-button-wrapper">
-                    <stripe-buy-button
-                      buy-button-id={plan.buyButtonId}
-                      publishable-key={stripePublishableKey}
-                      client-reference-id={companySlug}
-                    ></stripe-buy-button>
-                  </div>
                 ) : (
-                  <Link
-                    href={`/signup?plan=${plan.name.toLowerCase()}${companySlug ? `&company=${companySlug}` : ''}`}
-                    className="btn-primary"
-                    style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.75rem 0', textDecoration: 'none' }}
-                  >
-                   Start 14 days trial
-                  </Link>
+                  <>
+                    {plan.buyButtonId && plan.name !== "Enterprise" ? (
+                      <div className="stripe-button-wrapper">
+                        <stripe-buy-button
+                          buy-button-id={plan.buyButtonId}
+                          publishable-key={stripePublishableKey}
+                          client-reference-id={companySlug}
+                        ></stripe-buy-button>
+                      </div>
+                    ) : plan.name !== "Enterprise" ? (
+                      <Link
+                        href={`/signup?plan=${plan.name.toLowerCase()}${companySlug ? `&company=${companySlug}` : ''}`}
+                        className="btn-primary"
+                        style={{ display: 'block', textAlign: 'center', width: '100%', padding: '0.75rem 0', textDecoration: 'none' }}
+                      >
+                        Start 14 days trial
+                      </Link>
+                    ) : null}
+                    
+                    {plan.name === "Enterprise" && (
+                      <button
+                        type="button"
+                        onClick={() => setContactModalOpen(true)}
+                        className="btn-primary"
+                        style={{ width: '87%',textAlign: 'center',justifyContent: 'center',fontWeight:'400', minHeight:'44px',marginBottom:'25px' }}
+                      >
+                        Get in touch with us
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </article>
@@ -547,11 +569,114 @@ function PricingContent() {
               </div>
             ) : (
               <Link href="/signup?plan=professional" className="manual-payment-button manual-payment-wide">
-              Start free trial
+              Start trial
               </Link>
             )}
           </div>
         </section>
+        ) : null}
+
+        {contactModalOpen ? (
+          <div
+            className="contact-modal-overlay"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(0,0,0,0.45)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 999,
+              padding: '1rem',
+            }}
+          >
+            <div
+              className="contact-modal"
+              style={{
+                width: '100%',
+                maxWidth: '420px',
+                backgroundColor: '#fff',
+                borderRadius: '16px',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+                padding: '1.5rem',
+                position: 'relative',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: '1.5rem' }}>Get in touch</h2>
+                  <p style={{ margin: '0.5rem 0 0', color: '#555' }}>
+                    Share your details and we will contact you soon.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setContactModalOpen(false)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#333',
+                    fontSize: '1.5rem',
+                    cursor: 'pointer',
+                    lineHeight: 1,
+                  }}
+                  aria-label="Close contact form"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form style={{ marginTop: '1.25rem', display: 'grid', gap: '1rem' }}>
+                <label style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '12px', color: '#333' }}>
+                  Name
+                  <input
+                    type="text"
+                    value={contactName}
+                    onChange={(event) => setContactName(event.target.value)}
+                    placeholder="Your name"
+                    style={{ padding: '0.75rem 0.85rem', borderRadius: '8px', border: '1px solid #ccc', width: '100%',fontSize:'15px' }}
+                  />
+                </label>
+
+                <label style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '12px', color: '#333' }}>
+                  Email
+                  <input
+                    type="email"
+                    value={contactEmail}
+                    onChange={(event) => setContactEmail(event.target.value)}
+                    placeholder="you@example.com"
+                    style={{ padding: '0.75rem 0.85rem', borderRadius: '8px', border: '1px solid #ccc', width: '100%',fontSize:'15px' }}
+                  />
+                </label>
+
+                <label style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '12px', color: '#333' }}>
+                  Mobile
+                  <input
+                    type="tel"
+                    value={contactMobile}
+                    onChange={(event) => setContactMobile(event.target.value)}
+                    placeholder="+1 123 456 7890"
+                    style={{ padding: '0.75rem 0.85rem', borderRadius: '8px', border: '1px solid #ccc', width: '100%',fontSize:'15px' }}
+                  />
+                </label>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+                 
+                  <button
+                     className="btn-primary"
+                    type="button"
+                    onClick={() => setContactModalOpen(false)}
+                    
+                  >
+                    Submit
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         ) : null}
       </div>
 
