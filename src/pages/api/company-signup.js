@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import pool from "../../lib/db_mysql";
 
 const plans = new Set(["Beginner", "Professional", "Enterprise"]);
@@ -149,6 +150,8 @@ export default async function handler(req, res) {
       });
     }
 
+    const hashedAdminPassword = await bcrypt.hash(adminPassword, 10);
+
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
@@ -276,7 +279,7 @@ export default async function handler(req, res) {
     const [agentResult] = await connection.query(insertAgentSql, [
       normalizedCompanyName,
       supportEmail,
-      adminPassword,
+      hashedAdminPassword,
       null,
       normalizedCompanyName,
       domain,

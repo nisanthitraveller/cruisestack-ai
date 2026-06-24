@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import pool from "./db_mysql";
 
 export const AGENT_SESSION_COOKIE = "cruisestack_agent_session";
@@ -78,6 +79,22 @@ function decodeSessionCookie(value) {
   if (!companySlug || !token) return null;
 
   return { companySlug, token };
+}
+
+function isBcryptHash(value) {
+  return /^\$2[aby]\$\d{2}\$/.test(String(value || ""));
+}
+
+async function passwordMatches(inputPassword, storedPassword) {
+  if (!storedPassword) return false;
+
+  const storedValue = String(storedPassword);
+
+  if (!isBcryptHash(storedValue)) {
+    return storedValue === inputPassword;
+  }
+
+  return bcrypt.compare(inputPassword, storedValue);
 }
 
 export async function createAgentSessionRecord(connection, agent, company) {
@@ -237,18 +254,33 @@ export async function findAgentByCredentials(connection, company, identifier, pa
 
   const [agents] = await connection.query(
     `
-    SELECT id, name, email, type, user_id, agency_code, company_id, status
+    SELECT id, name, email, password, type, user_id, agency_code, company_id, status
     FROM \`${agentTable}\`
     WHERE company_id = ?
       AND status = 1
       AND (email = ? OR user_id = ?)
-      AND password = ?
     LIMIT 1
     `,
-    [company.id, identifier, identifier, password]
+    [company.id, identifier, identifier]
   );
 
-  if (!agents[0]) return null;
+  if (!agents[0] || !(await passwordMatches(password, agents[0].password))) {
+    return null;
+  }
+
+  if (!isBcryptHash(agents[0].password)) {
+    await connection.query(
+      `
+      UPDATE \`${agentTable}\`
+      SET password = ?
+      WHERE id = ?
+      LIMIT 1
+      `,
+      [await bcrypt.hash(password, 10), agents[0].id]
+    );
+  }
+
+  delete agents[0].password;
 
   return {
     ...agents[0],
