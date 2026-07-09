@@ -7,6 +7,7 @@ const plans = new Set(["Beginner", "Professional", "Enterprise"]);
 const MASTER_PREFIX = "cruisestack_";
 
 const excludedTemplateTables = ["cruisestack_logs", "cruisestack_migrations"];
+const duplicateCheckExcludedSlugs = ["gmc", "getmycruise"];
 
 function createSlug(value) {
   return value
@@ -159,10 +160,15 @@ export default async function handler(req, res) {
       `
       SELECT id
       FROM companies
-      WHERE slug = ? OR support_email = ? OR (? IS NOT NULL AND domain = ?)
+      WHERE (
+          slug = ?
+          OR support_email = ?
+          OR (? IS NOT NULL AND domain = ?)
+        )
+        AND LOWER(slug) NOT IN (?, ?)
       LIMIT 1
       `,
-      [slug, supportEmail, domain, domain],
+      [slug, supportEmail, domain, domain, ...duplicateCheckExcludedSlugs],
     );
 
     if (existing.length > 0) {
