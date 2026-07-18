@@ -5,6 +5,11 @@ import pool from "./db_mysql";
 export const AGENT_SESSION_COOKIE = "cruisestack_agent_session";
 
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
+const SKIPPABLE_TENANT_SCHEMA_ERRORS = new Set([
+  "ER_BAD_FIELD_ERROR",
+  "ER_BAD_TABLE_ERROR",
+  "ER_NO_SUCH_TABLE",
+]);
 
 export function tableSafePrefix(value) {
   return String(value || "")
@@ -239,9 +244,15 @@ export async function findCompaniesByAgentIdentifier(connection, identifier) {
         matches.push(company);
       }
     } catch (error) {
-      if (error?.code !== "ER_NO_SUCH_TABLE") {
+      if (!SKIPPABLE_TENANT_SCHEMA_ERRORS.has(error?.code)) {
         throw error;
       }
+
+      console.warn("Skipping incompatible tenant agent table during login", {
+        code: error?.code,
+        companyId: company.id,
+        table: agentTable,
+      });
     }
   }
 
