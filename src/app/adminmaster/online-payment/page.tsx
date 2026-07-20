@@ -164,6 +164,9 @@ export default async function AdminMasterOnlinePaymentPage() {
             <Link href="/adminmaster/commission-control">
               Commission Control
             </Link>
+            <Link href="/adminmaster/companies">
+              Companies
+            </Link>
             <form action="/api/adminmaster/logout" method="post">
               <button type="submit">Logout</button>
             </form>
