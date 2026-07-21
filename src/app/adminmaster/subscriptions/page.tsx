@@ -163,6 +163,9 @@ export default async function AdminMasterSubscriptionsPage() {
             <Link href="/adminmaster/companies">
               Companies
             </Link>
+            <Link href="/adminmaster/email-config">
+              Email configuration
+            </Link>
             <form action="/api/adminmaster/logout" method="post">
               <button type="submit">Logout</button>
             </form>
