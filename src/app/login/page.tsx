@@ -1,6 +1,6 @@
 "use client";
 import { FormEvent, Suspense, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import '../style.css'; 
 import loginImg from "../../assets/pana.svg";
 import Image from 'next/image';
@@ -9,6 +9,7 @@ import Footer from "@/components/Footer/footer";
 
 function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,6 +27,7 @@ function LoginContent() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          companySlug: searchParams?.get("company") || undefined,
           identifier,
           password,
         }),

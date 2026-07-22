@@ -184,6 +184,216 @@
   font-weight: 700;
 }
 
+.email-config-panel {
+  overflow: visible;
+}
+
+.email-config-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 560px;
+}
+
+.email-company-list {
+  background: #f8fafc;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 680px;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.email-company-list button {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.email-company-list button:hover,
+.email-company-list button.selected {
+  background: #fff;
+  border-color: #bfdbfe;
+}
+
+.email-company-list button.selected {
+  box-shadow: inset 3px 0 #006cea;
+}
+
+.email-company-list strong,
+.email-company-list small {
+  display: block;
+}
+
+.email-company-list small {
+  color: #64748b;
+  margin-top: 3px;
+}
+
+.email-company-list i {
+  border-radius: 999px;
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  padding: 5px 7px;
+  text-transform: uppercase;
+}
+
+.email-company-list i.enabled {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.email-company-list i.disabled {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.email-config-form {
+  padding: 26px;
+}
+
+.email-config-heading,
+.email-config-footer {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+}
+
+.email-config-heading h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.email-config-toggle {
+  align-items: center;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  color: #1e40af;
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  font-weight: 900;
+  gap: 9px;
+  padding: 10px 12px;
+}
+
+.email-config-toggle input {
+  height: 17px;
+  width: 17px;
+}
+
+.email-config-note {
+  background: #f8fafc;
+  border-left: 3px solid #94a3b8;
+  color: #64748b;
+  font-size: 13px;
+  margin: 22px 0;
+  padding: 10px 12px;
+}
+
+.email-config-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.email-config-grid label {
+  display: grid;
+  gap: 7px;
+}
+
+.email-config-grid label > span {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.email-config-grid input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #0f172a;
+  font: inherit;
+  min-height: 44px;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.email-config-grid input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.18);
+  outline: none;
+}
+
+.email-config-full {
+  grid-column: 1 / -1;
+}
+
+.email-config-message {
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  margin: 18px 0 0;
+  padding: 11px 12px;
+}
+
+.email-config-message.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.email-config-message.success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.email-config-footer {
+  border-top: 1px solid #e2e8f0;
+  margin-top: 24px;
+  padding-top: 20px;
+}
+
+.email-config-footer span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.email-config-footer button {
+  background: #006cea;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+  min-height: 44px;
+  padding: 10px 16px;
+}
+
+.email-config-footer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.adminmaster-empty {
+  color: #64748b;
+  padding: 30px;
+}
+
 .adminmaster-table-wrap {
   overflow-x: auto;
 }
@@ -274,6 +484,11 @@
   color: #92400e;
 }
 
+.adminmaster-pill.neutral {
+  background: #e2e8f0;
+  color: #475569;
+}
+
 .adminmaster-actions {
   display: grid;
   gap: 8px;
@@ -334,6 +549,206 @@
   color: #64748b;
   padding: 28px;
   text-align: center;
+}
+
+.companies-panel {
+  overflow: visible;
+}
+
+.companies-toolbar {
+  gap: 18px;
+}
+
+.companies-toolbar > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+
+.companies-filters {
+  display: flex;
+  gap: 10px;
+}
+
+.companies-filters input,
+.companies-filters select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #0f172a;
+  font: inherit;
+  min-height: 40px;
+  padding: 9px 11px;
+}
+
+.companies-filters input {
+  min-width: 290px;
+}
+
+.companies-table {
+  min-width: 1120px;
+}
+
+.companies-table th:last-child,
+.companies-table td:last-child {
+  background: #fff;
+  box-shadow: -10px 0 18px rgba(15, 23, 42, 0.06);
+  min-width: 245px;
+  position: sticky;
+  right: 0;
+  z-index: 2;
+}
+
+.companies-table th:last-child {
+  background: #f8fafc;
+  z-index: 3;
+}
+
+.companies-row-actions {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 38px minmax(105px, 1fr) 38px;
+}
+
+.companies-icon-button {
+  align-items: center;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  color: #1d4ed8;
+  cursor: pointer;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.companies-icon-button.delete {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.companies-icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.companies-modal-backdrop {
+  align-items: center;
+  background: rgba(8, 26, 53, 0.66);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 24px;
+  position: fixed;
+  z-index: 1000;
+}
+
+.companies-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 28px 90px rgba(8, 26, 53, 0.3);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  width: min(760px, 100%);
+}
+
+.companies-modal-header {
+  align-items: flex-start;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  padding: 22px 24px;
+}
+
+.companies-modal-header h2 {
+  font-size: 22px;
+  margin: 0;
+}
+
+.companies-modal-header span {
+  color: #64748b;
+  display: block;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.companies-modal-header > button {
+  background: #f1f5f9;
+  border: 0;
+  border-radius: 999px;
+  color: #334155;
+  cursor: pointer;
+  font-size: 24px;
+  height: 36px;
+  line-height: 1;
+  width: 36px;
+}
+
+.companies-edit-form {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 24px;
+}
+
+.companies-edit-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.companies-edit-form label > span {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.companies-edit-form input,
+.companies-edit-form select {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #0f172a;
+  font: inherit;
+  min-height: 42px;
+  padding: 9px 11px;
+  width: 100%;
+}
+
+.companies-color-field {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 52px minmax(0, 1fr);
+}
+
+.companies-color-field input[type="color"] {
+  cursor: pointer;
+  padding: 4px;
+}
+
+.companies-readonly-details {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #64748b;
+  display: grid;
+  font-size: 12px;
+  gap: 5px;
+  grid-column: 1 / -1;
+  padding: 12px;
+}
+
+.companies-modal-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+}
+
+.companies-modal-actions .adminmaster-refresh {
+  cursor: pointer;
 }
 
 .commission-control-panel {
@@ -540,6 +955,30 @@
     align-items: stretch;
     flex-direction: column;
   }
+
+  .companies-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .companies-filters {
+    width: 100%;
+  }
+
+  .companies-filters input {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .email-config-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .email-company-list {
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 0;
+    max-height: 260px;
+  }
 }
 
 @media (max-width: 560px) {
@@ -558,5 +997,27 @@
 
   .commission-add-form {
     grid-template-columns: 1fr;
+  }
+
+  .companies-filters {
+    flex-direction: column;
+  }
+
+  .companies-edit-form {
+    grid-template-columns: 1fr;
+  }
+
+  .email-config-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .email-config-full {
+    grid-column: auto;
+  }
+
+  .email-config-heading,
+  .email-config-footer {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
