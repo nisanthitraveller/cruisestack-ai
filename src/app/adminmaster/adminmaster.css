@@ -389,6 +389,111 @@
   opacity: 0.65;
 }
 
+.email-config-footer-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.email-config-footer button.secondary {
+  background: #fff;
+  border: 1px solid #94a3b8;
+  color: #334155;
+}
+
+.email-test-modal {
+  align-items: center;
+  background: rgba(8, 26, 53, 0.58);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 1000;
+}
+
+.email-test-dialog {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 24px 80px rgba(8, 26, 53, 0.28);
+  padding: 24px;
+  width: min(480px, 100%);
+}
+
+.email-test-header {
+  align-items: start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.email-test-header h3 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.email-test-dialog > p:not(.email-config-message) {
+  color: #64748b;
+  font-size: 14px;
+  margin: 18px 0;
+}
+
+.email-test-dialog label {
+  display: grid;
+  gap: 7px;
+}
+
+.email-test-dialog label span {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.email-test-dialog input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.email-test-close {
+  background: transparent;
+  border: 0;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.email-test-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.email-test-actions button {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #334155;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  min-height: 42px;
+  padding: 9px 15px;
+}
+
+.email-test-actions button.primary {
+  background: #006cea;
+  border-color: #006cea;
+  color: #fff;
+}
+
+.email-test-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 .adminmaster-empty {
   color: #64748b;
   padding: 30px;
@@ -1018,6 +1123,10 @@
   .email-config-heading,
   .email-config-footer {
     align-items: stretch;
+    flex-direction: column;
+  }
+
+  .email-config-footer-actions {
     flex-direction: column;
   }
 }

@@ -41,6 +41,10 @@ export default function EmailConfigClient({
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [testOpen, setTestOpen] = useState(false);
+  const [testEmail, setTestEmail] = useState("");
+  const [testing, setTesting] = useState(false);
+  const [testError, setTestError] = useState("");
 
   function selectCompany(companyId: number) {
     const company = companies.find((item) => item.companyId === companyId);
@@ -48,6 +52,37 @@ export default function EmailConfigClient({
     setForm(company ? createForm(company) : null);
     setMessage("");
     setError("");
+    setTestOpen(false);
+    setTestEmail("");
+    setTestError("");
+  }
+
+  async function sendTestEmail() {
+    if (!form) return;
+
+    setTesting(true);
+    setTestError("");
+
+    try {
+      const response = await fetch("/api/adminmaster/email-config/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ companyId: form.companyId, toEmail: testEmail }),
+      });
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(data?.message || "Unable to send test email");
+      }
+
+      setTestOpen(false);
+      setTestEmail("");
+      setMessage(`Test email sent successfully to ${testEmail}.`);
+    } catch (sendError) {
+      setTestError(sendError instanceof Error ? sendError.message : "Unable to send test email");
+    } finally {
+      setTesting(false);
+    }
   }
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -212,10 +247,79 @@ export default function EmailConfigClient({
               ? `Last updated ${new Date(form.updatedAt).toLocaleString()}`
               : "No SMTP configuration saved yet"}
           </span>
-          <button disabled={saving} type="submit">
-            {saving ? "Saving..." : "Save SMTP configuration"}
-          </button>
+          <div className="email-config-footer-actions">
+            <button
+              className="secondary"
+              disabled={saving || !form.hasPassword}
+              onClick={() => {
+                setTestError("");
+                setTestOpen(true);
+              }}
+              title={form.hasPassword ? "Send a test using saved SMTP details" : "Save SMTP details first"}
+              type="button"
+            >
+              Send test email
+            </button>
+            <button disabled={saving} type="submit">
+              {saving ? "Saving..." : "Save SMTP configuration"}
+            </button>
+          </div>
         </div>
+
+        {testOpen ? (
+          <div className="email-test-modal" role="presentation">
+            <div
+              aria-labelledby="email-test-title"
+              className="email-test-dialog"
+              role="dialog"
+            >
+              <div className="email-test-header">
+                <div>
+                  <p className="adminmaster-kicker">SMTP verification</p>
+                  <h3 id="email-test-title">Send test email</h3>
+                </div>
+                <button
+                  aria-label="Close test email dialog"
+                  className="email-test-close"
+                  disabled={testing}
+                  onClick={() => setTestOpen(false)}
+                  type="button"
+                >
+                  ×
+                </button>
+              </div>
+              <p>
+                Test the saved SMTP configuration for <strong>{form.companyName || form.slug}</strong>.
+                Tenant SMTP does not need to be enabled.
+              </p>
+              <label>
+                <span>Send test to</span>
+                <input
+                  autoFocus
+                  onChange={(event) => setTestEmail(event.target.value)}
+                  placeholder="recipient@example.com"
+                  required
+                  type="email"
+                  value={testEmail}
+                />
+              </label>
+              {testError ? <p className="email-config-message error">{testError}</p> : null}
+              <div className="email-test-actions">
+                <button disabled={testing} onClick={() => setTestOpen(false)} type="button">
+                  Cancel
+                </button>
+                <button
+                  className="primary"
+                  disabled={testing || !testEmail}
+                  onClick={sendTestEmail}
+                  type="button"
+                >
+                  {testing ? "Sending..." : "Send test"}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </form>
     </div>
   );
