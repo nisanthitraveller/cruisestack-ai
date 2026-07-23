@@ -18,6 +18,8 @@ export type CompanyRow = {
   primary_color: string | null;
   secondary_color: string | null;
   slug: string;
+  special_discount_enabled: number | null;
+  special_discount_percentage: number | string | null;
   status: number;
   subscription_plan: string | null;
   subscription_status: number | null;
@@ -33,6 +35,8 @@ type CompanyForm = {
   plan_type: string;
   primary_color: string;
   secondary_color: string;
+  special_discount_enabled: string;
+  special_discount_percentage: string;
   status: string;
   support_email: string;
 };
@@ -47,6 +51,11 @@ function formFromCompany(company: CompanyRow): CompanyForm {
     plan_type: company.plan_type || "Beginner",
     primary_color: company.primary_color || "#003366",
     secondary_color: company.secondary_color || "#ffffff",
+    special_discount_enabled:
+      Number(company.special_discount_enabled) === 1 ? "1" : "0",
+    special_discount_percentage: String(
+      company.special_discount_percentage ?? 30,
+    ),
     status: Number(company.status) === 1 ? "1" : "0",
     support_email: company.support_email || "",
   };
@@ -299,7 +308,16 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                         {company.payment_method || "No subscription"}
                       </span>
                     </td>
-                    <td>{company.company_type || "Not set"}</td>
+                    <td>
+                      <div className="adminmaster-company">
+                        <strong>{company.company_type || "Not set"}</strong>
+                        <span>
+                          {Number(company.special_discount_enabled) === 1
+                            ? `${company.special_discount_percentage ?? 30}% special discount`
+                            : "Special discount off"}
+                        </span>
+                      </div>
+                    </td>
                     <td>{formatDate(company.created_at)}</td>
                     <td>
                       <span className={`adminmaster-pill ${isActive ? "active" : "blocked"}`}>
@@ -399,10 +417,53 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
               </label>
               <label>
                 <span>Company type</span>
-                <select onChange={(event) => updateField("company_type", event.target.value)} value={form.company_type}>
+                <select
+                  onChange={(event) => {
+                    const companyType = event.target.value;
+                    updateField("company_type", companyType);
+                    if (companyType !== "B2C") {
+                      updateField("special_discount_enabled", "0");
+                    }
+                  }}
+                  value={form.company_type}
+                >
                   <option value="B2C">B2C</option>
                   <option value="B2B">B2B</option>
                 </select>
+              </label>
+              <label>
+                <span>Special discount</span>
+                <select
+                  disabled={form.company_type !== "B2C"}
+                  onChange={(event) =>
+                    updateField("special_discount_enabled", event.target.value)
+                  }
+                  value={form.special_discount_enabled}
+                >
+                  <option value="0">Disabled</option>
+                  <option value="1">Enabled</option>
+                </select>
+              </label>
+              <label>
+                <span>Special discount percentage</span>
+                <input
+                  disabled={
+                    form.company_type !== "B2C" ||
+                    form.special_discount_enabled !== "1"
+                  }
+                  max={100}
+                  min={0}
+                  onChange={(event) =>
+                    updateField(
+                      "special_discount_percentage",
+                      event.target.value,
+                    )
+                  }
+                  required
+                  step="0.01"
+                  type="number"
+                  value={form.special_discount_percentage}
+                />
               </label>
               <label>
                 <span>Primary colour</span>

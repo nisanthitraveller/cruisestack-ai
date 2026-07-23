@@ -42,6 +42,9 @@ function normalizeCompanyUpdate(body) {
     plan_type: String(body.plan_type || "").trim(),
     primary_color: String(body.primary_color || "").trim(),
     secondary_color: String(body.secondary_color || "").trim(),
+    special_discount_enabled:
+      Number(body.special_discount_enabled) === 1 ? 1 : 0,
+    special_discount_percentage: Number(body.special_discount_percentage),
     status: Number(body.status) === 1 ? 1 : 0,
     support_email: String(body.support_email || "").trim().toLowerCase(),
   };
@@ -73,6 +76,21 @@ function validateCompanyUpdate(company) {
 
   if (!allowedCompanyTypes.has(company.company_type)) {
     throw httpError("Invalid company type");
+  }
+
+  if (
+    !Number.isFinite(company.special_discount_percentage) ||
+    company.special_discount_percentage < 0 ||
+    company.special_discount_percentage > 100
+  ) {
+    throw httpError("Special discount percentage must be between 0 and 100");
+  }
+
+  if (
+    company.special_discount_enabled === 1 &&
+    company.company_type !== "B2C"
+  ) {
+    throw httpError("Special discount can only be enabled for a B2C company");
   }
 
   if (!/^#[0-9a-f]{6}$/i.test(company.primary_color)) {
@@ -275,6 +293,8 @@ export async function POST(request) {
           currency = ?,
           plan_type = ?,
           company_type = ?,
+          special_discount_enabled = ?,
+          special_discount_percentage = ?,
           primary_color = ?,
           secondary_color = ?,
           status = ?,
@@ -289,6 +309,8 @@ export async function POST(request) {
           update.currency,
           update.plan_type,
           update.company_type,
+          update.special_discount_enabled,
+          update.special_discount_percentage,
           update.primary_color,
           update.secondary_color,
           update.status,
