@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export type CompanyRow = {
@@ -115,6 +115,14 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
   const [editingCompany, setEditingCompany] = useState<CompanyRow | null>(null);
   const [form, setForm] = useState<CompanyForm | null>(null);
   const [busyAction, setBusyAction] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState("");
+
+  useEffect(() => {
+    return () => {
+      if (logoPreview.startsWith("blob:")) URL.revokeObjectURL(logoPreview);
+    };
+  }, [logoPreview]);
 
   const visibleCompanies = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -142,12 +150,16 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
   function openEdit(company: CompanyRow) {
     setEditingCompany(company);
     setForm(formFromCompany(company));
+    setLogoFile(null);
+    setLogoPreview(company.logo || "");
   }
 
   function closeEdit() {
     if (busyAction) return;
     setEditingCompany(null);
     setForm(null);
+    setLogoFile(null);
+    setLogoPreview("");
   }
 
   function updateField(field: keyof CompanyForm, value: string) {
@@ -166,14 +178,49 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
         companyId: editingCompany.id,
         ...form,
       });
+
+      if (logoFile) {
+        const logoFormData = new FormData();
+        logoFormData.set("companyId", String(editingCompany.id));
+        logoFormData.set("logo", logoFile);
+        const logoResponse = await fetch("/api/adminmaster/companies/logo", {
+          body: logoFormData,
+          method: "POST",
+        });
+        const logoResult = await logoResponse.json().catch(() => null);
+
+        if (!logoResponse.ok) {
+          throw new Error(logoResult?.message || "Unable to upload company logo");
+        }
+      }
+
       setEditingCompany(null);
       setForm(null);
+      setLogoFile(null);
+      setLogoPreview("");
       router.refresh();
     } catch (error) {
       window.alert(error instanceof Error ? error.message : "Unable to update company");
     } finally {
       setBusyAction(null);
     }
+  }
+
+  function selectLogo(file: File | null) {
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      window.alert("Logo must be smaller than 2 MB");
+      return;
+    }
+
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      window.alert("Upload a PNG, JPG or WEBP image");
+      return;
+    }
+
+    setLogoFile(file);
+    setLogoPreview(URL.createObjectURL(file));
   }
 
   async function toggleStatus(company: CompanyRow) {
@@ -289,10 +336,26 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                 return (
                   <tr key={company.id}>
                     <td>
-                      <div className="adminmaster-company">
-                        <strong>{company.company_name || company.slug}</strong>
-                        <span>{company.slug}</span>
-                        <span>{company.support_email || "No support email"}</span>
+                      <div className="companies-company-cell">
+                        <div className="companies-logo-thumbnail">
+                          {company.logo ? (
+                            <img
+                              alt={`${company.company_name} logo`}
+                              src={company.logo}
+                            />
+                          ) : (
+                            <span>
+                              {(company.company_name || company.slug)
+                                .charAt(0)
+                                .toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                        <div className="adminmaster-company">
+                          <strong>{company.company_name || company.slug}</strong>
+                          <span>{company.slug}</span>
+                          <span>{company.support_email || "No support email"}</span>
+                        </div>
                       </div>
                     </td>
                     <td>
@@ -391,6 +454,32 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
             </div>
 
             <form className="companies-edit-form" onSubmit={saveCompany}>
+              <div className="companies-logo-editor">
+                <div className="companies-logo-preview">
+                  {logoPreview ? (
+                    <img
+                      alt={`${editingCompany.company_name} logo preview`}
+                      src={logoPreview}
+                    />
+                  ) : (
+                    <span>No logo</span>
+                  )}
+                </div>
+                <div>
+                  <strong>Company logo</strong>
+                  <p>PNG, JPG or WEBP. Maximum size 2 MB.</p>
+                  <label className="companies-logo-upload">
+                    <span>{logoFile ? "Choose another logo" : "Choose logo"}</span>
+                    <input
+                      accept="image/png,image/jpeg,image/webp"
+                      onChange={(event) =>
+                        selectLogo(event.target.files?.[0] || null)
+                      }
+                      type="file"
+                    />
+                  </label>
+                </div>
+              </div>
               <label>
                 <span>Company name</span>
                 <input required maxLength={150} onChange={(event) => updateField("company_name", event.target.value)} value={form.company_name} />
