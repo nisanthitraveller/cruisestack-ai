@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, Suspense, useState } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import '../style.css'; 
 import loginImg from "../../assets/pana.svg";
@@ -14,6 +14,13 @@ function LoginContent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("iframe_token");
+    sessionStorage.removeItem("jwtToken");
+    sessionStorage.removeItem("iframe_token");
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -87,6 +87,10 @@ export default function Header() {
       method: "POST",
     });
 
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("iframe_token");
+    sessionStorage.removeItem("jwtToken");
+    sessionStorage.removeItem("iframe_token");
     window.location.href = "/login";
   }
 

@@ -216,6 +216,10 @@ function PricingNavActions() {
       credentials: "include",
     });
 
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("iframe_token");
+    sessionStorage.removeItem("jwtToken");
+    sessionStorage.removeItem("iframe_token");
     window.location.href = "/login";
   }
 
