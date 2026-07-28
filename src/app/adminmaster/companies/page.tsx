@@ -99,6 +99,8 @@ export default async function AdminMasterCompaniesPage() {
             <Link className="active" href="/adminmaster/companies">
               Companies
             </Link>
+            <Link href="/adminmaster/email-config">Email configuration</Link>
+            <Link href="/adminmaster/direct-booking">Direct booking</Link>
             <form action="/api/adminmaster/logout" method="post">
               <button type="submit">Logout</button>
             </form>

@@ -75,6 +75,7 @@ export default async function AdminMasterEmailConfigPage() {
             <Link href="/adminmaster/commission-control">Commission Control</Link>
             <Link href="/adminmaster/companies">Companies</Link>
             <Link className="active" href="/adminmaster/email-config">Email configuration</Link>
+            <Link href="/adminmaster/direct-booking">Direct booking</Link>
             <form action="/api/adminmaster/logout" method="post">
               <button type="submit">Logout</button>
             </form>
