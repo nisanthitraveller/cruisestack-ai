@@ -114,15 +114,16 @@ async function saveIntegration(connection, body) {
       WHERE company_id = ?
         AND cruiseline_id = ?
         AND provider_id = ?
+        AND environment = ?
         AND id <> ?
       LIMIT 1
       `,
-      [companyId, cruiselineId, providerId, integrationId],
+      [companyId, cruiselineId, providerId, environment, integrationId],
     );
     if (duplicates[0]) {
       throw Object.assign(
         new Error(
-          "This company, cruise line and provider integration already exists",
+          `This ${environment} company, cruise line and provider integration already exists`,
         ),
         { statusCode: 409 },
       );
@@ -168,14 +169,15 @@ async function saveIntegration(connection, body) {
       WHERE company_id = ?
         AND cruiseline_id = ?
         AND provider_id = ?
+        AND environment = ?
       LIMIT 1
       `,
-      [companyId, cruiselineId, providerId],
+      [companyId, cruiselineId, providerId, environment],
     );
     if (duplicates[0]) {
       throw Object.assign(
         new Error(
-          "This company, cruise line and provider integration already exists",
+          `This ${environment} company, cruise line and provider integration already exists`,
         ),
         { statusCode: 409 },
       );
