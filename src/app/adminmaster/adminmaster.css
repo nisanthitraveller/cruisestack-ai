@@ -610,6 +610,136 @@
   padding: 6px 8px;
 }
 
+.isolated-booking-panel {
+  padding: 24px;
+}
+
+.isolated-booking-warning {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 10px;
+  color: #9f1239;
+  padding: 14px;
+}
+
+.isolated-booking-warning p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 5px 0 0;
+}
+
+.isolated-booking-form,
+.isolated-booking-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 20px;
+}
+
+.isolated-booking-form label,
+.isolated-booking-grid label,
+.isolated-booking-confirmation {
+  color: #334155;
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 7px;
+}
+
+.isolated-booking-form input,
+.isolated-booking-form select,
+.isolated-booking-grid input,
+.isolated-booking-grid select,
+.isolated-booking-confirmation input {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  color: #0f172a;
+  font: inherit;
+  min-height: 42px;
+  padding: 9px 11px;
+}
+
+.isolated-booking-form > button {
+  align-self: end;
+  background: #1d4ed8;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  min-height: 42px;
+}
+
+.isolated-booking-confirm {
+  border-top: 1px solid #e2e8f0;
+  margin-top: 22px;
+  padding-top: 20px;
+}
+
+.isolated-booking-price {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.isolated-booking-price span {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #475569;
+  font-size: 11px;
+  padding: 8px 10px;
+}
+
+.isolated-booking-check {
+  align-items: center;
+  color: #334155;
+  display: flex;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.isolated-booking-confirmation {
+  color: #9f1239;
+  margin-top: 18px;
+  max-width: 420px;
+}
+
+.isolated-booking-confirmation input {
+  border-color: #fda4af;
+}
+
+.isolated-booking-create {
+  background: #be123c;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  margin-top: 14px;
+  padding: 11px 14px;
+}
+
+.isolated-booking-create:disabled,
+.isolated-booking-form > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 700px) {
+  .isolated-booking-form,
+  .isolated-booking-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .direct-booking-test-result > strong {
   color: #86efac;
   display: block;

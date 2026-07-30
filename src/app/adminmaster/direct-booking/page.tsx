@@ -153,6 +153,12 @@ export default async function AdminMasterDirectBookingPage() {
               >
                 Refresh
               </Link>
+              <Link
+                className="adminmaster-refresh"
+                href="/adminmaster/direct-booking/booking-test"
+              >
+                UAT Booking Test
+              </Link>
             </div>
           </header>
 
