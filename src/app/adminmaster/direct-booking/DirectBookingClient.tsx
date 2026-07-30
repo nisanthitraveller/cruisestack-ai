@@ -39,6 +39,11 @@ export type DirectBookingIntegration = {
 
 type CredentialDraft = { key: string; value: string };
 
+type DiagnosticResult = {
+  type: "authentication" | "wallet" | "pricing";
+  data: Record<string, unknown>;
+};
+
 const emptyIntegration = {
   id: 0,
   companyId: 0,
@@ -75,6 +80,19 @@ export default function DirectBookingClient({
   });
   const [providerOpen, setProviderOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [diagnosticBusy, setDiagnosticBusy] = useState("");
+  const [diagnosticError, setDiagnosticError] = useState("");
+  const [diagnosticResult, setDiagnosticResult] =
+    useState<DiagnosticResult | null>(null);
+  const [pricingTest, setPricingTest] = useState({
+    itinerary: "c165df80-be38-410a-b431-b11725173f94",
+    roomType: "",
+    adults: "2",
+    children: "0",
+    infants: "0",
+    offerId: "",
+    priceType: "",
+  });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const activeProviders = useMemo(
@@ -95,6 +113,8 @@ export default function DirectBookingClient({
     );
     setMessage("");
     setError("");
+    setDiagnosticError("");
+    setDiagnosticResult(null);
   }
 
   function updateForm<K extends keyof typeof form>(
@@ -129,6 +149,49 @@ export default function DirectBookingClient({
     }
 
     return data;
+  }
+
+  async function runDiagnostic(
+    testType: "authentication" | "wallet" | "pricing",
+  ) {
+    if (!form.id) {
+      setDiagnosticError("Save the integration before running a UAT test.");
+      return;
+    }
+
+    setDiagnosticBusy(testType);
+    setDiagnosticError("");
+    setDiagnosticResult(null);
+
+    try {
+      const response = await fetch(
+        "/api/adminmaster/direct-booking/test",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            integrationId: form.id,
+            testType,
+            ...(testType === "pricing" ? pricingTest : {}),
+          }),
+        },
+      );
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(data?.message || "Unable to run UAT diagnostic");
+      }
+
+      setDiagnosticResult({ type: testType, data: data.result || {} });
+    } catch (testError) {
+      setDiagnosticError(
+        testError instanceof Error
+          ? testError.message
+          : "Unable to run UAT diagnostic",
+      );
+    } finally {
+      setDiagnosticBusy("");
+    }
   }
 
   async function saveIntegration(event: React.FormEvent) {
@@ -424,6 +487,180 @@ export default function DirectBookingClient({
             + Add credential
           </button>
         </div>
+
+        <section className="direct-booking-diagnostics">
+          <div className="direct-booking-diagnostics-heading">
+            <div>
+              <p className="adminmaster-kicker">UAT diagnostics</p>
+              <h3>Test Cordelia connection</h3>
+              <p>
+                These tests do not create a booking or debit the supplier wallet.
+              </p>
+            </div>
+            <span className={form.environment === "UAT" ? "uat" : "production"}>
+              {form.environment}
+            </span>
+          </div>
+
+          <div className="direct-booking-test-actions">
+            <button
+              disabled={
+                Boolean(diagnosticBusy) ||
+                !form.id ||
+                form.environment !== "UAT"
+              }
+              onClick={() => runDiagnostic("authentication")}
+              type="button"
+            >
+              {diagnosticBusy === "authentication"
+                ? "Testing..."
+                : "Test authentication"}
+            </button>
+            <button
+              disabled={
+                Boolean(diagnosticBusy) ||
+                !form.id ||
+                form.environment !== "UAT"
+              }
+              onClick={() => runDiagnostic("wallet")}
+              type="button"
+            >
+              {diagnosticBusy === "wallet" ? "Checking..." : "Check wallet"}
+            </button>
+          </div>
+
+          <div className="direct-booking-pricing-test">
+            <h4>Pricing test</h4>
+            <div className="direct-booking-grid">
+              <label className="direct-booking-wide">
+                <span>UAT itinerary ID *</span>
+                <input
+                  onChange={(event) =>
+                    setPricingTest((current) => ({
+                      ...current,
+                      itinerary: event.target.value,
+                    }))
+                  }
+                  value={pricingTest.itinerary}
+                />
+              </label>
+              <label>
+                <span>Room type *</span>
+                <input
+                  onChange={(event) =>
+                    setPricingTest((current) => ({
+                      ...current,
+                      roomType: event.target.value,
+                    }))
+                  }
+                  placeholder="INTERIORSTANDARD"
+                  value={pricingTest.roomType}
+                />
+              </label>
+              <label>
+                <span>Price type</span>
+                <input
+                  onChange={(event) =>
+                    setPricingTest((current) => ({
+                      ...current,
+                      priceType: event.target.value,
+                    }))
+                  }
+                  placeholder="Optional"
+                  value={pricingTest.priceType}
+                />
+              </label>
+              <label>
+                <span>Adults *</span>
+                <input
+                  min="0"
+                  onChange={(event) =>
+                    setPricingTest((current) => ({
+                      ...current,
+                      adults: event.target.value,
+                    }))
+                  }
+                  type="number"
+                  value={pricingTest.adults}
+                />
+              </label>
+              <label>
+                <span>Children</span>
+                <input
+                  min="0"
+                  onChange={(event) =>
+                    setPricingTest((current) => ({
+                      ...current,
+                      children: event.target.value,
+                    }))
+                  }
+                  type="number"
+                  value={pricingTest.children}
+                />
+              </label>
+              <label>
+                <span>Infants</span>
+                <input
+                  min="0"
+                  onChange={(event) =>
+                    setPricingTest((current) => ({
+                      ...current,
+                      infants: event.target.value,
+                    }))
+                  }
+                  type="number"
+                  value={pricingTest.infants}
+                />
+              </label>
+              <label>
+                <span>Offer ID</span>
+                <input
+                  onChange={(event) =>
+                    setPricingTest((current) => ({
+                      ...current,
+                      offerId: event.target.value,
+                    }))
+                  }
+                  placeholder="Optional"
+                  value={pricingTest.offerId}
+                />
+              </label>
+            </div>
+            <button
+              className="direct-booking-run-pricing"
+              disabled={
+                Boolean(diagnosticBusy) ||
+                !form.id ||
+                form.environment !== "UAT" ||
+                !pricingTest.itinerary.trim() ||
+                !pricingTest.roomType.trim()
+              }
+              onClick={() => runDiagnostic("pricing")}
+              type="button"
+            >
+              {diagnosticBusy === "pricing"
+                ? "Calling pricing API..."
+                : "Test pricing"}
+            </button>
+          </div>
+
+          {diagnosticError ? (
+            <p className="email-config-message error">{diagnosticError}</p>
+          ) : null}
+
+          {diagnosticResult ? (
+            <div className="direct-booking-test-result">
+              <strong>
+                {diagnosticResult.type === "authentication"
+                  ? "Authentication successful"
+                  : diagnosticResult.type === "wallet"
+                    ? "Wallet response"
+                    : "Pricing response"}
+              </strong>
+              <pre>{JSON.stringify(diagnosticResult.data, null, 2)}</pre>
+            </div>
+          ) : null}
+        </section>
 
         {error ? <p className="email-config-message error">{error}</p> : null}
         {message ? <p className="email-config-message success">{message}</p> : null}
