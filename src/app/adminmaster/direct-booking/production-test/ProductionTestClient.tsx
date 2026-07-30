@@ -13,6 +13,9 @@ type TestType =
 type PriceDetail = {
   type?: string;
   fare?: number;
+  discount?: number;
+  added_fare?: number;
+  added_discount?: number;
 };
 
 type PricingRoom = {
@@ -22,6 +25,7 @@ type PricingRoom = {
 type PricingResponse = {
   available?: boolean;
   base_price?: number;
+  discount?: number;
   port_charges?: number;
   gratuity?: number;
   fuel_surcharge?: number;
@@ -100,7 +104,12 @@ function FareSummary({ pricing }: { pricing: PricingResponse }) {
         <div className="production-fare-group">
           <div className="production-fare-total">
             <strong>Cruise Fare</strong>
-            <strong>{inr(pricing.base_price)}</strong>
+            <strong>
+              {inr(
+                Number(pricing.base_price || 0) -
+                  Number(pricing.discount || 0),
+              )}
+            </strong>
           </div>
           {passengers.map((passenger, index) => {
             const type = String(passenger.type || "Passenger").toUpperCase();
@@ -120,7 +129,14 @@ function FareSummary({ pricing }: { pricing: PricingResponse }) {
                 <span>
                   {label} {count}
                 </span>
-                <span>{inr(passenger.fare)}</span>
+                <span>
+                  {inr(
+                    Number(passenger.fare || 0) +
+                      Number(passenger.added_fare || 0) -
+                      Number(passenger.discount || 0) -
+                      Number(passenger.added_discount || 0),
+                  )}
+                </span>
               </div>
             );
           })}
@@ -198,11 +214,13 @@ export default function ProductionTestClient({
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
+  const [resultType, setResultType] = useState<TestType | null>(null);
 
   async function run(testType: TestType) {
     setBusy(testType);
     setError("");
     setResult(null);
+    setResultType(null);
     try {
       const response = await fetch(
         "/api/adminmaster/direct-booking/production-test",
@@ -217,6 +235,7 @@ export default function ProductionTestClient({
         throw new Error(data?.message || "Production test failed");
       }
       setResult(data.result || {});
+      setResultType(testType);
     } catch (testError) {
       setError(
         testError instanceof Error ? testError.message : "Production test failed",
@@ -292,7 +311,17 @@ export default function ProductionTestClient({
       {result ? (
         <>
           <div className="direct-booking-test-result">
-            <strong>Production response</strong>
+            <strong>
+              {resultType === "authentication"
+                ? "Production authentication response"
+                : resultType === "wallet"
+                  ? "Production wallet response"
+                  : resultType === "offers"
+                    ? "Production offers response"
+                    : resultType === "availability"
+                      ? "Production availability response"
+                      : "Production pricing response"}
+            </strong>
             {offerOptions(result).length ? (
               <div className="production-offer-options">
                 {offerOptions(result).map((offer) => (
