@@ -5,7 +5,7 @@ import { decryptIntegrationCredential } from "@/lib/integrationCredentials";
 
 const CORDELIA_UAT_BASE_URL =
   "https://uat.cordeliacruises.com/api/agent";
-const REQUEST_TIMEOUT_MS = 60000;
+const REQUEST_TIMEOUT_MS = 20000;
 
 function apiError(message, statusCode = 400, details = null) {
   const error = new Error(message);
@@ -57,10 +57,7 @@ async function cordeliaFetch(path, options = {}) {
   } catch (error) {
     if (error?.statusCode) throw error;
     if (error?.name === "TimeoutError") {
-      throw apiError(
-        `Cordelia UAT did not respond to ${path} within 60 seconds`,
-        504,
-      );
+      throw apiError("Cordelia did not respond within 20 seconds", 504);
     }
     throw apiError("Unable to connect to the Cordelia UAT API", 502);
   }
