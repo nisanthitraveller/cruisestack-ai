@@ -17,11 +17,6 @@ function apiError(message, statusCode = 400) {
   throw error;
 }
 
-function safeNumber(value) {
-  const number = Number(value);
-  return Number.isFinite(number) ? number : null;
-}
-
 async function providerFetch(path, options) {
   let response;
   try {
@@ -159,55 +154,6 @@ function baseTestInput(body) {
   };
 }
 
-function availabilityResult(data) {
-  const entries = Array.isArray(data.availability) ? data.availability : [];
-  const rooms = [];
-
-  for (const entry of entries) {
-    const categories = Array.isArray(entry?.available_categories)
-      ? entry.available_categories
-      : entry?.room_type
-        ? [entry]
-        : [];
-    for (const category of categories) {
-      rooms.push({
-        roomType: clean(category.room_type),
-        available: Boolean(category.available),
-        price: safeNumber(category.price),
-        agentCommissionPercentage: safeNumber(
-          category.agent_commission_pct,
-        ),
-      });
-    }
-  }
-  return {
-    availableRoomCount: rooms.filter((room) => room.available).length,
-    rooms,
-  };
-}
-
-function pricingResult(data) {
-  return {
-    available: Boolean(data.available),
-    totalPrice: safeNumber(data.total_price),
-    grossPrice: safeNumber(data.gross_price),
-    partialPayableAmount: safeNumber(data.partial_payable_amount),
-    dueDate: data.due_date ?? null,
-    paymentOptionId: data.payment_option_id ?? null,
-    agentCommissionPercentage: safeNumber(data.agent_commission_pct),
-    agentCommission: safeNumber(data.agent_commission),
-    rooms: Array.isArray(data.rooms)
-      ? data.rooms.map((room) => ({
-          roomType: clean(room.room_type),
-          available: Boolean(room.available),
-          price: safeNumber(room.price),
-          sequenceNumber: safeNumber(room.seq_no),
-          priceKey: clean(room.price_key),
-        }))
-      : [],
-  };
-}
-
 export async function POST(request) {
   let connection;
   try {
@@ -273,7 +219,7 @@ export async function POST(request) {
       );
       return NextResponse.json({
         success: true,
-        result: availabilityResult(data),
+        result: data,
       });
     }
 
@@ -303,7 +249,7 @@ export async function POST(request) {
       });
       return NextResponse.json({
         success: true,
-        result: pricingResult(data),
+        result: data,
       });
     }
 
