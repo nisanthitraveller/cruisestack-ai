@@ -131,15 +131,15 @@ function FareSummary({ pricing }: { pricing: PricingResponse }) {
         </div>
       </div>
 
-      <details className="production-policy">
-        <summary>Rescheduling policy</summary>
+      <details className="production-policy" open>
+        <summary>Rescheduling Fee</summary>
         <ul>
           {reschedulingPolicy.map((policy) => <li key={policy}>{policy}</li>)}
         </ul>
       </details>
 
-      <details className="production-policy">
-        <summary>Cancellation policy</summary>
+      <details className="production-policy" open>
+        <summary>CANCELLATION FEE</summary>
         <ul>
           {cancellationPolicy.map((policy) => <li key={policy}>{policy}</li>)}
         </ul>
