@@ -89,6 +89,8 @@ function FareSummary({ pricing }: { pricing: PricingResponse }) {
     (room) => room.price_details || [],
   );
   const passengerCounts = new Map<string, number>();
+  const cruiseFare = Number(pricing.base_price || 0);
+  const cruiseDiscount = Number(pricing.discount || 0);
 
   return (
     <section className="production-fare-summary">
@@ -104,11 +106,12 @@ function FareSummary({ pricing }: { pricing: PricingResponse }) {
         <div className="production-fare-group">
           <div className="production-fare-total">
             <strong>Cruise Fare</strong>
-            <strong>
-              {inr(
-                Number(pricing.base_price || 0) -
-                  Number(pricing.discount || 0),
-              )}
+            <strong className="production-fare-calculation">
+              {cruiseDiscount > 0
+                ? `${inr(cruiseFare)} − ${inr(cruiseDiscount)} = ${inr(
+                    cruiseFare - cruiseDiscount,
+                  )}`
+                : inr(cruiseFare)}
             </strong>
           </div>
           {passengers.map((passenger, index) => {
@@ -123,19 +126,25 @@ function FareSummary({ pricing }: { pricing: PricingResponse }) {
                   : type === "INFANT"
                     ? "Infant"
                     : "Passenger";
+            const originalFare =
+              Number(passenger.fare || 0) +
+              Number(passenger.added_fare || 0);
+            const passengerDiscount =
+              Number(passenger.discount || 0) +
+              Number(passenger.added_discount || 0);
+            const netFare = originalFare - passengerDiscount;
 
             return (
               <div className="production-fare-passenger" key={`${type}-${index}`}>
                 <span>
                   {label} {count}
                 </span>
-                <span>
-                  {inr(
-                    Number(passenger.fare || 0) +
-                      Number(passenger.added_fare || 0) -
-                      Number(passenger.discount || 0) -
-                      Number(passenger.added_discount || 0),
-                  )}
+                <span className="production-fare-calculation">
+                  {passengerDiscount > 0
+                    ? `${inr(originalFare)} − ${inr(
+                        passengerDiscount,
+                      )} = ${inr(netFare)}`
+                    : inr(netFare)}
                 </span>
               </div>
             );

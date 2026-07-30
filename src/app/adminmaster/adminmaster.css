@@ -869,6 +869,11 @@
   padding: 5px 12px;
 }
 
+.production-fare-calculation {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
 .production-fare-grand-total {
   border-top: 2px solid #0f172a;
   color: #0f172a !important;
