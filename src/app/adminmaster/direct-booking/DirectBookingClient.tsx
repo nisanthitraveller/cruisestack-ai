@@ -40,8 +40,23 @@ export type DirectBookingIntegration = {
 type CredentialDraft = { key: string; value: string };
 
 type DiagnosticResult = {
-  type: "authentication" | "wallet" | "availability" | "pricing";
+  type:
+    | "authentication"
+    | "wallet"
+    | "availability"
+    | "pricing"
+    | "booking";
   data: Record<string, unknown>;
+};
+
+type PricingBookingContext = {
+  itinerary: string;
+  roomType: string;
+  priceKey: string;
+  sequenceNumber: number;
+  totalPrice: number | null;
+  partialPayableAmount: number | null;
+  paymentOptionId: string;
 };
 
 const emptyIntegration = {
@@ -84,6 +99,23 @@ export default function DirectBookingClient({
   const [diagnosticError, setDiagnosticError] = useState("");
   const [diagnosticResult, setDiagnosticResult] =
     useState<DiagnosticResult | null>(null);
+  const [bookingContext, setBookingContext] =
+    useState<PricingBookingContext | null>(null);
+  const [bookingForm, setBookingForm] = useState({
+    firstName: "",
+    lastName: "",
+    gender: "Male",
+    dob: "",
+    mealType: "Vegetarian",
+    country: "India",
+    state: "",
+    phoneNumber: "",
+    email: "",
+    panNumber: "",
+    gstin: "",
+    usePartialPayment: false,
+    confirmation: "",
+  });
   const [pricingTest, setPricingTest] = useState({
     itinerary: "c165df80-be38-410a-b431-b11725173f94",
     roomType: "",
@@ -115,6 +147,7 @@ export default function DirectBookingClient({
     setError("");
     setDiagnosticError("");
     setDiagnosticResult(null);
+    setBookingContext(null);
   }
 
   function updateForm<K extends keyof typeof form>(
@@ -152,7 +185,12 @@ export default function DirectBookingClient({
   }
 
   async function runDiagnostic(
-    testType: "authentication" | "wallet" | "availability" | "pricing",
+    testType:
+      | "authentication"
+      | "wallet"
+      | "availability"
+      | "pricing"
+      | "booking",
   ) {
     if (!form.id) {
       setDiagnosticError("Save the integration before running a UAT test.");
@@ -162,6 +200,7 @@ export default function DirectBookingClient({
     setDiagnosticBusy(testType);
     setDiagnosticError("");
     setDiagnosticResult(null);
+    if (testType === "pricing") setBookingContext(null);
 
     try {
       const response = await fetch(
@@ -175,6 +214,9 @@ export default function DirectBookingClient({
             ...(testType === "pricing" || testType === "availability"
               ? pricingTest
               : {}),
+            ...(testType === "booking"
+              ? { ...bookingContext, ...bookingForm }
+              : {}),
           }),
         },
       );
@@ -185,6 +227,41 @@ export default function DirectBookingClient({
       }
 
       setDiagnosticResult({ type: testType, data: data.result || {} });
+      if (testType === "pricing") {
+        const result = data.result || {};
+        const room = Array.isArray(result.rooms) ? result.rooms[0] : null;
+        const isSingleAdultTest =
+          Number(pricingTest.adults) === 1 &&
+          Number(pricingTest.children) === 0 &&
+          Number(pricingTest.infants) === 0;
+
+        if (
+          isSingleAdultTest &&
+          result.available &&
+          room?.available &&
+          room?.roomType &&
+          room?.priceKey &&
+          Number.isInteger(room?.sequenceNumber)
+        ) {
+          setBookingContext({
+            itinerary: pricingTest.itinerary,
+            roomType: room.roomType,
+            priceKey: room.priceKey,
+            sequenceNumber: room.sequenceNumber,
+            totalPrice:
+              typeof result.totalPrice === "number" ? result.totalPrice : null,
+            partialPayableAmount:
+              typeof result.partialPayableAmount === "number"
+                ? result.partialPayableAmount
+                : null,
+            paymentOptionId: String(result.paymentOptionId || ""),
+          });
+        } else if (!isSingleAdultTest) {
+          setDiagnosticError(
+            "The guarded booking smoke test currently supports exactly one adult and no children or infants.",
+          );
+        }
+      }
     } catch (testError) {
       setDiagnosticError(
         testError instanceof Error
@@ -676,6 +753,8 @@ export default function DirectBookingClient({
                     ? "Wallet response"
                     : diagnosticResult.type === "availability"
                       ? "Availability response"
+                      : diagnosticResult.type === "booking"
+                        ? "UAT booking confirmed"
                     : "Pricing response"}
               </strong>
               {diagnosticResult.type === "availability" &&
@@ -705,6 +784,226 @@ export default function DirectBookingClient({
                 </div>
               ) : null}
               <pre>{JSON.stringify(diagnosticResult.data, null, 2)}</pre>
+            </div>
+          ) : null}
+
+          {bookingContext ? (
+            <div className="direct-booking-booking-test">
+              <div className="direct-booking-booking-warning">
+                <strong>Create UAT booking</strong>
+                <p>
+                  This calls Cordelia&apos;s Booking API and debits the UAT
+                  wallet. It cannot be treated like a harmless connection test.
+                </p>
+              </div>
+
+              <div className="direct-booking-booking-summary">
+                <span>
+                  Room <strong>{bookingContext.roomType}</strong>
+                </span>
+                <span>
+                  Full amount{" "}
+                  <strong>{bookingContext.totalPrice ?? "Not returned"}</strong>
+                </span>
+                <span>
+                  Partial amount{" "}
+                  <strong>
+                    {bookingContext.partialPayableAmount ?? "Not available"}
+                  </strong>
+                </span>
+              </div>
+
+              <div className="direct-booking-grid">
+                <label>
+                  <span>First name *</span>
+                  <input
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        firstName: event.target.value,
+                      }))
+                    }
+                    value={bookingForm.firstName}
+                  />
+                </label>
+                <label>
+                  <span>Last name *</span>
+                  <input
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        lastName: event.target.value,
+                      }))
+                    }
+                    value={bookingForm.lastName}
+                  />
+                </label>
+                <label>
+                  <span>Gender *</span>
+                  <select
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        gender: event.target.value,
+                      }))
+                    }
+                    value={bookingForm.gender}
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Date of birth (DD/MM/YYYY) *</span>
+                  <input
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        dob: event.target.value,
+                      }))
+                    }
+                    placeholder="01/01/1990"
+                    value={bookingForm.dob}
+                  />
+                </label>
+                <label>
+                  <span>Meal type *</span>
+                  <select
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        mealType: event.target.value,
+                      }))
+                    }
+                    value={bookingForm.mealType}
+                  >
+                    <option value="Vegetarian">Vegetarian</option>
+                    <option value="Non - Vegetarian">Non - Vegetarian</option>
+                    <option value="Jain">Jain</option>
+                  </select>
+                </label>
+                <label>
+                  <span>State *</span>
+                  <input
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        state: event.target.value,
+                      }))
+                    }
+                    placeholder="Maharashtra"
+                    value={bookingForm.state}
+                  />
+                </label>
+                <label>
+                  <span>Country *</span>
+                  <input
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        country: event.target.value,
+                      }))
+                    }
+                    value={bookingForm.country}
+                  />
+                </label>
+                <label>
+                  <span>Phone with country code *</span>
+                  <input
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        phoneNumber: event.target.value,
+                      }))
+                    }
+                    placeholder="+919876543210"
+                    value={bookingForm.phoneNumber}
+                  />
+                </label>
+                <label>
+                  <span>Email *</span>
+                  <input
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        email: event.target.value,
+                      }))
+                    }
+                    type="email"
+                    value={bookingForm.email}
+                  />
+                </label>
+                <label>
+                  <span>PAN number</span>
+                  <input
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        panNumber: event.target.value.toUpperCase(),
+                      }))
+                    }
+                    value={bookingForm.panNumber}
+                  />
+                </label>
+                <label>
+                  <span>GSTIN</span>
+                  <input
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        gstin: event.target.value.toUpperCase(),
+                      }))
+                    }
+                    value={bookingForm.gstin}
+                  />
+                </label>
+              </div>
+
+              {bookingContext.paymentOptionId ? (
+                <label className="direct-booking-partial-option">
+                  <input
+                    checked={bookingForm.usePartialPayment}
+                    onChange={(event) =>
+                      setBookingForm((current) => ({
+                        ...current,
+                        usePartialPayment: event.target.checked,
+                      }))
+                    }
+                    type="checkbox"
+                  />
+                  Use Cordelia partial-payment option
+                </label>
+              ) : null}
+
+              <label className="direct-booking-confirmation">
+                <span>
+                  Type <strong>CREATE UAT BOOKING</strong> to confirm *
+                </span>
+                <input
+                  autoComplete="off"
+                  onChange={(event) =>
+                    setBookingForm((current) => ({
+                      ...current,
+                      confirmation: event.target.value,
+                    }))
+                  }
+                  value={bookingForm.confirmation}
+                />
+              </label>
+
+              <button
+                className="direct-booking-create-test"
+                disabled={
+                  Boolean(diagnosticBusy) ||
+                  bookingForm.confirmation !== "CREATE UAT BOOKING"
+                }
+                onClick={() => runDiagnostic("booking")}
+                type="button"
+              >
+                {diagnosticBusy === "booking"
+                  ? "Creating UAT booking — do not retry..."
+                  : "Create UAT booking and debit wallet"}
+              </button>
             </div>
           ) : null}
         </section>

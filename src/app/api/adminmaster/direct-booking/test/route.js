@@ -314,6 +314,213 @@ function sanitizedPricing(data) {
   };
 }
 
+function requiredText(value, label, maxLength = 150) {
+  const result = clean(value);
+  if (!result) throw apiError(`${label} is required`);
+  if (result.length > maxLength) throw apiError(`${label} is too long`);
+  return result;
+}
+
+function bookingPassenger(body) {
+  const gender = requiredText(body.gender, "Gender");
+  const mealType = requiredText(body.mealType, "Meal type");
+  const email = requiredText(body.email, "Email").toLowerCase();
+  const phoneNumber = requiredText(body.phoneNumber, "Phone number", 30);
+  const dob = requiredText(body.dob, "Date of birth", 10);
+
+  if (!["Male", "Female"].includes(gender)) {
+    throw apiError("Gender must be Male or Female");
+  }
+  if (!["Vegetarian", "Non - Vegetarian", "Jain"].includes(mealType)) {
+    throw apiError("Select a valid meal type");
+  }
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dob)) {
+    throw apiError("Date of birth must use DD/MM/YYYY");
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw apiError("Enter a valid passenger email");
+  }
+
+  return {
+    first_name: requiredText(body.firstName, "First name"),
+    last_name: requiredText(body.lastName, "Last name"),
+    gender,
+    dob,
+    meal_type: mealType,
+    country: requiredText(body.country, "Country"),
+    state: requiredText(body.state, "State"),
+    phone_number: phoneNumber,
+    email,
+  };
+}
+
+function bookingInput(body) {
+  if (clean(body.confirmation) !== "CREATE UAT BOOKING") {
+    throw apiError('Type "CREATE UAT BOOKING" to confirm this wallet debit');
+  }
+
+  const itinerary = requiredText(body.itinerary, "Itinerary ID");
+  const roomType = requiredText(body.roomType, "Room type");
+  const priceKey = requiredText(body.priceKey, "Price key", 2000);
+  const sequenceNumber = Number(body.sequenceNumber);
+
+  if (!Number.isInteger(sequenceNumber) || sequenceNumber < 0) {
+    throw apiError("A valid pricing sequence number is required");
+  }
+
+  return {
+    itinerary,
+    roomType,
+    priceKey,
+    sequenceNumber,
+    paymentOptionId: clean(body.paymentOptionId),
+    usePartialPayment: body.usePartialPayment === true,
+    expectedTotalPrice: safeNumber(body.totalPrice),
+    expectedPartialPayableAmount: safeNumber(body.partialPayableAmount),
+    passenger: bookingPassenger(body),
+    panNumber: clean(body.panNumber),
+    gstin: clean(body.gstin),
+  };
+}
+
+async function createUatBooking(credentials, token, input) {
+  const headers = authenticatedHeaders(credentials, token);
+  const pricingPayload = {
+    itinerary: input.itinerary,
+    addons: [],
+    rooms: [
+      {
+        room_type: input.roomType,
+        adults: 1,
+        children: 0,
+        infants: 0,
+        seq_no: input.sequenceNumber,
+        price_key: input.priceKey,
+      },
+    ],
+  };
+
+  if (input.usePartialPayment) {
+    if (!input.paymentOptionId) {
+      throw apiError("No partial-payment option is available for this price");
+    }
+    pricingPayload.payment_option_id = input.paymentOptionId;
+  }
+
+  const latestPricing = await cordeliaFetch("/itineraries/pricing.json", {
+    method: "POST",
+    headers,
+    body: JSON.stringify(pricingPayload),
+  });
+  const latestRoom = Array.isArray(latestPricing.rooms)
+    ? latestPricing.rooms[0]
+    : null;
+
+  if (!latestPricing.available || !latestRoom?.available) {
+    throw apiError(
+      "The selected cabin is no longer available. No booking was created.",
+      409,
+    );
+  }
+
+  const latestTotalPrice = safeNumber(latestPricing.total_price);
+  const latestPartialPayableAmount = safeNumber(
+    latestPricing.partial_payable_amount,
+  );
+  const expectedAmount = input.usePartialPayment
+    ? input.expectedPartialPayableAmount
+    : input.expectedTotalPrice;
+  const latestAmount = input.usePartialPayment
+    ? latestPartialPayableAmount
+    : latestTotalPrice;
+
+  if (
+    expectedAmount == null ||
+    latestAmount == null ||
+    expectedAmount !== latestAmount
+  ) {
+    throw apiError(
+      `Cordelia price changed from ${expectedAmount ?? "unknown"} to ${
+        latestAmount ?? "unknown"
+      }. Run Pricing again before booking.`,
+      409,
+    );
+  }
+
+  const latestPriceKey = clean(latestRoom.price_key);
+  const latestSequenceNumber = Number(latestRoom.seq_no);
+  if (!latestPriceKey || !Number.isInteger(latestSequenceNumber)) {
+    throw apiError(
+      "Cordelia repricing did not return a valid price key and sequence number",
+      502,
+    );
+  }
+
+  const bookingPayload = {
+    itinerary: input.itinerary,
+    tcs_with_pan: Boolean(input.panNumber),
+    tds_opted: false,
+    expense_above_7l: false,
+    tax_regime: "new_regime",
+    addons: [],
+    rooms: [
+      {
+        seq_no: latestSequenceNumber,
+        price_key: latestPriceKey,
+        room_type: input.roomType,
+        adults: [input.passenger],
+        children: [],
+        infants: [],
+      },
+    ],
+    pan_no: input.panNumber || "",
+    plan_enabled: false,
+    variables: {
+      input: {
+        contact: {
+          name: `${input.passenger.first_name} ${input.passenger.last_name}`,
+          email: input.passenger.email,
+          phoneNumber: input.passenger.phone_number,
+          gstin: input.gstin || "",
+          pan: input.panNumber || "",
+        },
+      },
+    },
+  };
+
+  if (input.usePartialPayment) {
+    bookingPayload.payment_option_id = input.paymentOptionId;
+  }
+
+  const booking = await cordeliaFetch("/bookings.json", {
+    method: "POST",
+    headers,
+    body: JSON.stringify(bookingPayload),
+  });
+
+  if (booking.success !== true) {
+    throw apiError(
+      clean(booking.message) || "Cordelia did not confirm the UAT booking",
+      502,
+    );
+  }
+
+  return {
+    success: true,
+    bookingReference: booking.booking_reference ?? null,
+    bookingVoucher: booking.booking_voucher ?? null,
+    totalPrice: safeNumber(booking.total_price),
+    dueBy: booking.due_by ?? null,
+    itinerary: booking.itinerary ?? input.itinerary,
+    customerName: booking.customer_name ?? null,
+    customerPhone: booking.customer_phone ?? null,
+    customerEmail: booking.customer_email ?? null,
+    paymentMode: input.usePartialPayment ? "PARTIAL" : "FULL",
+    repricedTotal: latestTotalPrice,
+    repricedPartialPayable: latestPartialPayableAmount,
+  };
+}
+
 export async function POST(request) {
   let connection;
 
@@ -392,6 +599,16 @@ export async function POST(request) {
         success: true,
         result: sanitizedPricing(data),
       });
+    }
+
+    if (testType === "booking") {
+      const result = await createUatBooking(
+        credentials,
+        authentication.token,
+        bookingInput(body),
+      );
+
+      return NextResponse.json({ success: true, result });
     }
 
     throw apiError("Unsupported diagnostic test");
