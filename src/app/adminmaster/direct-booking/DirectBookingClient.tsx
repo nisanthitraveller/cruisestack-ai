@@ -40,7 +40,7 @@ export type DirectBookingIntegration = {
 type CredentialDraft = { key: string; value: string };
 
 type DiagnosticResult = {
-  type: "authentication" | "wallet" | "pricing";
+  type: "authentication" | "wallet" | "availability" | "pricing";
   data: Record<string, unknown>;
 };
 
@@ -152,7 +152,7 @@ export default function DirectBookingClient({
   }
 
   async function runDiagnostic(
-    testType: "authentication" | "wallet" | "pricing",
+    testType: "authentication" | "wallet" | "availability" | "pricing",
   ) {
     if (!form.id) {
       setDiagnosticError("Save the integration before running a UAT test.");
@@ -172,7 +172,9 @@ export default function DirectBookingClient({
           body: JSON.stringify({
             integrationId: form.id,
             testType,
-            ...(testType === "pricing" ? pricingTest : {}),
+            ...(testType === "pricing" || testType === "availability"
+              ? pricingTest
+              : {}),
           }),
         },
       );
@@ -530,7 +532,7 @@ export default function DirectBookingClient({
           </div>
 
           <div className="direct-booking-pricing-test">
-            <h4>Pricing test</h4>
+            <h4>Availability and pricing test</h4>
             <div className="direct-booking-grid">
               <label className="direct-booking-wide">
                 <span>UAT itinerary ID *</span>
@@ -626,22 +628,39 @@ export default function DirectBookingClient({
                 />
               </label>
             </div>
-            <button
-              className="direct-booking-run-pricing"
-              disabled={
-                Boolean(diagnosticBusy) ||
-                !form.id ||
-                form.environment !== "UAT" ||
-                !pricingTest.itinerary.trim() ||
-                !pricingTest.roomType.trim()
-              }
-              onClick={() => runDiagnostic("pricing")}
-              type="button"
-            >
-              {diagnosticBusy === "pricing"
-                ? "Calling pricing API..."
-                : "Test pricing"}
-            </button>
+            <div className="direct-booking-pricing-actions">
+              <button
+                className="direct-booking-run-pricing"
+                disabled={
+                  Boolean(diagnosticBusy) ||
+                  !form.id ||
+                  form.environment !== "UAT" ||
+                  !pricingTest.itinerary.trim()
+                }
+                onClick={() => runDiagnostic("availability")}
+                type="button"
+              >
+                {diagnosticBusy === "availability"
+                  ? "Checking availability..."
+                  : "Check availability"}
+              </button>
+              <button
+                className="direct-booking-run-pricing"
+                disabled={
+                  Boolean(diagnosticBusy) ||
+                  !form.id ||
+                  form.environment !== "UAT" ||
+                  !pricingTest.itinerary.trim() ||
+                  !pricingTest.roomType.trim()
+                }
+                onClick={() => runDiagnostic("pricing")}
+                type="button"
+              >
+                {diagnosticBusy === "pricing"
+                  ? "Calling pricing API..."
+                  : "Test pricing"}
+              </button>
+            </div>
           </div>
 
           {diagnosticError ? (
@@ -655,8 +674,36 @@ export default function DirectBookingClient({
                   ? "Authentication successful"
                   : diagnosticResult.type === "wallet"
                     ? "Wallet response"
+                    : diagnosticResult.type === "availability"
+                      ? "Availability response"
                     : "Pricing response"}
               </strong>
+              {diagnosticResult.type === "availability" &&
+              Array.isArray(diagnosticResult.data.rooms) ? (
+                <div className="direct-booking-room-options">
+                  {(
+                    diagnosticResult.data.rooms as Array<{
+                      roomType?: string;
+                      available?: boolean;
+                    }>
+                  )
+                    .filter((room) => room.available && room.roomType)
+                    .map((room) => (
+                      <button
+                        key={room.roomType}
+                        onClick={() =>
+                          setPricingTest((current) => ({
+                            ...current,
+                            roomType: room.roomType || "",
+                          }))
+                        }
+                        type="button"
+                      >
+                        Use {room.roomType}
+                      </button>
+                    ))}
+                </div>
+              ) : null}
               <pre>{JSON.stringify(diagnosticResult.data, null, 2)}</pre>
             </div>
           ) : null}

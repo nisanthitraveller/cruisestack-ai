@@ -214,6 +214,75 @@ function pricingRequest(body) {
   return requestBody;
 }
 
+function availabilityRequest(body) {
+  const itinerary = clean(body.itinerary);
+  const adults = Number(body.adults);
+  const children = Number(body.children || 0);
+  const infants = Number(body.infants || 0);
+  const priceType = clean(body.priceType);
+
+  if (!itinerary) throw apiError("Itinerary ID is required");
+
+  for (const [label, value] of [
+    ["Adults", adults],
+    ["Children", children],
+    ["Infants", infants],
+  ]) {
+    if (!Number.isInteger(value) || value < 0 || value > 20) {
+      throw apiError(`${label} must be a whole number between 0 and 20`);
+    }
+  }
+
+  if (adults + children + infants < 1) {
+    throw apiError("At least one passenger is required");
+  }
+
+  const requestBody = {
+    itinerary,
+    rooms: [{ adults, children, infants }],
+  };
+  if (priceType) requestBody.price_type = priceType;
+  return requestBody;
+}
+
+function sanitizedAvailability(data) {
+  const availability = Array.isArray(data.availability)
+    ? data.availability
+    : [];
+  const rooms = [];
+
+  for (const item of availability) {
+    const categories = Array.isArray(item?.available_categories)
+      ? item.available_categories
+      : item?.room_type
+        ? [item]
+        : [];
+
+    for (const category of categories) {
+      rooms.push({
+        roomType: clean(category.room_type),
+        available: Boolean(category.available),
+        price: safeNumber(category.price),
+        basePrice: safeNumber(category.base_price),
+        portCharges: safeNumber(category.port_charges),
+        gratuity: safeNumber(category.gratuity),
+        fuelSurcharge: safeNumber(category.fuel_surcharge),
+        tax: safeNumber(category.tax),
+        agentCommissionPercentage: safeNumber(
+          category.agent_commission_pct,
+        ),
+        agentCommission: safeNumber(category.agent_commission),
+        offerId: clean(category.offer_id) || null,
+      });
+    }
+  }
+
+  return {
+    availableRoomCount: rooms.filter((room) => room.available).length,
+    rooms,
+  };
+}
+
 function sanitizedPricing(data) {
   return {
     available: Boolean(data.available),
@@ -293,6 +362,22 @@ export async function POST(request) {
           status: wallet.status ?? null,
           balance: wallet.balance ?? null,
         },
+      });
+    }
+
+    if (testType === "availability") {
+      const data = await cordeliaFetch(
+        "/itineraries/check_availability.json",
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify(availabilityRequest(body)),
+        },
+      );
+
+      return NextResponse.json({
+        success: true,
+        result: sanitizedAvailability(data),
       });
     }
 
