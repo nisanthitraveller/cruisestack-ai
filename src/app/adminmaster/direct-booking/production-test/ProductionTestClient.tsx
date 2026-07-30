@@ -3,7 +3,12 @@
 import { useState } from "react";
 
 type Integration = { id: number; label: string };
-type TestType = "authentication" | "wallet" | "availability" | "pricing";
+type TestType =
+  | "authentication"
+  | "wallet"
+  | "offers"
+  | "availability"
+  | "pricing";
 
 type PriceDetail = {
   type?: string;
@@ -148,6 +153,33 @@ function FareSummary({ pricing }: { pricing: PricingResponse }) {
   );
 }
 
+function offerOptions(result: Record<string, unknown>) {
+  if (!Array.isArray(result.data)) return [];
+
+  return result.data.flatMap((entry) => {
+    if (!entry || typeof entry !== "object") return [];
+    const roomType = String(
+      (entry as Record<string, unknown>).room_type || "",
+    );
+    const offers = (entry as Record<string, unknown>).offers;
+    if (!Array.isArray(offers)) return [];
+
+    return offers.flatMap((offer) => {
+      if (!offer || typeof offer !== "object") return [];
+      const offerRecord = offer as Record<string, unknown>;
+      const offerId = String(offerRecord.offer_id || "");
+      if (!offerId) return [];
+      return [
+        {
+          offerId,
+          roomType,
+          description: String(offerRecord.description || "Offer"),
+        },
+      ];
+    });
+  });
+}
+
 export default function ProductionTestClient({
   integrations,
 }: {
@@ -245,6 +277,9 @@ export default function ProductionTestClient({
       </div>
 
       <div className="direct-booking-test-actions">
+        <button disabled={Boolean(busy) || !form.itinerary} onClick={() => run("offers")} type="button">
+          {busy === "offers" ? "Loading..." : "Get offers"}
+        </button>
         <button disabled={Boolean(busy) || !form.itinerary} onClick={() => run("availability")} type="button">
           {busy === "availability" ? "Checking..." : "Check availability"}
         </button>
@@ -258,6 +293,25 @@ export default function ProductionTestClient({
         <>
           <div className="direct-booking-test-result">
             <strong>Production response</strong>
+            {offerOptions(result).length ? (
+              <div className="production-offer-options">
+                {offerOptions(result).map((offer) => (
+                  <button
+                    key={`${offer.roomType}-${offer.offerId}`}
+                    onClick={() =>
+                      setForm((current) => ({
+                        ...current,
+                        roomType: offer.roomType || current.roomType,
+                        offerId: offer.offerId,
+                      }))
+                    }
+                    type="button"
+                  >
+                    Use {offer.roomType || "offer"}: {offer.description}
+                  </button>
+                ))}
+              </div>
+            ) : null}
             <pre>{JSON.stringify(result, null, 2)}</pre>
           </div>
           {"gross_price" in result && "rooms" in result ? (

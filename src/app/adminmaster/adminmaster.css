@@ -901,6 +901,25 @@
   margin-top: 6px;
 }
 
+.production-offer-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.production-offer-options button {
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 7px;
+  color: #bfdbfe;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 7px 9px;
+}
+
 .direct-booking-test-result > strong {
   color: #86efac;
   display: block;
