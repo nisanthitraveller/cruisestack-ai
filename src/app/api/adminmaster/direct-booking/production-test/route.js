@@ -195,6 +195,24 @@ export async function POST(request) {
       });
     }
 
+    if (testType === "itinerary") {
+      const itinerary = clean(body.itinerary);
+      if (!itinerary) apiError("Itinerary ID is required");
+
+      const params = new URLSearchParams({ itinerary });
+      const data = await providerFetch(
+        `/itineraries/show.json?${params.toString()}`,
+        {
+          method: "GET",
+          headers,
+        },
+      );
+      return NextResponse.json({
+        success: true,
+        result: data,
+      });
+    }
+
     if (testType === "offers") {
       const itinerary = clean(body.itinerary);
       if (!itinerary) apiError("Itinerary ID is required");

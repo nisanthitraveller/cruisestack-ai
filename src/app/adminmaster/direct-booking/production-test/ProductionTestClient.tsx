@@ -6,6 +6,7 @@ type Integration = { id: number; label: string };
 type TestType =
   | "authentication"
   | "wallet"
+  | "itinerary"
   | "offers"
   | "availability"
   | "pricing";
@@ -305,6 +306,9 @@ export default function ProductionTestClient({
       </div>
 
       <div className="direct-booking-test-actions">
+        <button disabled={Boolean(busy) || !form.itinerary} onClick={() => run("itinerary")} type="button">
+          {busy === "itinerary" ? "Loading..." : "Get itinerary details"}
+        </button>
         <button disabled={Boolean(busy) || !form.itinerary} onClick={() => run("offers")} type="button">
           {busy === "offers" ? "Loading..." : "Get offers"}
         </button>
@@ -325,12 +329,31 @@ export default function ProductionTestClient({
                 ? "Production authentication response"
                 : resultType === "wallet"
                   ? "Production wallet response"
+                  : resultType === "itinerary"
+                    ? "Production itinerary details"
                   : resultType === "offers"
                     ? "Production offers response"
                     : resultType === "availability"
                       ? "Production availability response"
                       : "Production pricing response"}
             </strong>
+            {resultType === "itinerary" &&
+            result.special_fare_available === true ? (
+              <div className="production-special-fare">
+                <span>Special fare is available for this itinerary.</span>
+                <button
+                  onClick={() =>
+                    setForm((current) => ({
+                      ...current,
+                      priceType: "special_pricing",
+                    }))
+                  }
+                  type="button"
+                >
+                  Use special pricing
+                </button>
+              </div>
+            ) : null}
             {offerOptions(result).length ? (
               <div className="production-offer-options">
                 {offerOptions(result).map((offer) => (

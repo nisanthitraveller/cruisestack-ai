@@ -925,6 +925,33 @@
   padding: 7px 9px;
 }
 
+.production-special-fare {
+  align-items: center;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  color: #166534;
+  display: flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 9px 10px;
+}
+
+.production-special-fare button {
+  background: #047857;
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 7px 9px;
+}
+
 .direct-booking-test-result > strong {
   color: #86efac;
   display: block;
