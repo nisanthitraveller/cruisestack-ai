@@ -5,6 +5,149 @@ import { useState } from "react";
 type Integration = { id: number; label: string };
 type TestType = "authentication" | "wallet" | "availability" | "pricing";
 
+type PriceDetail = {
+  type?: string;
+  fare?: number;
+};
+
+type PricingRoom = {
+  price_details?: PriceDetail[];
+};
+
+type PricingResponse = {
+  available?: boolean;
+  base_price?: number;
+  port_charges?: number;
+  gratuity?: number;
+  fuel_surcharge?: number;
+  gross_tax?: number;
+  gross_price?: number;
+  rooms?: PricingRoom[];
+};
+
+const reschedulingPolicy = [
+  "More than 61 days: INR 5,000 per stateroom plus any fare difference.",
+  "46 to 60 days: INR 10,000 per stateroom plus any fare difference.",
+  "31 to 45 days: INR 15,000 per stateroom plus any fare difference.",
+  "0 to 30 days: Rescheduling is not permitted and will be treated as a cancellation.",
+  "Alternative applicable schedule — 46 days or more: INR 5,000 per stateroom plus any fare difference.",
+  "Alternative applicable schedule — 31 to 45 days: INR 7,000 per stateroom plus any fare difference.",
+  "Alternative applicable schedule — 16 to 30 days: INR 10,000 per stateroom plus any fare difference.",
+  "Alternative applicable schedule — 0 to 15 days: Rescheduling is not permitted and will be treated as a cancellation.",
+  "The policy applies to rescheduling the complete booking. Partial-booking rescheduling is not permitted.",
+  "Any fare difference, including cabin fares, service charges, levies, taxes and fuel surcharge, is payable by the customer.",
+  "No refund is provided when changing from a higher-priced cabin or sailing to a lower-priced option.",
+  "For a documented medical emergency, rescheduling fees may be waived; fare differences remain applicable.",
+  "Government taxes remain applicable.",
+  "GST applies to all payable rescheduling amounts.",
+  "The rescheduled itinerary must commence within six months of the original departure date.",
+  "If travel does not commence within six months, it will be treated as a no-show and only eligible taxes will be refunded.",
+  "Free rescheduling may be allowed following the death of an immediate family member or severe illness when valid supporting documents are submitted; applicable fare differences still apply.",
+  "Cancellation after rescheduling is calculated using the original sailing date.",
+  "Rescheduling fees are non-refundable.",
+];
+
+const cancellationPolicy = [
+  "46 days or more: Full refund.",
+  "31 to 45 days: 50% of the cabin fare and 100% of the fuel surcharge.",
+  "0 to 30 days: 100% of the cabin fare and fuel surcharge.",
+  "No-show: 100% of the cabin fare and fuel surcharge.",
+  "Cancellation is permitted only for the entire stateroom. Partial passenger cancellation is not allowed.",
+  "Service charges and levies are refundable, including in a no-show case.",
+  "GST on the refunded amount will be returned.",
+  "For death or major illness, a full-stateroom refund may be provided after submission and validation of supporting proof.",
+  "Refunds will be processed within 31 working days from the cancellation date.",
+  "Modification fees and rescheduling fees are non-refundable.",
+  "For a partially paid booking, failure to pay the balance by the due date may cause automatic cancellation and forfeiture of the paid amount.",
+  "The complete fuel surcharge will be forfeited across all categories where the cancellation policy applies.",
+  "Exclusive Value Fare and B.O.G.O. offers may not permit refund, rescheduling or no-show benefits.",
+  "Offer benefits do not apply to modifications made after the original booking.",
+  "This policy applies only after full payment has been received.",
+];
+
+function inr(value: unknown) {
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) return "—";
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+function FareSummary({ pricing }: { pricing: PricingResponse }) {
+  const passengers = (pricing.rooms || []).flatMap(
+    (room) => room.price_details || [],
+  );
+  const passengerCounts = new Map<string, number>();
+
+  return (
+    <section className="production-fare-summary">
+      <div className="production-fare-heading">
+        <div>
+          <p className="adminmaster-kicker">Customer-facing calculation</p>
+          <h2>Fare Summary</h2>
+        </div>
+        <span>{pricing.available ? "Available" : "Unavailable"}</span>
+      </div>
+
+      <div className="production-fare-lines">
+        <div className="production-fare-group">
+          <div className="production-fare-total">
+            <strong>Cruise Fare</strong>
+            <strong>{inr(pricing.base_price)}</strong>
+          </div>
+          {passengers.map((passenger, index) => {
+            const type = String(passenger.type || "Passenger").toUpperCase();
+            const count = (passengerCounts.get(type) || 0) + 1;
+            passengerCounts.set(type, count);
+            const label =
+              type === "ADULT"
+                ? "Adult"
+                : type === "CHILD"
+                  ? "Child"
+                  : type === "INFANT"
+                    ? "Infant"
+                    : "Passenger";
+
+            return (
+              <div className="production-fare-passenger" key={`${type}-${index}`}>
+                <span>
+                  {label} {count}
+                </span>
+                <span>{inr(passenger.fare)}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div><span>Port Charges</span><strong>{inr(pricing.port_charges)}</strong></div>
+        <div><span>Gratuity</span><strong>{inr(pricing.gratuity)}</strong></div>
+        <div><span>Fuel Surcharge</span><strong>{inr(pricing.fuel_surcharge)}</strong></div>
+        <div><span>GST (18%)</span><strong>{inr(pricing.gross_tax)}</strong></div>
+        <div className="production-fare-grand-total">
+          <span>Gross Total</span>
+          <strong>{inr(pricing.gross_price)}</strong>
+        </div>
+      </div>
+
+      <details className="production-policy">
+        <summary>Rescheduling policy</summary>
+        <ul>
+          {reschedulingPolicy.map((policy) => <li key={policy}>{policy}</li>)}
+        </ul>
+      </details>
+
+      <details className="production-policy">
+        <summary>Cancellation policy</summary>
+        <ul>
+          {cancellationPolicy.map((policy) => <li key={policy}>{policy}</li>)}
+        </ul>
+      </details>
+    </section>
+  );
+}
+
 export default function ProductionTestClient({
   integrations,
 }: {
@@ -112,10 +255,15 @@ export default function ProductionTestClient({
 
       {error ? <p className="email-config-message error">{error}</p> : null}
       {result ? (
-        <div className="direct-booking-test-result">
-          <strong>Production response</strong>
-          <pre>{JSON.stringify(result, null, 2)}</pre>
-        </div>
+        <>
+          <div className="direct-booking-test-result">
+            <strong>Production response</strong>
+            <pre>{JSON.stringify(result, null, 2)}</pre>
+          </div>
+          {"gross_price" in result && "rooms" in result ? (
+            <FareSummary pricing={result as PricingResponse} />
+          ) : null}
+        </>
       ) : null}
     </div>
   );
