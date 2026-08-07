@@ -19,7 +19,7 @@ const plans = [
     buyButtonId: "buy_btn_1Tc2w8EmqvBXj5NHLYhkv3Sd",
     stripePriceId: "price_1TXERSEmqvBXj5NHd0ImLbQk",
     features: {
-      "Standard agency commissions": "Yes",
+      "Best agency commissions": "Yes",
       "Online-direct payments": "Yes",
       "Cabin blocking": "Yes",
       "PDF quotations": "Yes",
@@ -102,7 +102,7 @@ const plans = [
     stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
     
     features: {
-      "Confidential agency commissions": "Yes",
+      "Best agency commissions": "Yes",
       "Online-direct payments": "Yes",
       "Cabin blocking": "Yes",
       "PDF quotations": "Yes",
