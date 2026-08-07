@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Image from "next/image";
-import agentImg from "../../assets/pana.svg";
+import agentImg from "../../assets/Company.webp";
 
 type DashboardActionsProps = {
   b2bUrl: string;

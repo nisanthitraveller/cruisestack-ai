@@ -3,11 +3,8 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import '../style.css'; 
-import logoMain from "../../assets/logo.png";
-import logoft from "../../assets/logo-white.png";
-import signImg from "../../assets/pana-l.svg";
+import signImg from "../../assets/Company.webp";
 import Image from 'next/image';
-import Link from "next/link";
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
 

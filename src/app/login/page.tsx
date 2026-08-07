@@ -2,7 +2,7 @@
 import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import '../style.css'; 
-import loginImg from "../../assets/pana.svg";
+import loginImg from "../../assets/Company.webp";
 import Image from 'next/image';
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";

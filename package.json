@@ -9,8 +9,10 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "mysql2": "^3.22.3",
     "next": "latest",
+    "nodemailer": "^9.0.4",
     "react": "latest",
     "react-dom": "latest",
     "stripe": "^22.1.1"
