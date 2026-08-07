@@ -41,14 +41,13 @@ const plans = [
       "AI voicebot": "yes",
       //"One-time integration: $1000": "Yes",
       //"Monthly fee: $499": "Yes",
-      "$5/booking": "Yes",
       "400 trip summaries/month": "Yes",
+      "20 bookings/month": "Yes",
       //"$0.04/API scan fees": "Yes",
     },
     pricingdetails: {
-      
       "Monthly fee": "$499/month",
-      "Upto bookings": "20 bookings/month",
+      "$5/booking": "$5/booking",
     }
   },
 
@@ -83,14 +82,16 @@ const plans = [
       "AI voicebot": "yes",
       //"One-time integration: $2000": "Yes",
      // "Monthly fee: $999": "Yes",
-      "$4/booking": "Yes",
+      
       "2000 trip summaries/month": "Yes",
+       "100 bookings/month": "yes",
      // "$0.03/API scan fees": "Yes",
     },
      pricingdetails: {
      
       "Monthly fee": "$999/month",
-      "Upto bookings": "100 bookings/month",
+     
+      "$4/booking": "$4/booking",
     }
   },
   {
@@ -123,14 +124,16 @@ const plans = [
       "AI voicebot": "yes",
       // "One-time integration: $3000": "Yes",
       //"Monthly fee: $2199": "Yes",
-      "$3/booking": "yes",
+     
       "5000 trip summaries/month": "Yes",
+      "250 bookings/month": "Yes",
       //"$0.02/API scan fees": "Yes",
     },
      pricingdetails: {
       
       "Monthly fee": "$1999/month",
-      "Upto bookings": "250 bookings/month",
+       "$3/booking": "$3/booking",
+      
       
     }
   },
