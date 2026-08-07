@@ -28,25 +28,27 @@ const plans = [
       "Backend ops system": "Yes",
       "Iframe integration": "Yes",
       "B2C integration": "Yes",
-      "B2B integration": "No",
-      "User login integration": "No",
-      "Payment gateway integration": "No",
-      "Brand theme customisation": "No",
-      "API integration": "No",
-      "Sales support": "No",
-      "Marketing support": "No",
-      "Cruise line & GSA/PSA connects": "No",
-      "AI bot (on web and WhatsApp)": "No",
+      "B2B integration": "yes",
+      "User login integration": "yes",
+      "Payment gateway integration": "yes",
+      "Brand theme customisation": "yes",
+      "API integration": "yes",
+      "Sales support": "yes",
+      "Marketing support": "yes",
+      "Cruise line & GSA/PSA connects": "yes",
+      "AI bot (on web and WhatsApp)": "yes",
+      "AI chatbot": "yes",
+      "AI voicebot": "yes",
       //"One-time integration: $1000": "Yes",
       //"Monthly fee: $499": "Yes",
       "$5/booking": "Yes",
-      "Upto 1000 trip summaries": "Yes",
+      "400 trip summaries/month": "Yes",
       //"$0.04/API scan fees": "Yes",
     },
     pricingdetails: {
       
       "Monthly fee": "$499/month",
-      "Upto bookings": "up to 50 bookings",
+      "Upto bookings": "20 bookings/month",
     }
   },
 
@@ -72,21 +74,23 @@ const plans = [
       "User login integration": "Yes",
       "Payment gateway integration": "Yes",
       "Brand theme customisation": "Yes",
-      "API integration": "No",
-      "Sales support": "No",
-      "Marketing support": "No",
-      "Cruise line & GSA/PSA connects": "No",
-      "AI bot (on web and WhatsApp)": "No",
+      "API integration": "yes",
+      "Sales support": "yes",
+      "Marketing support": "yes",
+      "Cruise line & GSA/PSA connects": "yes",
+      "AI bot (on web and WhatsApp)": " Yes",
+       "AI chatbot": "yes",
+      "AI voicebot": "yes",
       //"One-time integration: $2000": "Yes",
      // "Monthly fee: $999": "Yes",
       "$4/booking": "Yes",
-      "Upto 2000 trip summaries": "Yes",
+      "2000 trip summaries/month": "Yes",
      // "$0.03/API scan fees": "Yes",
     },
      pricingdetails: {
      
       "Monthly fee": "$999/month",
-      "Upto bookings": "up to 200 bookings",
+      "Upto bookings": "100 bookings/month",
     }
   },
   {
@@ -115,16 +119,18 @@ const plans = [
       "Marketing support": "Yes",
       "Cruise line & GSA/PSA connects": "Yes",
       "AI bot (on web and WhatsApp)": "Yes",
+       "AI chatbot": "yes",
+      "AI voicebot": "yes",
       // "One-time integration: $3000": "Yes",
       //"Monthly fee: $2199": "Yes",
-      "$3/booking": "No",
-      "Upto 5000 trip summaries": "Yes",
+      "$3/booking": "yes",
+      "5000 trip summaries/month": "Yes",
       //"$0.02/API scan fees": "Yes",
     },
      pricingdetails: {
       
-      "Monthly fee": "Write to us",
-      "Upto bookings": "",
+      "Monthly fee": "$1999/month",
+      "Upto bookings": "250 bookings/month",
       
     }
   },
@@ -494,10 +500,10 @@ function PricingContent() {
                       style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', opacity: available === "No" ? 0.35 : 1 }}
                     >
                       <span className="feature-status" style={{ fontWeight: 'bold', color: available === "Yes" ? "#22c55e" : "#000" }}>
-                        {available === "Yes" ? "" : "-"}
+                        {available === "Yes" ? "" : ""}
                       </span>
                       <span className="feature-name" style={{ fontSize: '1rem', display: available === "No" ? "none" : "block" }}>
-                        {boldFeatures.has(feature) ? <strong>{feature}</strong> : feature}
+                        {boldFeatures.has(feature) ? <span>{feature}</span> : feature}
                       </span>
                     </div>
                   ))}
