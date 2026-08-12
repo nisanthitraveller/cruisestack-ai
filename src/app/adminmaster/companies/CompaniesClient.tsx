@@ -41,6 +41,26 @@ type CompanyForm = {
   support_email: string;
 };
 
+type AgentRow = {
+  commission_count: number | string;
+  email: string;
+  id: number;
+  mobile: string | null;
+  name: string;
+  status: number;
+  type: string;
+  user_id: string;
+};
+
+const emptyAgentForm = {
+  email: "",
+  mobile: "",
+  name: "",
+  password: "",
+  source_agent_id: "",
+  user_id: "",
+};
+
 function formFromCompany(company: CompanyRow): CompanyForm {
   return {
     chatbot: Number(company.chatbot) === 1 ? "1" : "0",
@@ -117,6 +137,10 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState("");
+  const [agentCompany, setAgentCompany] = useState<CompanyRow | null>(null);
+  const [agents, setAgents] = useState<AgentRow[]>([]);
+  const [agentForm, setAgentForm] = useState(emptyAgentForm);
+  const [agentError, setAgentError] = useState("");
 
   useEffect(() => {
     return () => {
@@ -279,6 +303,73 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
     }
   }
 
+  async function openAgents(company: CompanyRow) {
+    setAgentCompany(company);
+    setAgents([]);
+    setAgentForm(emptyAgentForm);
+    setAgentError("");
+    setBusyAction(`agents-${company.id}`);
+
+    try {
+      const result = await postCompanyAction({
+        action: "list_agents",
+        companyId: company.id,
+      });
+      const loadedAgents = Array.isArray(result?.agents) ? result.agents : [];
+      setAgents(loadedAgents);
+      setAgentForm((current) => ({
+        ...current,
+        source_agent_id: loadedAgents[0]?.id
+          ? String(loadedAgents[0].id)
+          : "",
+      }));
+    } catch (error) {
+      setAgentError(
+        error instanceof Error ? error.message : "Unable to load agents",
+      );
+    } finally {
+      setBusyAction(null);
+    }
+  }
+
+  function closeAgents() {
+    if (busyAction) return;
+    setAgentCompany(null);
+    setAgents([]);
+    setAgentForm(emptyAgentForm);
+    setAgentError("");
+  }
+
+  async function addAgent(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!agentCompany) return;
+    setBusyAction(`add-agent-${agentCompany.id}`);
+    setAgentError("");
+
+    try {
+      await postCompanyAction({
+        action: "add_agent",
+        companyId: agentCompany.id,
+        ...agentForm,
+      });
+      const result = await postCompanyAction({
+        action: "list_agents",
+        companyId: agentCompany.id,
+      });
+      setAgents(Array.isArray(result?.agents) ? result.agents : []);
+      setAgentForm((current) => ({
+        ...emptyAgentForm,
+        source_agent_id: current.source_agent_id,
+      }));
+    } catch (error) {
+      setAgentError(
+        error instanceof Error ? error.message : "Unable to add agent",
+      );
+    } finally {
+      setBusyAction(null);
+    }
+  }
+
   return (
     <section className="adminmaster-panel companies-panel">
       <div className="adminmaster-panel-header companies-toolbar">
@@ -389,6 +480,14 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                     </td>
                     <td>
                       <div className="companies-row-actions">
+                        <button
+                          className="adminmaster-button update"
+                          disabled={isBusy}
+                          onClick={() => openAgents(company)}
+                          type="button"
+                        >
+                          Agents
+                        </button>
                         <button
                           aria-label={`Edit ${company.company_name}`}
                           className="companies-icon-button edit"
@@ -595,6 +694,86 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                 </button>
                 <button className="adminmaster-button update" disabled={Boolean(busyAction)} type="submit">
                   {busyAction?.startsWith("update-") ? "Saving..." : "Save changes"}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      ) : null}
+
+      {agentCompany ? (
+        <div className="companies-modal-backdrop" onMouseDown={closeAgents} role="presentation">
+          <section
+            aria-labelledby="company-agents-title"
+            aria-modal="true"
+            className="companies-modal"
+            onMouseDown={(event) => event.stopPropagation()}
+            role="dialog"
+          >
+            <div className="companies-modal-header">
+              <div>
+                <p className="adminmaster-kicker">Company agents</p>
+                <h2 id="company-agents-title">Agents — {agentCompany.company_name}</h2>
+                <span>Tenant table: {agentCompany.slug}_agent</span>
+              </div>
+              <button aria-label="Close agents" disabled={Boolean(busyAction)} onClick={closeAgents} type="button">×</button>
+            </div>
+
+            {agentError ? <div className="adminmaster-login-error">{agentError}</div> : null}
+
+            <div className="adminmaster-table-wrap">
+              <table className="adminmaster-table">
+                <thead>
+                  <tr><th>Name</th><th>Login</th><th>Type</th><th>Commissions</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                  {agents.map((agent) => (
+                    <tr key={agent.id}>
+                      <td><strong>{agent.name}</strong><br /><span>{agent.mobile || "No mobile"}</span></td>
+                      <td>{agent.email}<br /><span>{agent.user_id}</span></td>
+                      <td>{agent.type}</td>
+                      <td>{Number(agent.commission_count || 0)}</td>
+                      <td>{Number(agent.status) === 1 ? "Active" : "Inactive"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <form className="companies-edit-form" onSubmit={addAgent}>
+              <label>
+                <span>Agent name</span>
+                <input required maxLength={150} value={agentForm.name} onChange={(event) => setAgentForm((current) => ({ ...current, name: event.target.value }))} />
+              </label>
+              <label>
+                <span>Email</span>
+                <input required type="email" value={agentForm.email} onChange={(event) => setAgentForm((current) => ({ ...current, email: event.target.value }))} />
+              </label>
+              <label>
+                <span>User ID</span>
+                <input required maxLength={100} value={agentForm.user_id} onChange={(event) => setAgentForm((current) => ({ ...current, user_id: event.target.value }))} />
+              </label>
+              <label>
+                <span>Mobile</span>
+                <input maxLength={30} value={agentForm.mobile} onChange={(event) => setAgentForm((current) => ({ ...current, mobile: event.target.value }))} />
+              </label>
+              <label>
+                <span>Temporary password</span>
+                <input required minLength={8} type="password" value={agentForm.password} onChange={(event) => setAgentForm((current) => ({ ...current, password: event.target.value }))} />
+              </label>
+              <label>
+                <span>Copy commission from</span>
+                <select required value={agentForm.source_agent_id} onChange={(event) => setAgentForm((current) => ({ ...current, source_agent_id: event.target.value }))}>
+                  <option value="">Select an existing agent</option>
+                  {agents.map((agent) => (
+                    <option key={agent.id} value={agent.id}>{agent.name} — {agent.email} ({Number(agent.commission_count || 0)} rows)</option>
+                  ))}
+                </select>
+              </label>
+              <div className="companies-modal-actions">
+                <button className="adminmaster-refresh" disabled={Boolean(busyAction)} onClick={closeAgents} type="button">Close</button>
+                <button className="adminmaster-button update" disabled={Boolean(busyAction) || agents.length === 0} type="submit">
+                  {busyAction?.startsWith("add-agent-") ? "Adding agent..." : "Add agent and copy commission"}
                 </button>
               </div>
             </form>

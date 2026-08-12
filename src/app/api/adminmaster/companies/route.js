@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db_mysql";
 import { getAdminMasterFromSession } from "@/lib/adminMasterAuth";
+import bcrypt from "bcryptjs";
 
-const allowedActions = new Set(["delete", "set_status", "update"]);
+const allowedActions = new Set([
+  "add_agent",
+  "delete",
+  "list_agents",
+  "set_status",
+  "update",
+]);
 const allowedCompanyTypes = new Set(["B2B", "B2C"]);
 const allowedPlans = new Set(["Beginner", "Professional", "Enterprise"]);
 const reservedWorkspacePrefixes = new Set([
@@ -194,6 +201,147 @@ async function findCompany(connection, companyId) {
   return rows[0] || null;
 }
 
+async function getCompanyAgents(connection, company) {
+  const tablePrefix = tableSafePrefix(company.slug);
+  const agentTable = `${tablePrefix}_agent`;
+  const commissionTable = `${tablePrefix}_agent_commission`;
+
+  if (
+    !(await tableExists(connection, agentTable)) ||
+    !(await tableExists(connection, commissionTable))
+  ) {
+    throw httpError("Agent tables are not available for this company", 409);
+  }
+
+  const [rows] = await connection.query(
+    `
+    SELECT
+      a.id,
+      a.name,
+      a.email,
+      a.mobile,
+      a.type,
+      a.user_id,
+      a.status,
+      COUNT(ac.id) AS commission_count
+    FROM ${quoteIdentifier(agentTable)} a
+    LEFT JOIN ${quoteIdentifier(commissionTable)} ac
+      ON ac.tour_agent_id = a.id
+     AND ac.company_id = a.company_id
+    WHERE a.company_id = ?
+    GROUP BY
+      a.id, a.name, a.email, a.mobile, a.type, a.user_id, a.status
+    ORDER BY a.type = 'Admin' DESC, a.id ASC
+    `,
+    [company.id],
+  );
+
+  return rows;
+}
+
+async function addCompanyAgent(connection, company, body) {
+  const tablePrefix = tableSafePrefix(company.slug);
+  const agentTable = `${tablePrefix}_agent`;
+  const commissionTable = `${tablePrefix}_agent_commission`;
+  const name = String(body.name || "").trim();
+  const email = String(body.email || "").trim().toLowerCase();
+  const mobile = String(body.mobile || "").trim();
+  const userId = String(body.user_id || "").trim().toLowerCase();
+  const password = String(body.password || "");
+  const sourceAgentId = Number(body.source_agent_id || 0);
+
+  if (!name || name.length > 150) {
+    throw httpError("Agent name is required and must be 150 characters or fewer");
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw httpError("Enter a valid agent email address");
+  }
+  if (!userId || userId.length > 100) {
+    throw httpError("User ID is required and must be 100 characters or fewer");
+  }
+  if (password.length < 8) {
+    throw httpError("Password must be at least 8 characters");
+  }
+  if (!sourceAgentId) {
+    throw httpError("Select an existing agent to copy commission details from");
+  }
+  if (
+    !(await tableExists(connection, agentTable)) ||
+    !(await tableExists(connection, commissionTable))
+  ) {
+    throw httpError("Agent tables are not available for this company", 409);
+  }
+
+  const [sourceAgents] = await connection.query(
+    `SELECT id
+     FROM ${quoteIdentifier(agentTable)}
+     WHERE id = ? AND company_id = ?
+     LIMIT 1`,
+    [sourceAgentId, company.id],
+  );
+  if (!sourceAgents[0]) {
+    throw httpError("The selected commission source agent was not found", 404);
+  }
+
+  const [sourceCommissionCount] = await connection.query(
+    `SELECT COUNT(*) AS total
+     FROM ${quoteIdentifier(commissionTable)}
+     WHERE tour_agent_id = ? AND company_id = ?`,
+    [sourceAgentId, company.id],
+  );
+  if (Number(sourceCommissionCount[0]?.total || 0) === 0) {
+    throw httpError("The selected agent has no commission details to copy", 409);
+  }
+
+  const [duplicates] = await connection.query(
+    `SELECT id
+     FROM ${quoteIdentifier(agentTable)}
+     WHERE company_id = ? AND (LOWER(email) = ? OR LOWER(user_id) = ?)
+     LIMIT 1`,
+    [company.id, email, userId],
+  );
+  if (duplicates[0]) {
+    throw httpError("An agent with this email or user ID already exists", 409);
+  }
+
+  const [agentResult] = await connection.query(
+    `INSERT INTO ${quoteIdentifier(agentTable)}
+      (name, email, password, mobile, company_name, address,
+       primary_contact_name, gst_number, bank_name, bank_account_number,
+       bank_account_name, ifsc_code, branch_name, logo, status, type, user_id,
+       agency_code, company_id)
+     VALUES (?, ?, ?, ?, ?, NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL,
+             NULL, 1, 'Agent', ?, ?, ?)`,
+    [
+      name,
+      email,
+      await bcrypt.hash(password, 10),
+      mobile || null,
+      company.company_name,
+      name,
+      userId,
+      company.slug,
+      company.id,
+    ],
+  );
+
+  const [commissionResult] = await connection.query(
+    `INSERT INTO ${quoteIdentifier(commissionTable)}
+      (tour_agent_id, cruiseline_id, commission, discount, markup,
+       gmc_discount, created_at, updated_at, status, company_id)
+     SELECT ?, cruiseline_id, commission, discount, markup, gmc_discount,
+            NOW(), NOW(), status, ?
+     FROM ${quoteIdentifier(commissionTable)}
+     WHERE tour_agent_id = ? AND company_id = ?`,
+    [agentResult.insertId, company.id, sourceAgentId, company.id],
+  );
+
+  return {
+    agentId: agentResult.insertId,
+    commissionsCopied: commissionResult.affectedRows,
+  };
+}
+
 async function permanentlyDeleteCompany(connection, company, confirmation) {
   if (confirmation !== company.company_name) {
     throw httpError("Company-name confirmation did not match", 400);
@@ -279,6 +427,20 @@ export async function POST(request) {
       );
     }
 
+    if (action === "list_agents") {
+      return NextResponse.json({
+        success: true,
+        agents: await getCompanyAgents(connection, company),
+      });
+    }
+
+    if (action === "add_agent") {
+      await connection.beginTransaction();
+      const result = await addCompanyAgent(connection, company, body);
+      await connection.commit();
+      return NextResponse.json({ success: true, ...result });
+    }
+
     if (action === "update") {
       const update = normalizeCompanyUpdate(body);
       validateCompanyUpdate(update);
@@ -346,6 +508,11 @@ export async function POST(request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch {}
+    }
     console.error("Adminmaster company action error:", error);
 
     return NextResponse.json(
