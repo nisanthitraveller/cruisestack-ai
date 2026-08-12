@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import pool from "@/lib/db_mysql";
 import {
   ADMINMASTER_SESSION_COOKIE,
   createAdminMasterSessionCookie,
@@ -8,8 +7,6 @@ import {
 } from "@/lib/adminMasterAuth";
 
 export async function POST(request) {
-  let connection;
-
   try {
     const body = await request.json();
     const identifier = body.identifier?.trim();
@@ -22,13 +19,7 @@ export async function POST(request) {
       );
     }
 
-    connection = await pool.getConnection();
-
-    const admin = await findAdminMasterByCredentials(
-      connection,
-      identifier,
-      password,
-    );
+    const admin = await findAdminMasterByCredentials(identifier, password);
 
     if (!admin) {
       return NextResponse.json(
@@ -55,7 +46,5 @@ export async function POST(request) {
       { message: error.message || "Unable to log in" },
       { status: 500 },
     );
-  } finally {
-    if (connection) connection.release();
   }
 }
