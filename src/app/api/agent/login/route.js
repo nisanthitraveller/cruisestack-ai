@@ -10,7 +10,7 @@ import {
 } from "@/lib/agentAuth";
 
 function whitelabelPath(company, agent, token) {
-  const agentSlug = String(agent?.agency_code || company.slug || "");
+  const agentSlug = String(company.slug || "");
   const params = new URLSearchParams({
     token: String(token || ""),
     next: "admin/dashboard",
@@ -31,7 +31,7 @@ export async function POST(request) {
     if (!identifier || !password) {
       return NextResponse.json(
         { message: "Email/user ID and password are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(request) {
     } else {
       const companies = await findCompaniesByAgentIdentifier(
         connection,
-        identifier
+        identifier,
       );
 
       if (companies.length > 1) {
@@ -53,7 +53,7 @@ export async function POST(request) {
             message:
               "Multiple workspaces found for this user. Please contact support.",
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
 
@@ -63,7 +63,7 @@ export async function POST(request) {
     if (!company) {
       return NextResponse.json(
         { message: "Invalid agent credentials" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -71,20 +71,20 @@ export async function POST(request) {
       connection,
       company,
       identifier,
-      password
+      password,
     );
 
     if (!agent) {
       return NextResponse.json(
         { message: "Invalid agent credentials" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const agentSession = await createAgentSessionRecord(
       connection,
       agent,
-      company
+      company,
     );
 
     const response = NextResponse.json({
@@ -94,17 +94,14 @@ export async function POST(request) {
     response.cookies.set(
       AGENT_SESSION_COOKIE,
       agentSession.cookieValue,
-      getAgentCookieOptions()
+      getAgentCookieOptions(),
     );
 
     return response;
   } catch (error) {
     console.error("Agent Login Error:", error);
 
-    return NextResponse.json(
-      { message: "Unable to log in" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Unable to log in" }, { status: 500 });
   } finally {
     if (connection) connection.release();
   }
