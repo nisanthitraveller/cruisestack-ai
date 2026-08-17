@@ -51,7 +51,21 @@ async function logWebhookEvent(connection, event) {
     return { duplicate: false, logId: result.insertId };
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
-      return { duplicate: true, logId: null };
+      const [existing] = await connection.query(
+        `
+        SELECT id, processing_status
+        FROM stripe_webhook_events
+        WHERE stripe_event_id = ?
+        LIMIT 1
+        `,
+        [event.id]
+      );
+
+      return {
+        duplicate: true,
+        retryable: existing[0]?.processing_status === "Failed",
+        logId: existing[0]?.id || null,
+      };
     }
 
     throw error;
@@ -110,6 +124,23 @@ async function findCompanyBySlug(connection, slug) {
   return companies[0] || null;
 }
 
+async function findCompanyByEmail(connection, email) {
+  if (!email) return null;
+
+  const [companies] = await connection.query(
+    `
+    SELECT id, slug, plan_type
+    FROM companies
+    WHERE LOWER(support_email) = LOWER(?)
+    LIMIT 2
+    `,
+    [email]
+  );
+
+  // Never guess when an email is shared by more than one tenant.
+  return companies.length === 1 ? companies[0] : null;
+}
+
 async function findCompanyBySubscription(connection, stripeSubscriptionId) {
   if (!stripeSubscriptionId) return null;
 
@@ -140,10 +171,26 @@ async function findCompanyForStripeSubscription(connection, stripeSubscriptionId
     subscription: stripeSubscriptionId,
     limit: 1,
   });
+  const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
 
   const checkoutSession = sessions.data[0];
+  const companyBySlug = await findCompanyBySlug(
+    connection,
+    checkoutSession?.client_reference_id || subscription.metadata?.company_slug
+  );
 
-  return findCompanyBySlug(connection, checkoutSession?.client_reference_id);
+  if (companyBySlug) return companyBySlug;
+
+  const customer =
+    typeof subscription.customer === "string"
+      ? await stripe.customers.retrieve(subscription.customer)
+      : subscription.customer;
+
+  return findCompanyByEmail(
+    connection,
+    checkoutSession?.customer_details?.email ||
+      (!customer?.deleted ? customer?.email : null)
+  );
 }
 
 async function findPlanByPrice(connection, stripePriceId) {
@@ -358,17 +405,21 @@ async function copyMasterCommissionToCompany(connection, company, planId) {
 }
 
 async function handleCheckoutCompleted(connection, session) {
-  const company = await findCompanyBySlug(connection, session.client_reference_id);
+  const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+    expand: ["line_items.data.price.product", "subscription"],
+  });
+  const company =
+    (await findCompanyBySlug(
+      connection,
+      session.client_reference_id || fullSession.metadata?.company_slug
+    )) ||
+    (await findCompanyByEmail(connection, fullSession.customer_details?.email));
 
   if (!company) {
     throw new Error(
       `Company not found for checkout client_reference_id: ${session.client_reference_id || "empty"}`
     );
   }
-
-  const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
-    expand: ["line_items.data.price.product", "subscription"],
-  });
 
   const lineItem = fullSession.line_items?.data?.[0];
   const price = lineItem?.price || null;
@@ -604,7 +655,7 @@ export default async function handler(req, res) {
   try {
     const webhookLog = await ensureWebhookEventLogged(event);
 
-    if (webhookLog.duplicate) {
+    if (webhookLog.duplicate && !webhookLog.retryable) {
       return res.status(200).json({ received: true, duplicate: true });
     }
 

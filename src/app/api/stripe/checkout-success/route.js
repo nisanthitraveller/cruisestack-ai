@@ -42,11 +42,7 @@ export async function GET(request) {
     }
 
     const checkoutSession = await stripe.checkout.sessions.retrieve(sessionId);
-    const companySlug = checkoutSession.client_reference_id;
-
-    if (!companySlug) {
-      return dashboardRedirect(request, "/login?checkout=missing-company");
-    }
+    let companySlug = checkoutSession.client_reference_id;
 
     const paid =
       checkoutSession.payment_status === "paid" ||
@@ -55,13 +51,30 @@ export async function GET(request) {
     if (!paid) {
       return dashboardRedirect(
         request,
-        `/login?company=${companySlug}&checkout=pending`,
+        `/login${companySlug ? `?company=${encodeURIComponent(companySlug)}&` : "?"}checkout=pending`,
       );
     }
 
     connection = await pool.getConnection();
 
-    const company = await findCompanyBySlug(connection, companySlug);
+    let company = companySlug
+      ? await findCompanyBySlug(connection, companySlug)
+      : null;
+
+    if (!company && checkoutSession.customer_details?.email) {
+      const [companies] = await connection.query(
+        `
+        SELECT id, company_name, slug, logo, primary_color, secondary_color,
+               support_email, currency, plan_type, status
+        FROM companies
+        WHERE LOWER(support_email) = LOWER(?)
+        LIMIT 2
+        `,
+        [checkoutSession.customer_details.email],
+      );
+      company = companies.length === 1 ? companies[0] : null;
+      companySlug = company?.slug || null;
+    }
 
     if (!company) {
       return dashboardRedirect(request, "/login?checkout=company-not-found");

@@ -46,6 +46,12 @@ function LoginContent() {
         throw new Error(data.message || "Unable to log in");
       }
 
+      const next = searchParams?.get("next");
+      if (next?.startsWith("/") && !next.startsWith("//")) {
+        router.push(next);
+        return;
+      }
+
       if (data.redirectUrl) {
         router.push(data.redirectUrl);
         return;

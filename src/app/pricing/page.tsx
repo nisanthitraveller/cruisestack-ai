@@ -1,8 +1,7 @@
 "use client";
 
 import { FormEvent, Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import Script from "next/script";
+import { useRouter, useSearchParams } from "next/navigation";
 import '../style.css'; 
 import logoMain from "../../assets/logo.png";
 import logoft from "../../assets/logo-white.png";
@@ -139,9 +138,6 @@ const plans = [
   },
 ];
 
-// Test publishable key: pk_test_xQRIZXb6NdxLp0H7njlt4fcb009VCIPwSf
-const stripePublishableKey = "pk_live_51GJbyfEmqvBXj5NHMQL7JwIH8XpeW0PnZn4LvhWKI2ZntEo3gcsorswHdiwWTGcKB8dG8ICB8lCPirX2DEq1U5n400CCAPWkPb";
-
 type AgentSummary = {
   companySlug?: string | null;
   name: string;
@@ -265,6 +261,7 @@ function PricingNavActions() {
 }
 
 function PricingContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const companySlug = searchParams?.get("company") || undefined;
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
@@ -275,6 +272,41 @@ function PricingContent() {
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactMobile, setContactMobile] = useState("");
+  const [checkoutPlan, setCheckoutPlan] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState("");
+
+  async function startCheckout(planName: string) {
+    setCheckoutPlan(planName);
+    setCheckoutError("");
+
+    try {
+      const response = await fetch("/api/stripe/create-checkout-session", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planName }),
+      });
+
+      const data = await response.json();
+
+      if (response.status === 401) {
+        const next = companySlug
+          ? `/pricing?company=${encodeURIComponent(companySlug)}`
+          : "/pricing";
+        router.push(`/login?next=${encodeURIComponent(next)}`);
+        return;
+      }
+
+      if (!response.ok || !data.url) {
+        throw new Error(data.message || "Unable to start checkout");
+      }
+
+      window.location.assign(data.url);
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : "Unable to start checkout");
+      setCheckoutPlan(null);
+    }
+  }
   const manualPaymentUrl = (cycle: "monthly" | "yearly") => {
     const params = new URLSearchParams({
       manual: "1",
@@ -358,12 +390,6 @@ function PricingContent() {
         </div>
       </nav>
 
-      <Script
-        async
-        src="https://js.stripe.com/v3/buy-button.js"
-        strategy="afterInteractive"
-      />
-
       <div className="pricing-page">
         <section className="pricing-hero" style={{marginBottom:'85px'}}>
          
@@ -409,6 +435,7 @@ function PricingContent() {
             </Link>
           </section>
         ) : null}
+        {checkoutError ? <div className="form-alert error">{checkoutError}</div> : null}
   {/* <div 
   className="billing-toggle" 
   style={{ 
@@ -531,11 +558,15 @@ function PricingContent() {
                   </div>
                 ) : (
                   <> <div className="stripe-button-wrapper">
-                        <stripe-buy-button
-                          buy-button-id={plan.buyButtonId}
-                          publishable-key={stripePublishableKey}
-                          client-reference-id={companySlug}
-                        ></stripe-buy-button>
+                        <button
+                          type="button"
+                          className="btn-primary"
+                          style={{ width: "100%", justifyContent: "center", minHeight: "44px" }}
+                          disabled={checkoutPlan !== null || checkingSubscription}
+                          onClick={() => startCheckout(plan.name)}
+                        >
+                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Choose ${plan.name}`}
+                        </button>
                       </div>
                     {/*{plan.buyButtonId && plan.name !== "Enterprise" ? (
                       ) : null}

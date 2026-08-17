@@ -63,6 +63,21 @@ export default function CompanySignupPage() {
         throw new Error(data.message || "Unable to create company");
       }
 
+      const loginResponse = await fetch("/api/agent/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companySlug: data.company.slug,
+          identifier: form.supportEmail,
+          password: form.adminPassword,
+        }),
+      });
+
+      if (!loginResponse.ok) {
+        throw new Error("Company created, but automatic sign-in failed. Please sign in to continue.");
+      }
+
       router.push(`/pricing?company=${data.company.slug}`);
     } catch (submitError) {
       setError(
