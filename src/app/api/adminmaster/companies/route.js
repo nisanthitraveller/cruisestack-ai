@@ -42,6 +42,7 @@ function httpError(message, statusCode = 400) {
 function normalizeCompanyUpdate(body) {
   return {
     chatbot: Number(body.chatbot) === 1 ? 1 : 0,
+    deals_enabled: Number(body.deals_enabled) === 1 ? 1 : 0,
     company_name: String(body.company_name || "").trim(),
     company_type: String(body.company_type || "").trim().toUpperCase(),
     currency: String(body.currency || "").trim().toUpperCase(),
@@ -385,6 +386,11 @@ async function permanentlyDeleteCompany(connection, company, confirmation) {
     "company_subscriptions",
     company.id,
   );
+  await deleteCompanyRowsIfTableExists(
+    connection,
+    "cruisestack_deal",
+    company.id,
+  );
 
   for (const tableName of tenantTables) {
     await connection.query(`DROP TABLE IF EXISTS ${quoteIdentifier(tableName)}`);
@@ -460,7 +466,8 @@ export async function POST(request) {
           primary_color = ?,
           secondary_color = ?,
           status = ?,
-          chatbot = ?
+          chatbot = ?,
+          deals_enabled = ?
         WHERE id = ?
         LIMIT 1
         `,
@@ -477,6 +484,7 @@ export async function POST(request) {
           update.secondary_color,
           update.status,
           update.chatbot,
+          update.deals_enabled,
           company.id,
         ],
       );

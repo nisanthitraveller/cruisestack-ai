@@ -31,6 +31,7 @@ async function getCompanies(): Promise<CompanyRow[]> {
         c.special_discount_percentage,
         c.created_at,
         c.chatbot,
+        c.deals_enabled,
         cs.payment_method,
         cs.payment_status,
         cs.status AS subscription_status,
