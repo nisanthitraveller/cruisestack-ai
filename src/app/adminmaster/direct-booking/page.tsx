@@ -39,6 +39,7 @@ async function getDirectBookingData() {
       i.inr_flow_enabled,
       i.pre_payment_balance_check_enabled,
       i.post_payment_booking_enabled,
+      i.exact_supplier_price_enabled,
       i.updated_at,
       GROUP_CONCAT(c.credential_key ORDER BY c.credential_key SEPARATOR ',') AS credential_keys
     FROM company_cruiseline_integrations i
@@ -46,7 +47,8 @@ async function getDirectBookingData() {
     GROUP BY
       i.id, i.company_id, i.cruiseline_id, i.provider_id, i.environment,
       i.is_enabled, i.inr_flow_enabled, i.pre_payment_balance_check_enabled,
-      i.post_payment_booking_enabled, i.updated_at
+      i.post_payment_booking_enabled, i.exact_supplier_price_enabled,
+      i.updated_at
     ORDER BY i.updated_at DESC, i.id DESC
     `,
   );
@@ -88,6 +90,8 @@ async function getDirectBookingData() {
       Number(row.pre_payment_balance_check_enabled) === 1,
     postPaymentBookingEnabled:
       Number(row.post_payment_booking_enabled) === 1,
+    exactSupplierPriceEnabled:
+      Number(row.exact_supplier_price_enabled) === 1,
     credentialKeys: String(row.credential_keys || "")
       .split(",")
       .filter(Boolean),

@@ -87,6 +87,8 @@ async function saveIntegration(connection, body) {
     body.prePaymentBalanceCheckEnabled === true ? 1 : 0;
   const postPaymentBooking =
     body.postPaymentBookingEnabled === true ? 1 : 0;
+  const exactSupplierPrice =
+    body.exactSupplierPriceEnabled === true ? 1 : 0;
 
   if (!companyId || !cruiselineId || !providerId) {
     throw Object.assign(
@@ -140,7 +142,8 @@ async function saveIntegration(connection, body) {
         is_enabled = ?,
         inr_flow_enabled = ?,
         pre_payment_balance_check_enabled = ?,
-        post_payment_booking_enabled = ?
+        post_payment_booking_enabled = ?,
+        exact_supplier_price_enabled = ?
       WHERE id = ?
       `,
       [
@@ -152,6 +155,7 @@ async function saveIntegration(connection, body) {
         inrFlowEnabled,
         balanceCheck,
         postPaymentBooking,
+        exactSupplierPrice,
         integrationId,
       ],
     );
@@ -189,9 +193,9 @@ async function saveIntegration(connection, body) {
         (
           company_id, cruiseline_id, provider_id, environment, is_enabled,
           inr_flow_enabled, pre_payment_balance_check_enabled,
-          post_payment_booking_enabled
+          post_payment_booking_enabled, exact_supplier_price_enabled
         )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         companyId,
@@ -202,6 +206,7 @@ async function saveIntegration(connection, body) {
         inrFlowEnabled,
         balanceCheck,
         postPaymentBooking,
+        exactSupplierPrice,
       ],
     );
     savedId = result.insertId;

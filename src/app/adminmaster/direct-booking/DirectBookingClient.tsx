@@ -33,6 +33,7 @@ export type DirectBookingIntegration = {
   inrFlowEnabled: boolean;
   prePaymentBalanceCheckEnabled: boolean;
   postPaymentBookingEnabled: boolean;
+  exactSupplierPriceEnabled: boolean;
   credentialKeys: string[];
   updatedAt: string | null;
 };
@@ -54,6 +55,7 @@ const emptyIntegration = {
   inrFlowEnabled: false,
   prePaymentBalanceCheckEnabled: false,
   postPaymentBookingEnabled: false,
+  exactSupplierPriceEnabled: true,
   credentialKeys: [],
   updatedAt: null,
 };
@@ -429,6 +431,19 @@ export default function DirectBookingClient({
             <span>
               <strong>Book after verified payment</strong>
               <small>Create the supplier booking after payment verification.</small>
+            </span>
+          </label>
+          <label>
+            <input
+              checked={form.exactSupplierPriceEnabled}
+              onChange={(event) =>
+                updateForm("exactSupplierPriceEnabled", event.target.checked)
+              }
+              type="checkbox"
+            />
+            <span>
+              <strong>Use exact supplier price</strong>
+              <small>Do not apply commission or B2C special discount.</small>
             </span>
           </label>
         </div>
