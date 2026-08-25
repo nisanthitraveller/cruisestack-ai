@@ -319,9 +319,6 @@ function PricingContent() {
 
     return `/success?${params.toString()}`;
   };
-  const visiblePlans = plans.filter(
-    (plan) => plan.name !== "Professional" && plan.name !== "Enterprise",
-  );
   const paymentsHidden = Boolean(subscriptionStatus?.isActive);
   const boldFeatures = new Set([
     "B2B integration",
@@ -515,7 +512,7 @@ function PricingContent() {
         <section className="pricing-grid structural-four-columns">
         
 
-          {visiblePlans.map((plan) => (
+          {plans.map((plan) => (
             <article className="pricing-card" key={plan.name} style={{position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'between' }}>
              {plan.recommended && <div className="recommended-badge">{plan.recommended}</div>}
               <div className="pricing-card-header-wrapper">
