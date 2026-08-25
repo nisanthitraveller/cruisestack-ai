@@ -293,7 +293,7 @@ function PricingContent() {
         const next = companySlug
           ? `/pricing?company=${encodeURIComponent(companySlug)}`
           : "/pricing";
-        router.push(`/login?next=${encodeURIComponent(next)}`);
+        router.push(`/signup?next=${encodeURIComponent(next)}`);
         return;
       }
 
@@ -607,13 +607,14 @@ function PricingContent() {
             <div className="manual-payment-divider">
               <span>OR</span>
             </div>
-            <p>Need a longer 21-day free trial?</p>
+            <p>
+              </p>
 
             {companySlug ? (
               <div className="manual-payment-actions" style={{display:'flex',justifyContent:'center'}}>
-               {/*   <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
-                   Start trial
-                </Link> *}
+                <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
+                   Need a longer 21-day free trial?
+                </Link> 
                {/* <Link href={manualPaymentUrl("yearly")} className="manual-payment-button">
                   Yearly
                 </Link> */}
@@ -621,7 +622,7 @@ function PricingContent() {
               </div>
             ) : (
               <Link href="/signup?plan=professional" className="manual-payment-button manual-payment-wide">
-              Start trial
+              Need a longer 21-day free trial?
               </Link>
             )}
           </div>
