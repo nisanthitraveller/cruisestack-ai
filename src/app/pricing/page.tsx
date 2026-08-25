@@ -12,7 +12,7 @@ import Footer from "@/components/Footer/footer";
 const plans = [
  
   {
-    name: "Beginner",
+    name: "Key features",
     colorClass: "beginner",
     // Test buy button: buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B
     buyButtonId: "buy_btn_1Tc2w8EmqvBXj5NHLYhkv3Sd",
@@ -40,13 +40,13 @@ const plans = [
       "AI voicebot": "yes",
       //"One-time integration: $1000": "Yes",
       //"Monthly fee: $499": "Yes",
-      "400 trip summaries/month": "Yes",
-      "20 bookings/month": "Yes",
+      "400 trip summaries/month": "No",
+      "20 bookings/month": "No",
       //"$0.04/API scan fees": "Yes",
     },
     pricingdetails: {
       "Monthly fee": "$499/month",
-      "$5/booking": "$5/booking",
+      "$0.50/trip summary": "$0.50/trip summary",
     }
   },
 
@@ -319,6 +319,9 @@ function PricingContent() {
 
     return `/success?${params.toString()}`;
   };
+  const visiblePlans = plans.filter(
+    (plan) => plan.name !== "Professional" && plan.name !== "Enterprise",
+  );
   const paymentsHidden = Boolean(subscriptionStatus?.isActive);
   const boldFeatures = new Set([
     "B2B integration",
@@ -391,10 +394,10 @@ function PricingContent() {
       </nav>
 
       <div className="pricing-page">
-        <section className="pricing-hero" style={{marginBottom:'85px'}}>
+        <section className="pricing-hero">
          
-          <h1>Simple, transparent & scalable tiers</h1>
-          <p>Choose the feature landscape that matches your business scale.</p>
+          <h1>Simple, transparent & scalable pricing</h1>
+          <p>Pay as your business grows</p>
 
         </section>
 
@@ -512,7 +515,7 @@ function PricingContent() {
         <section className="pricing-grid structural-four-columns">
         
 
-          {plans.map((plan) => (
+          {visiblePlans.map((plan) => (
             <article className="pricing-card" key={plan.name} style={{position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'between' }}>
              {plan.recommended && <div className="recommended-badge">{plan.recommended}</div>}
               <div className="pricing-card-header-wrapper">
@@ -565,7 +568,7 @@ function PricingContent() {
                           disabled={checkoutPlan !== null || checkingSubscription}
                           onClick={() => startCheckout(plan.name)}
                         >
-                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Choose ${plan.name}`}
+                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Select`}
                         </button>
                       </div>
                     {/*{plan.buyButtonId && plan.name !== "Enterprise" ? (
@@ -601,15 +604,15 @@ function PricingContent() {
         {!paymentsHidden ? (
         <section className="manual-payment-section">
           <div className="manual-payment-box">
-            <div className="manual-payment-divider">
+            {/* <div className="manual-payment-divider">
               <span>OR</span>
-            </div>
-            <p>Need a longer 21-day free trial?</p>
+            </div> */}
+            
 
             {companySlug ? (
               <div className="manual-payment-actions" style={{display:'flex',justifyContent:'center'}}>
                  <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
-                   Start trial
+                  Need a longer 21-day free trial?
                 </Link>
                {/* <Link href={manualPaymentUrl("yearly")} className="manual-payment-button">
                   Yearly
@@ -617,8 +620,8 @@ function PricingContent() {
                
               </div>
             ) : (
-              <Link href="/signup?plan=professional" className="manual-payment-button manual-payment-wide">
-              Start trial
+              <Link href="/signup?plan=beginner" className="manual-payment-button manual-payment-wide">
+             Need a longer 21-day free trial?
               </Link>
             )}
           </div>
