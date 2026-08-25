@@ -12,7 +12,7 @@ import Footer from "@/components/Footer/footer";
 const plans = [
 
   {
-    name: "Beginner",
+    name: "Key features",
     colorClass: "beginner",
     // Test buy button: buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B
     buyButtonId: "buy_btn_1Tc2w8EmqvBXj5NHLYhkv3Sd",
@@ -40,21 +40,21 @@ const plans = [
       "AI voicebot": "yes",
       //"One-time integration: $1000": "Yes",
       //"Monthly fee: $499": "Yes",
-      "400 trip summaries/month": "Yes",
-      "20 bookings/month": "Yes",
+      "400 trip summaries/month": "No",
+      "20 bookings/month": "No",
       //"$0.04/API scan fees": "Yes",
     },
     pricingdetails: {
       "Monthly fee": "$499/month",
-      "$5/booking": "$5/booking",
+      "$0.50/trip summary": "$0.50/trip summary",
     }
   },
-
+/*
   {
     recommended: "Recommended",
     name: "Professional",
     colorClass: "professional",
-    // Test buy button: buy_btn_1TXFHhEmqvBXj5NHX68zHgJi
+    
     buyButtonId: "buy_btn_1Tc2xMEmqvBXj5NHgUanmIGl",
     stripePriceId: "price_1TXERoEmqvBXj5NHejeHS6Kk",
 
@@ -79,12 +79,12 @@ const plans = [
       "AI bot (on web and WhatsApp)": " Yes",
        "AI chatbot": "yes",
       "AI voicebot": "yes",
-      //"One-time integration: $2000": "Yes",
-     // "Monthly fee: $999": "Yes",
+     
+    
 
       "2000 trip summaries/month": "Yes",
        "100 bookings/month": "yes",
-     // "$0.03/API scan fees": "Yes",
+     
     },
      pricingdetails: {
 
@@ -96,7 +96,7 @@ const plans = [
   {
     name: "Enterprise",
     colorClass: "enterprise",
-    // Test buy button: buy_btn_1TXFJjEmqvBXj5NHAMCe0CWw
+    
     buyButtonId: "buy_btn_1Tc2z7EmqvBXj5NHUQVP4Rwx",
     stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
 
@@ -121,12 +121,11 @@ const plans = [
       "AI bot (on web and WhatsApp)": "Yes",
        "AI chatbot": "yes",
       "AI voicebot": "yes",
-      // "One-time integration: $3000": "Yes",
-      //"Monthly fee: $2199": "Yes",
+      
 
       "5000 trip summaries/month": "Yes",
       "250 bookings/month": "Yes",
-      //"$0.02/API scan fees": "Yes",
+     
     },
      pricingdetails: {
 
@@ -135,7 +134,7 @@ const plans = [
 
 
     }
-  },
+  },  */
 ];
 
 type AgentSummary = {
@@ -396,8 +395,8 @@ function PricingContent() {
       <div className="pricing-page">
         <section className="pricing-hero" style={{marginBottom:'85px'}}>
 
-          <h1>Simple, transparent & scalable tiers</h1>
-          <p>Choose the feature landscape that matches your business scale.</p>
+          <h1>Simple, transparent & scalable pricing</h1>
+          <p>Pay as your business grows.</p>
 
         </section>
 
@@ -517,7 +516,7 @@ function PricingContent() {
 
           {plans.map((plan) => (
             <article className="pricing-card" key={plan.name} style={{position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'between' }}>
-             {plan.recommended && <div className="recommended-badge">{plan.recommended}</div>}
+          {/*   {plan.recommended && <div className="recommended-badge">{plan.recommended}</div>} */}
               <div className="pricing-card-header-wrapper">
 
                 <div className={`pricing-card-header ${plan.colorClass}`} style={{ padding: '1rem', fontWeight: 'bold', textAlign: 'center', fontSize: '1.1rem' }}>
@@ -568,7 +567,7 @@ function PricingContent() {
                           disabled={checkoutPlan !== null || checkingSubscription}
                           onClick={() => startCheckout(plan.name)}
                         >
-                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Choose ${plan.name}`}
+                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Select`}
                         </button>
                       </div>
                     {/*{plan.buyButtonId && plan.name !== "Enterprise" ? (
