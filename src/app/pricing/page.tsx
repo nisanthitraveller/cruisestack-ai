@@ -13,6 +13,7 @@ const plans = [
 
   {
     name: "beginner",
+    displayName: "Key features", // UI only
     colorClass: "beginner",
     // Test buy button: buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B
     buyButtonId: "buy_btn_1Tc2w8EmqvBXj5NHLYhkv3Sd",
@@ -520,7 +521,7 @@ function PricingContent() {
               <div className="pricing-card-header-wrapper">
 
                 <div className={`pricing-card-header ${plan.colorClass}`} style={{ padding: '1rem', fontWeight: 'bold', textAlign: 'center', fontSize: '1.1rem' }}>
-                  {plan.name}
+                  {plan.displayName}
                 </div>
 
                 {/* Features List */}
@@ -567,7 +568,7 @@ function PricingContent() {
                           disabled={checkoutPlan !== null || checkingSubscription}
                           onClick={() => startCheckout(plan.name)}
                         >
-                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Choose ${plan.name}`}
+                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Select`}
                         </button>
                       </div>
                     {/*{plan.buyButtonId && plan.name !== "Enterprise" ? (
