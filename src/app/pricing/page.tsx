@@ -393,7 +393,7 @@ function PricingContent() {
       </nav>
 
       <div className="pricing-page">
-        <section className="pricing-hero" style={{marginBottom:'85px'}}>
+        <section className="pricing-hero">
 
           <h1>Simple, transparent & scalable pricing</h1>
           <p>Pay as your business grows.</p>
