@@ -85,7 +85,11 @@
 .navActions {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 12px;
+  /* Keep the header from shifting when the session check replaces its placeholder. */
+  flex: 0 0 340px;
+  min-width: 340px;
 }
 
 .navActions a { text-decoration: none; }
@@ -121,13 +125,15 @@
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  transition: background 0.2s, transform 0.15s;
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
 .btnPrimary:hover {
   background: var(--blue-bright);
-  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 108, 234, 0.24);
 }
+
+.btnPrimary:active { box-shadow: none; }
 
 .userName {
   color: var(--gray-800);
