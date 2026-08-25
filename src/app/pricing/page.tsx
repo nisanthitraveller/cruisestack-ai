@@ -2,7 +2,7 @@
 
 import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import '../style.css'; 
+import '../style.css';
 import logoMain from "../../assets/logo.png";
 import logoft from "../../assets/logo-white.png";
 import Image from 'next/image';
@@ -10,9 +10,9 @@ import Link from "next/link";
 import Footer from "@/components/Footer/footer";
 
 const plans = [
- 
+
   {
-    name: "Key features",
+    name: "Beginner",
     colorClass: "beginner",
     // Test buy button: buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B
     buyButtonId: "buy_btn_1Tc2w8EmqvBXj5NHLYhkv3Sd",
@@ -40,17 +40,17 @@ const plans = [
       "AI voicebot": "yes",
       //"One-time integration: $1000": "Yes",
       //"Monthly fee: $499": "Yes",
-      "400 trip summaries/month": "No",
-      "20 bookings/month": "No",
+      "400 trip summaries/month": "Yes",
+      "20 bookings/month": "Yes",
       //"$0.04/API scan fees": "Yes",
     },
     pricingdetails: {
       "Monthly fee": "$499/month",
-      "$0.50/trip summary": "$0.50/trip summary",
+      "$5/booking": "$5/booking",
     }
   },
 
-  { 
+  {
     recommended: "Recommended",
     name: "Professional",
     colorClass: "professional",
@@ -81,15 +81,15 @@ const plans = [
       "AI voicebot": "yes",
       //"One-time integration: $2000": "Yes",
      // "Monthly fee: $999": "Yes",
-      
+
       "2000 trip summaries/month": "Yes",
        "100 bookings/month": "yes",
      // "$0.03/API scan fees": "Yes",
     },
      pricingdetails: {
-     
+
       "Monthly fee": "$999/month",
-     
+
       "$4/booking": "$4/booking",
     }
   },
@@ -99,7 +99,7 @@ const plans = [
     // Test buy button: buy_btn_1TXFJjEmqvBXj5NHAMCe0CWw
     buyButtonId: "buy_btn_1Tc2z7EmqvBXj5NHUQVP4Rwx",
     stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
-    
+
     features: {
       "Best agency commissions": "Yes",
       "Online-direct payments": "Yes",
@@ -123,17 +123,17 @@ const plans = [
       "AI voicebot": "yes",
       // "One-time integration: $3000": "Yes",
       //"Monthly fee: $2199": "Yes",
-     
+
       "5000 trip summaries/month": "Yes",
       "250 bookings/month": "Yes",
       //"$0.02/API scan fees": "Yes",
     },
      pricingdetails: {
-      
+
       "Monthly fee": "$1999/month",
        "$3/booking": "$3/booking",
-      
-      
+
+
     }
   },
 ];
@@ -319,6 +319,9 @@ function PricingContent() {
 
     return `/success?${params.toString()}`;
   };
+
+
+
   const paymentsHidden = Boolean(subscriptionStatus?.isActive);
   const boldFeatures = new Set([
     "B2B integration",
@@ -385,16 +388,16 @@ function PricingContent() {
             <li><a href="/resources">Resources </a></li>
             <li><a href="/company">Company </a></li>
           </ul>
-          
+
           <PricingNavActions />
         </div>
       </nav>
 
       <div className="pricing-page">
-        <section className="pricing-hero">
-         
-          <h1>Simple, transparent & scalable pricing</h1>
-          <p>Pay as your business grows</p>
+        <section className="pricing-hero" style={{marginBottom:'85px'}}>
+
+          <h1>Simple, transparent & scalable tiers</h1>
+          <p>Choose the feature landscape that matches your business scale.</p>
 
         </section>
 
@@ -436,23 +439,23 @@ function PricingContent() {
           </section>
         ) : null}
         {checkoutError ? <div className="form-alert error">{checkoutError}</div> : null}
-  {/* <div 
-  className="billing-toggle" 
-  style={{ 
-    width: '100%', 
-    marginBottom: '3.5rem', 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
+  {/* <div
+  className="billing-toggle"
+  style={{
+    width: '100%',
+    marginBottom: '3.5rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: '.6rem',
     fontFamily: 'sans-serif'
-    
+   
   }}
 >
  
-  <span 
+  <span
     onClick={() => setBillingCycle("monthly")}
-    style={{ 
+    style={{
       fontSize: '1rem',
       fontWeight: '500',
       color: '#000000',
@@ -464,12 +467,12 @@ function PricingContent() {
   </span>
 
  
-  <div 
+  <div
     onClick={() => setBillingCycle(billingCycle === "monthly" ? "annual" : "monthly")}
     style={{
       width: '40px',
       height: '22px',
-      backgroundColor: '#4d82f3', 
+      backgroundColor: '#4d82f3',
       borderRadius: '20px',
       position: 'relative',
       cursor: 'pointer',
@@ -478,7 +481,7 @@ function PricingContent() {
     }}
   >
    
-    <div 
+    <div
       style={{
         width: '18px',
         height: '18px',
@@ -493,10 +496,10 @@ function PricingContent() {
     />
   </div>
 
-  
-  <span 
+ 
+  <span
     onClick={() => setBillingCycle("annual")}
-    style={{ 
+    style={{
       fontSize: '1rem',
       fontWeight: '500',
       color: '#000000',
@@ -510,13 +513,13 @@ function PricingContent() {
 </div> */}
 
         <section className="pricing-grid structural-four-columns">
-        
+
 
           {plans.map((plan) => (
             <article className="pricing-card" key={plan.name} style={{position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'between' }}>
              {plan.recommended && <div className="recommended-badge">{plan.recommended}</div>}
               <div className="pricing-card-header-wrapper">
-                  
+
                 <div className={`pricing-card-header ${plan.colorClass}`} style={{ padding: '1rem', fontWeight: 'bold', textAlign: 'center', fontSize: '1.1rem' }}>
                   {plan.name}
                 </div>
@@ -524,8 +527,8 @@ function PricingContent() {
                 {/* Features List */}
                 <div className="features-list" style={{ margin: '2rem 0' }}>
                   {Object.entries(plan.features).map(([feature, available]) => (
-                    <div 
-                      key={feature} 
+                    <div
+                      key={feature}
                       className={`feature-item ${available === "No" ? "disabled" : ""}`}
                       style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', opacity: available === "No" ? 0.35 : 1 }}
                     >
@@ -543,8 +546,8 @@ function PricingContent() {
               <div className="pricing_details">
                 {Object.entries(plan.pricingdetails).map(([detail, value]) => (
                   <div key={detail} className="pricing-detail-item" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                   
-                   
+
+
                     <span className="pricing-detail-value" style={{ fontSize: '0.85rem', color: '#555' }}>{value}</span>
                   </div>
                 ))}
@@ -565,7 +568,7 @@ function PricingContent() {
                           disabled={checkoutPlan !== null || checkingSubscription}
                           onClick={() => startCheckout(plan.name)}
                         >
-                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Select`}
+                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Choose ${plan.name}`}
                         </button>
                       </div>
                     {/*{plan.buyButtonId && plan.name !== "Enterprise" ? (
@@ -580,7 +583,7 @@ function PricingContent() {
                     //     Start 14 days trial
                     //   </Link>
                     // ) : null}
-                    
+                   
                     {plan.name === "Enterprise" && (
                       <button
                         type="button"
@@ -601,24 +604,24 @@ function PricingContent() {
         {!paymentsHidden ? (
         <section className="manual-payment-section">
           <div className="manual-payment-box">
-            {/* <div className="manual-payment-divider">
+            <div className="manual-payment-divider">
               <span>OR</span>
-            </div> */}
-            
+            </div>
+            <p>Need a longer 21-day free trial?</p>
 
             {companySlug ? (
               <div className="manual-payment-actions" style={{display:'flex',justifyContent:'center'}}>
                  <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
-                  Need a longer 21-day free trial?
+                   Start trial
                 </Link>
                {/* <Link href={manualPaymentUrl("yearly")} className="manual-payment-button">
                   Yearly
                 </Link> */}
-               
+
               </div>
             ) : (
-              <Link href="/signup?plan=beginner" className="manual-payment-button manual-payment-wide">
-             Need a longer 21-day free trial?
+              <Link href="/signup?plan=professional" className="manual-payment-button manual-payment-wide">
+              Start trial
               </Link>
             )}
           </div>
@@ -713,12 +716,12 @@ function PricingContent() {
                 </label>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
-                 
+
                   <button
                      className="btn-primary"
                     type="button"
                     onClick={() => setContactModalOpen(false)}
-                    
+
                   >
                     Submit
                   </button>
