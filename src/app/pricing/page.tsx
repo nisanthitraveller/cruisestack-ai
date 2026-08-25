@@ -12,7 +12,7 @@ import Footer from "@/components/Footer/footer";
 const plans = [
 
   {
-    name: "Key features",
+    name: "beginner",
     colorClass: "beginner",
     // Test buy button: buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B
     buyButtonId: "buy_btn_1Tc2w8EmqvBXj5NHLYhkv3Sd",
