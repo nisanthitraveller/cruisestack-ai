@@ -610,9 +610,9 @@ function PricingContent() {
 
             {companySlug ? (
               <div className="manual-payment-actions" style={{display:'flex',justifyContent:'center'}}>
-                 <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
+               {/*   <Link href={manualPaymentUrl("monthly")} className="manual-payment-button">
                    Start trial
-                </Link>
+                </Link> *}
                {/* <Link href={manualPaymentUrl("yearly")} className="manual-payment-button">
                   Yearly
                 </Link> */}
