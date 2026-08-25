@@ -567,7 +567,7 @@ function PricingContent() {
                           disabled={checkoutPlan !== null || checkingSubscription}
                           onClick={() => startCheckout(plan.name)}
                         >
-                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Select`}
+                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Choose ${plan.name}`}
                         </button>
                       </div>
                     {/*{plan.buyButtonId && plan.name !== "Enterprise" ? (
