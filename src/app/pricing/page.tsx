@@ -13,7 +13,7 @@ const plans = [
 
   {
     name: "beginner",
-    displayName: "Key features", // UI only
+    displayName: "Beginner", // UI only
     colorClass: "beginner",
     // Test buy button: buy_btn_1TXFH0EmqvBXj5NHjnLGxB8B
     buyButtonId: "buy_btn_1Tc2w8EmqvBXj5NHLYhkv3Sd",
@@ -50,10 +50,11 @@ const plans = [
       "$0.50/trip summary": "$0.50/trip summary",
     }
   },
-/*
+
   {
     recommended: "Recommended",
     name: "Professional",
+    displayName: "Professional",
     colorClass: "professional",
     
     buyButtonId: "buy_btn_1Tc2xMEmqvBXj5NHgUanmIGl",
@@ -83,21 +84,21 @@ const plans = [
      
     
 
-      "2000 trip summaries/month": "Yes",
-       "100 bookings/month": "yes",
+      "2000 trip summaries/month": "No",
+       "100 bookings/month": "No",
      
     },
      pricingdetails: {
 
       "Monthly fee": "$999/month",
 
-      "$4/booking": "$4/booking",
+      "$0.30/trip summary": "$0.30/trip summary",
     }
   },
   {
     name: "Enterprise",
     colorClass: "enterprise",
-    
+    displayName: "Enterprise",
     buyButtonId: "buy_btn_1Tc2z7EmqvBXj5NHUQVP4Rwx",
     stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
 
@@ -124,18 +125,18 @@ const plans = [
       "AI voicebot": "yes",
       
 
-      "5000 trip summaries/month": "Yes",
-      "250 bookings/month": "Yes",
+      "5000 trip summaries/month": "No",
+      "250 bookings/month": "No",
      
     },
      pricingdetails: {
 
       "Monthly fee": "$1999/month",
-       "$3/booking": "$3/booking",
+       "$0.10/trip summary": "$0.10/trip summary",
 
 
     }
-  },  */
+  },  
 ];
 
 type AgentSummary = {
@@ -394,7 +395,7 @@ function PricingContent() {
       </nav>
 
       <div className="pricing-page">
-        <section className="pricing-hero">
+        <section className="pricing-hero" style={{marginBottom:85}}>
 
           <h1>Simple, transparent & scalable pricing</h1>
           <p>Pay as your business grows.</p>
@@ -517,7 +518,7 @@ function PricingContent() {
 
           {plans.map((plan) => (
             <article className="pricing-card" key={plan.name} style={{position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'between' }}>
-          {/*   {plan.recommended && <div className="recommended-badge">{plan.recommended}</div>} */}
+            {plan.recommended && <div className="recommended-badge">{plan.recommended}</div>} 
               <div className="pricing-card-header-wrapper">
 
                 <div className={`pricing-card-header ${plan.colorClass}`} style={{ padding: '1rem', fontWeight: 'bold', textAlign: 'center', fontSize: '1.1rem' }}>
@@ -568,7 +569,8 @@ function PricingContent() {
                           disabled={checkoutPlan !== null || checkingSubscription}
                           onClick={() => startCheckout(plan.name)}
                         >
-                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Select`}
+                          {/* {checkoutPlan === plan.name ? "Opening secure checkout..." : `Select`} */}
+                          {checkoutPlan === plan.name ? "Opening secure checkout..." : `Choose ${plan.displayName}`}
                         </button>
                       </div>
                     {/*{plan.buyButtonId && plan.name !== "Enterprise" ? (
@@ -604,9 +606,9 @@ function PricingContent() {
         {!paymentsHidden ? (
         <section className="manual-payment-section">
           <div className="manual-payment-box">
-            <div className="manual-payment-divider">
+            {/* <div className="manual-payment-divider">
               <span>OR</span>
-            </div>
+            </div> */}
             <p>
               </p>
 

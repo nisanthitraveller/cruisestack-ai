@@ -1782,10 +1782,10 @@ h1 {
 }
 
 .pricing-grid {
-  max-width: 666px;
+  max-width: 1000px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
 .features-list {
@@ -1802,7 +1802,7 @@ h1 {
     box-shadow: none;
     
 }
-.pricing-card:nth-of-type(1) {
+.pricing-card:nth-of-type(2) {
     background: #F6FAFF;
     border-color: #006CEA;
     border-width: 2px;
@@ -1867,11 +1867,7 @@ h1 {
     text-align: center;
     justify-content: center;
 }
-.pricing-card-header.beginner {
-  background: rgb(229 241 255 / 66%);
-  color: #fff;
-    background: #0071ffa8;
-}
+
 
 .pricing-card-header.professional {
   background: rgb(0 113 255 / 66%);
@@ -1880,6 +1876,11 @@ h1 {
 
 .pricing-card-header.enterprise {
   background: rgb(200 225 255 / 66%);
+}
+.pricing-card-header.beginner {
+  background: rgb(229 241 255 / 66%);
+  color: #000;
+   
 }
 .save_badge{
   font-weight: 500;
@@ -2062,7 +2063,7 @@ h1 {
 
 .manual-payment-section {
   margin: 20px auto 0;
-  max-width: 666px;
+  max-width: 1000px;
 }
 
 .manual-payment-box {
