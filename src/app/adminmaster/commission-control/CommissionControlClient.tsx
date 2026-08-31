@@ -46,6 +46,45 @@ type ImportSummary = {
   tenantTablesUpdated: number;
 };
 
+function normalizeSpreadsheetHeader(value: unknown) {
+  return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function extractCommissionRows(sheetRows: unknown[][]) {
+  const headerRowIndex = sheetRows.findIndex((row) => {
+    const headers = row.map(normalizeSpreadsheetHeader);
+    return (
+      headers.some((header) =>
+        ["cruiseline", "cruiselines", "cruisename"].includes(header),
+      ) && headers.includes("commission")
+    );
+  });
+
+  if (headerRowIndex < 0) {
+    throw new Error(
+      "Could not find Cruiselines and Commission headers in the workbook",
+    );
+  }
+
+  const headers = sheetRows[headerRowIndex].map(normalizeSpreadsheetHeader);
+  const cruiseColumnIndex = headers.findIndex((header) =>
+    ["cruiseline", "cruiselines", "cruisename"].includes(header),
+  );
+  const commissionColumnIndex = headers.indexOf("commission");
+
+  return sheetRows
+    .slice(headerRowIndex + 1)
+    .map((row) => ({
+      Commission: row[commissionColumnIndex] ?? "",
+      Cruiselines: row[cruiseColumnIndex] ?? "",
+    }))
+    .filter(
+      (row) =>
+        String(row.Cruiselines || "").trim() ||
+        String(row.Commission || "").trim(),
+    );
+}
+
 const emptyForm = {
   commission: "0",
   cruiseline_id: "",
@@ -211,10 +250,12 @@ export default function CommissionControlClient({
         throw new Error("The workbook does not contain a worksheet");
       }
 
-      const spreadsheetRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(
-        firstSheet,
-        { defval: "", raw: false },
-      );
+      const sheetRows = XLSX.utils.sheet_to_json<unknown[]>(firstSheet, {
+        defval: "",
+        header: 1,
+        raw: true,
+      });
+      const spreadsheetRows = extractCommissionRows(sheetRows);
       const result = await postCommissionAction({
         action: "import",
         rows: spreadsheetRows,
