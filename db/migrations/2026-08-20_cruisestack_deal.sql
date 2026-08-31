@@ -34,3 +34,6 @@ CREATE TABLE IF NOT EXISTS cruisestack_deal (
     FOREIGN KEY (company_id) REFERENCES companies (id)
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE cruisestack_deal
+  ADD COLUMN IF NOT EXISTS package_url VARCHAR(500) DEFAULT NULL AFTER package_id;

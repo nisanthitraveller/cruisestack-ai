@@ -117,7 +117,7 @@ async function findCompanyBySlug(connection, slug) {
   if (!slug) return null;
 
   const [companies] = await connection.query(
-    "SELECT id, slug, plan_type FROM companies WHERE slug = ? LIMIT 1",
+    "SELECT id, slug, plan_type, enable_commission_sync FROM companies WHERE slug = ? LIMIT 1",
     [slug]
   );
 
@@ -129,7 +129,7 @@ async function findCompanyByEmail(connection, email) {
 
   const [companies] = await connection.query(
     `
-    SELECT id, slug, plan_type
+    SELECT id, slug, plan_type, enable_commission_sync
     FROM companies
     WHERE LOWER(support_email) = LOWER(?)
     LIMIT 2
@@ -146,7 +146,7 @@ async function findCompanyBySubscription(connection, stripeSubscriptionId) {
 
   const [companies] = await connection.query(
     `
-    SELECT c.id, c.slug, c.plan_type
+    SELECT c.id, c.slug, c.plan_type, c.enable_commission_sync
     FROM company_subscriptions cs
     INNER JOIN companies c ON c.id = cs.company_id
     WHERE cs.stripe_subscription_id = ?
@@ -328,6 +328,11 @@ async function copyMasterCommissionToCompany(connection, company, planId) {
   });
   return;
 }
+
+  if (Number(company.enable_commission_sync ?? 1) !== 1) {
+    console.log(`Skipping commission copy for company ${company.id}: sync disabled`);
+    return;
+  }
 
   const tablePrefix = company.slug
     .trim()

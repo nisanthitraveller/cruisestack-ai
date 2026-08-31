@@ -2,10 +2,58 @@ import { NextResponse } from "next/server";
 import pool from "@/lib/db_mysql";
 import { getAdminMasterFromSession } from "@/lib/adminMasterAuth";
 
-const allowedActions = new Set(["add", "delete", "sync_all", "update"]);
+const allowedActions = new Set(["add", "delete", "import", "sync_all", "update"]);
+
+const cruiseNameAliases = new Map([
+  ["crystal cruises", "crystal"],
+  ["fred oslen", "fred olsen"],
+  ["oceania cruise lines", "oceania cruises"],
+  ["resorts world cruises", "star dreams cruises"],
+  ["viking ocean cruises", "viking ocean"],
+  ["viking river cruises", "viking river"],
+]);
 
 function quoteIdentifier(value) {
   return `\`${String(value).replace(/`/g, "``")}\``;
+}
+
+function normalizeCruiseName(value) {
+  const normalized = String(value || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+
+  return cruiseNameAliases.get(normalized) || normalized;
+}
+
+function getImportCell(row, names) {
+  const entries = Object.entries(row || {});
+  for (const [key, value] of entries) {
+    const normalizedKey = String(key).toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (names.includes(normalizedKey)) return value;
+  }
+  return "";
+}
+
+function parseCommissionPercentage(value) {
+  if (value === null || value === undefined) return null;
+  const raw = String(value).trim();
+  if (!raw || /^in\s*progress$/i.test(raw)) return null;
+
+  const hasPercentSign = raw.includes("%");
+  const numeric = Number(raw.replace(/,/g, "").replace(/%/g, "").trim());
+  if (!Number.isFinite(numeric)) return null;
+
+  const percentage = !hasPercentSign && numeric > 0 && numeric < 1
+    ? numeric * 100
+    : numeric;
+
+  if (percentage < 0 || percentage > 100) return null;
+  return Number(percentage.toFixed(4));
 }
 
 function normalizeCommissionPayload(body) {
@@ -110,6 +158,7 @@ async function getSubscribedCompaniesForPlan(connection, planId) {
     FROM companies c
     INNER JOIN company_subscriptions cs ON cs.company_id = c.id
     WHERE cs.plan_id = ?
+      AND COALESCE(c.enable_commission_sync, 1) = 1
       AND c.slug IS NOT NULL
       AND c.slug <> ''
       AND (
@@ -379,6 +428,100 @@ export async function POST(request) {
       await connection.commit();
 
       return NextResponse.json({ success: true, ...result });
+    }
+
+    if (action === "import") {
+      const planId = Number(body.subscription_plan_id || 0);
+      const importRows = Array.isArray(body.rows) ? body.rows : [];
+
+      if (!planId) {
+        throw new Error("Select a subscription plan before uploading");
+      }
+      if (!importRows.length) {
+        throw new Error("The spreadsheet does not contain any data rows");
+      }
+
+      const [cruises] = await connection.query(
+        "SELECT id, name FROM cruises ORDER BY id ASC",
+      );
+      const cruiseByName = new Map();
+      for (const cruise of cruises) {
+        const key = normalizeCruiseName(cruise.name);
+        if (key && !cruiseByName.has(key)) cruiseByName.set(key, cruise);
+      }
+
+      const [existingRows] = await connection.query(
+        `SELECT cruiseline_id
+         FROM cruisestack_master_commission
+         WHERE subscription_plan_id = ?`,
+        [planId],
+      );
+      const existingCruiseIds = new Set(
+        existingRows.map((row) => Number(row.cruiseline_id)),
+      );
+      const seenCruiseIds = new Set();
+      const summary = {
+        inserted: [],
+        skippedExisting: [],
+        skippedInvalidCommission: [],
+        skippedUnmatchedCruise: [],
+        tenantTablesUpdated: 0,
+      };
+
+      for (let index = 0; index < importRows.length; index += 1) {
+        const importRow = importRows[index];
+        const rowNumber = index + 2;
+        const cruiseName = String(
+          getImportCell(importRow, ["cruiseline", "cruiselines", "cruisename"]),
+        ).trim();
+        const commissionValue = getImportCell(importRow, ["commission"]);
+        const percentage = parseCommissionPercentage(commissionValue);
+        if (percentage === null) {
+          summary.skippedInvalidCommission.push({
+            commission: String(commissionValue || ""),
+            cruiseName,
+            rowNumber,
+          });
+          continue;
+        }
+        const cruise = cruiseByName.get(normalizeCruiseName(cruiseName));
+
+        if (!cruise) {
+          summary.skippedUnmatchedCruise.push({ cruiseName, rowNumber });
+          continue;
+        }
+
+        const cruiseId = Number(cruise.id);
+        if (existingCruiseIds.has(cruiseId) || seenCruiseIds.has(cruiseId)) {
+          summary.skippedExisting.push({
+            cruiseName: cruise.name,
+            rowNumber,
+          });
+          continue;
+        }
+
+        const [result] = await connection.query(
+          `INSERT INTO cruisestack_master_commission
+            (subscription_plan_id, cruiseline_id, commission, discount, markup,
+             gmc_discount, created_at, updated_at, status)
+           VALUES (?, ?, 0, ?, 0, ?, NOW(), NOW(), 1)`,
+          [planId, cruiseId, percentage, percentage],
+        );
+        const insertedRow = await getMasterCommissionRow(connection, result.insertId);
+        summary.tenantTablesUpdated += await syncCommissionRowToTenants(
+          connection,
+          insertedRow,
+        );
+        summary.inserted.push({
+          commission: percentage,
+          cruiseName: cruise.name,
+          rowNumber,
+        });
+        seenCruiseIds.add(cruiseId);
+      }
+
+      await connection.commit();
+      return NextResponse.json({ success: true, summary });
     }
 
     const id = Number(body.id || 0);

@@ -303,6 +303,10 @@ async function copyProfessionalCommissionToCompany(connection, company, planId) 
     return;
   }
 
+  if (Number(company.enable_commission_sync ?? 1) !== 1) {
+    return;
+  }
+
   const tablePrefix = tableSafePrefix(company.slug);
   const agentTable = `${tablePrefix}_agent`;
   const commissionTable = `${tablePrefix}_agent_commission`;

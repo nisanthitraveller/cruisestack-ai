@@ -200,7 +200,7 @@ export async function clearAgentSession(source) {
 export async function findCompanyBySlug(connection, slug) {
   const [companies] = await connection.query(
     `
-    SELECT id, company_name, slug, logo, primary_color, secondary_color, support_email, currency, plan_type, status
+    SELECT id, company_name, slug, logo, primary_color, secondary_color, support_email, currency, plan_type, status, enable_commission_sync
     FROM companies
     WHERE slug = ?
     LIMIT 1

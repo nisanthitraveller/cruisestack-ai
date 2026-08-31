@@ -1,0 +1,78 @@
+CREATE TABLE IF NOT EXISTS cruisestack_trip_replication_batches (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  company_id INT(11) NOT NULL,
+  tenant_slug VARCHAR(100) NOT NULL,
+  batch_name VARCHAR(255) NOT NULL,
+  source_booking_id BIGINT NOT NULL,
+  source_package_url VARCHAR(500) NOT NULL,
+  replica_count INT NOT NULL,
+  source_snapshot JSON DEFAULT NULL,
+  status ENUM('DRAFT','EXPORTED','IMPORTED','PUBLISHED','FAILED') NOT NULL DEFAULT 'DRAFT',
+  created_by BIGINT DEFAULT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_trip_replication_company (company_id, status),
+  CONSTRAINT fk_trip_replication_company
+    FOREIGN KEY (company_id) REFERENCES companies (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS cruisestack_trip_replicas (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  batch_id BIGINT UNSIGNED NOT NULL,
+  company_id INT(11) NOT NULL,
+  source_package_url VARCHAR(500) NOT NULL,
+  replica_booking_id BIGINT NOT NULL,
+  replica_package_url VARCHAR(500) NOT NULL,
+  package_id VARCHAR(200) NOT NULL,
+  deal_id BIGINT UNSIGNED DEFAULT NULL,
+  row_version INT NOT NULL DEFAULT 1,
+  cruise_line VARCHAR(255) NOT NULL,
+  ship_name VARCHAR(255) NOT NULL,
+  destination VARCHAR(255) DEFAULT NULL,
+  departure_port_code VARCHAR(20) DEFAULT NULL,
+  passengers_count INT NOT NULL DEFAULT 2,
+  no_nights INT DEFAULT NULL,
+  cabin VARCHAR(100) DEFAULT NULL,
+  currency CHAR(3) NOT NULL DEFAULT 'USD',
+  travel_date DATE NOT NULL,
+  cabin_price DECIMAL(12,2) NOT NULL DEFAULT 0,
+  gratuity DECIMAL(12,2) NOT NULL DEFAULT 0,
+  discount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  total_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  absolute_price DECIMAL(12,2) NOT NULL DEFAULT 0,
+  discounted_price DECIMAL(12,2) NOT NULL DEFAULT 0,
+  reduction_percent DECIMAL(6,2) NOT NULL DEFAULT 0,
+  offer_validity_date DATE DEFAULT NULL,
+  deal_title VARCHAR(255) DEFAULT NULL,
+  deal_image VARCHAR(500) DEFAULT NULL,
+  status ENUM('DRAFT','IMPORTED','PUBLISHED','FAILED') NOT NULL DEFAULT 'DRAFT',
+  error_message VARCHAR(1000) DEFAULT NULL,
+  published_at TIMESTAMP NULL DEFAULT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_trip_replica_package (company_id, replica_package_url),
+  KEY idx_trip_replica_batch (batch_id, status),
+  KEY idx_trip_replica_company (company_id, status),
+  KEY idx_trip_replica_deal (deal_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE cruisestack_deal
+  ADD COLUMN IF NOT EXISTS replication_batch_id BIGINT UNSIGNED DEFAULT NULL AFTER company_id,
+  ADD COLUMN IF NOT EXISTS replica_id BIGINT UNSIGNED DEFAULT NULL AFTER replication_batch_id;
+
+ALTER TABLE cruisestack_trip_replicas
+  ADD COLUMN IF NOT EXISTS package_id VARCHAR(200) NOT NULL DEFAULT '' AFTER replica_package_url,
+  ADD COLUMN IF NOT EXISTS cruise_line VARCHAR(255) NOT NULL DEFAULT 'Cruise' AFTER row_version,
+  ADD COLUMN IF NOT EXISTS ship_name VARCHAR(255) NOT NULL DEFAULT 'Ship' AFTER cruise_line,
+  ADD COLUMN IF NOT EXISTS destination VARCHAR(255) DEFAULT NULL AFTER ship_name,
+  ADD COLUMN IF NOT EXISTS departure_port_code VARCHAR(20) DEFAULT NULL AFTER destination,
+  ADD COLUMN IF NOT EXISTS passengers_count INT NOT NULL DEFAULT 2 AFTER departure_port_code,
+  ADD COLUMN IF NOT EXISTS no_nights INT DEFAULT NULL AFTER passengers_count,
+  ADD COLUMN IF NOT EXISTS cabin VARCHAR(100) DEFAULT NULL AFTER no_nights,
+  ADD COLUMN IF NOT EXISTS currency CHAR(3) NOT NULL DEFAULT 'USD' AFTER cabin,
+  ADD COLUMN IF NOT EXISTS absolute_price DECIMAL(12,2) NOT NULL DEFAULT 0 AFTER total_amount,
+  ADD COLUMN IF NOT EXISTS discounted_price DECIMAL(12,2) NOT NULL DEFAULT 0 AFTER absolute_price,
+  ADD COLUMN IF NOT EXISTS reduction_percent DECIMAL(6,2) NOT NULL DEFAULT 0 AFTER discounted_price,
+  ADD COLUMN IF NOT EXISTS published_at TIMESTAMP NULL DEFAULT NULL AFTER error_message;

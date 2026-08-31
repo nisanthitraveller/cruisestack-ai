@@ -164,7 +164,7 @@ export default async function AdminMasterCommissionControlPage() {
             <div>
               <p className="adminmaster-kicker">Master commission control</p>
               <h1>Commission Control</h1>
-              <p>Changes sync to every tenant agent commission table.</p>
+              <p>Changes sync only to companies with commission sync enabled.</p>
             </div>
             <div className="adminmaster-header-actions">
               <span className="adminmaster-user">Logged in as {admin.name || admin.email}</span>
@@ -189,7 +189,7 @@ export default async function AdminMasterCommissionControlPage() {
             </article>
             <article className="adminmaster-metric-card">
               <span>Sync mode</span>
-              <strong>Immediate</strong>
+              <strong>Company controlled</strong>
             </article>
           </section>
 

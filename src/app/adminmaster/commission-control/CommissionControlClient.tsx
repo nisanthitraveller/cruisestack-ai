@@ -32,6 +32,20 @@ type CommissionControlClientProps = {
 
 type BusyAction = string | null;
 
+type ImportItem = {
+  commission?: number;
+  cruiseName: string;
+  rowNumber: number;
+};
+
+type ImportSummary = {
+  inserted: ImportItem[];
+  skippedExisting: ImportItem[];
+  skippedInvalidCommission: Array<ImportItem & { commission?: string }>;
+  skippedUnmatchedCruise: ImportItem[];
+  tenantTablesUpdated: number;
+};
+
 const emptyForm = {
   commission: "0",
   cruiseline_id: "",
@@ -42,7 +56,7 @@ const emptyForm = {
   subscription_plan_id: "",
 };
 
-async function postCommissionAction(body: Record<string, string | number>) {
+async function postCommissionAction(body: Record<string, unknown>) {
   const response = await fetch("/api/adminmaster/commission-control", {
     body: JSON.stringify(body),
     headers: {
@@ -67,6 +81,11 @@ export default function CommissionControlClient({
   const router = useRouter();
   const [form, setForm] = useState(emptyForm);
   const [busyAction, setBusyAction] = useState<BusyAction>(null);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importPlan, setImportPlan] = useState(
+    plans[0]?.id ? String(plans[0].id) : "",
+  );
+  const [importSummary, setImportSummary] = useState<ImportSummary | null>(null);
   const [selectedPlan, setSelectedPlan] = useState(
     plans[0]?.id ? String(plans[0].id) : "all",
   );
@@ -151,7 +170,7 @@ export default function CommissionControlClient({
 
   async function handleSyncAll() {
     const confirmed = window.confirm(
-      "Sync all master commission rows to every tenant agent commission table?",
+      "Sync all master commission rows to companies that have commission sync enabled?",
     );
 
     if (!confirmed) return;
@@ -163,6 +182,51 @@ export default function CommissionControlClient({
       router.refresh();
     } catch (error) {
       window.alert(error instanceof Error ? error.message : "Unable to sync tenants");
+    } finally {
+      setBusyAction(null);
+    }
+  }
+
+  async function handleImport(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!importPlan || !importFile) {
+      window.alert("Select a plan and Excel file before uploading");
+      return;
+    }
+
+    setBusyAction("import");
+    setImportSummary(null);
+
+    try {
+      const XLSX = await import("xlsx");
+      const workbook = XLSX.read(await importFile.arrayBuffer(), {
+        type: "array",
+      });
+      const firstSheetName = workbook.SheetNames[0];
+      const firstSheet = firstSheetName
+        ? workbook.Sheets[firstSheetName]
+        : undefined;
+
+      if (!firstSheet) {
+        throw new Error("The workbook does not contain a worksheet");
+      }
+
+      const spreadsheetRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(
+        firstSheet,
+        { defval: "", raw: false },
+      );
+      const result = await postCommissionAction({
+        action: "import",
+        rows: spreadsheetRows,
+        subscription_plan_id: importPlan,
+      });
+
+      setImportSummary(result.summary as ImportSummary);
+      router.refresh();
+    } catch (error) {
+      window.alert(
+        error instanceof Error ? error.message : "Unable to import commission Excel",
+      );
     } finally {
       setBusyAction(null);
     }
@@ -198,10 +262,68 @@ export default function CommissionControlClient({
             onClick={handleSyncAll}
             type="button"
           >
-            {busyAction === "sync_all" ? "Syncing..." : "Sync all tenants"}
+            {busyAction === "sync_all" ? "Syncing..." : "Sync enabled companies"}
           </button>
         </div>
       </div>
+
+      <form className="commission-import-form" onSubmit={handleImport}>
+        <div>
+          <strong>Upload commission Excel</strong>
+          <span>
+            Existing plan/cruiseline rows and “In progress” values are skipped.
+          </span>
+        </div>
+        <label>
+          <span>Plan</span>
+          <select
+            onChange={(event) => setImportPlan(event.target.value)}
+            required
+            value={importPlan}
+          >
+            <option value="">Select plan</option>
+            {plans.map((plan) => (
+              <option key={plan.id} value={plan.id}>
+                {plan.plan_name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>Excel file</span>
+          <input
+            accept=".xlsx,.xls"
+            onChange={(event) => setImportFile(event.target.files?.[0] || null)}
+            required
+            type="file"
+          />
+        </label>
+        <button
+          className="adminmaster-button activate"
+          disabled={busyAction !== null}
+          type="submit"
+        >
+          {busyAction === "import" ? "Importing..." : "Upload Excel"}
+        </button>
+      </form>
+
+      {importSummary ? (
+        <div className="commission-import-summary" role="status">
+          <strong>Import completed</strong>
+          <span>Added: {importSummary.inserted.length}</span>
+          <span>Existing/duplicate skipped: {importSummary.skippedExisting.length}</span>
+          <span>In progress/invalid skipped: {importSummary.skippedInvalidCommission.length}</span>
+          <span>Unmatched cruise names: {importSummary.skippedUnmatchedCruise.length}</span>
+          <span>Tenant table updates: {importSummary.tenantTablesUpdated}</span>
+          {importSummary.skippedUnmatchedCruise.length > 0 ? (
+            <small>
+              Unmatched: {importSummary.skippedUnmatchedCruise
+                .map((item) => item.cruiseName || `row ${item.rowNumber}`)
+                .join(", ")}
+            </small>
+          ) : null}
+        </div>
+      ) : null}
 
       <form className="commission-add-form" onSubmit={handleAdd}>
         <label>

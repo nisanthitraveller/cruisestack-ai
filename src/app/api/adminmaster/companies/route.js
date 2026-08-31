@@ -43,6 +43,8 @@ function normalizeCompanyUpdate(body) {
   return {
     chatbot: Number(body.chatbot) === 1 ? 1 : 0,
     deals_enabled: Number(body.deals_enabled) === 1 ? 1 : 0,
+    enable_commission_sync:
+      Number(body.enable_commission_sync) === 1 ? 1 : 0,
     company_name: String(body.company_name || "").trim(),
     company_type: String(body.company_type || "").trim().toUpperCase(),
     currency: String(body.currency || "").trim().toUpperCase(),
@@ -467,7 +469,8 @@ export async function POST(request) {
           secondary_color = ?,
           status = ?,
           chatbot = ?,
-          deals_enabled = ?
+          deals_enabled = ?,
+          enable_commission_sync = ?
         WHERE id = ?
         LIMIT 1
         `,
@@ -485,6 +488,7 @@ export async function POST(request) {
           update.status,
           update.chatbot,
           update.deals_enabled,
+          update.enable_commission_sync,
           company.id,
         ],
       );

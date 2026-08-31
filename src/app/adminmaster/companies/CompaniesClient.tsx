@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export type CompanyRow = {
   chatbot: number | null;
   deals_enabled: number | null;
+  enable_commission_sync: number | null;
   company_name: string;
   company_type: string | null;
   created_at: string | null;
@@ -30,6 +31,7 @@ export type CompanyRow = {
 type CompanyForm = {
   chatbot: string;
   deals_enabled: string;
+  enable_commission_sync: string;
   company_name: string;
   company_type: string;
   currency: string;
@@ -67,6 +69,8 @@ function formFromCompany(company: CompanyRow): CompanyForm {
   return {
     chatbot: Number(company.chatbot) === 1 ? "1" : "0",
     deals_enabled: Number(company.deals_enabled) === 1 ? "1" : "0",
+    enable_commission_sync:
+      Number(company.enable_commission_sync ?? 1) === 1 ? "1" : "0",
     company_name: company.company_name || "",
     company_type: company.company_type || "B2C",
     currency: company.currency || "USD",
@@ -690,6 +694,19 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                   <option value="1">Enabled</option>
                   <option value="0">Disabled</option>
                 </select>
+              </label>
+              <label className="companies-checkbox-field">
+                <input
+                  checked={form.enable_commission_sync === "1"}
+                  onChange={(event) =>
+                    updateField(
+                      "enable_commission_sync",
+                      event.target.checked ? "1" : "0",
+                    )
+                  }
+                  type="checkbox"
+                />
+                <span>Enable commission sync</span>
               </label>
 
               <div className="companies-readonly-details">
