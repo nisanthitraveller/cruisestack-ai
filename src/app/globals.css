@@ -12,3 +12,7 @@ a{
     font-size: 32px !important;
   }
 }
+.trust-logos{
+  flex-wrap: wrap;
+  justify-content:center;
+}

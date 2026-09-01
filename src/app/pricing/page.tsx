@@ -8,6 +8,7 @@ import logoft from "../../assets/logo-white.png";
 import Image from 'next/image';
 import Link from "next/link";
 import Footer from "@/components/Footer/footer";
+import Header from "@/components/Header/header";
 
 const plans = [
 
@@ -239,7 +240,7 @@ function PricingNavActions() {
 
   if (!agent) {
     return (
-      <div className="nav-actions">
+      <div className="nav-actions d-none">
         <Link href="/login" className="btn-ghost">Login</Link>
         <Link href="/signup" className="btn-ghost">Sign Up</Link>
         <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
@@ -248,7 +249,7 @@ function PricingNavActions() {
   }
 
   return (
-    <div className="nav-actions">
+    <div className="nav-actions d-none">
       <Link href={agentDashboardHref(agent)} className="nav-user-name">
         {agent.name}
       </Link>
@@ -378,7 +379,8 @@ function PricingContent() {
 
   return (
      <main className="cruise-page-body">
-      <nav>
+      <Header/>
+      <nav style={{display:'none'}}>
         <div className='container-nav'>
           <Link href="/" className="nav-logo">
               <Image src={logoMain} alt="cruisestack" width={190}/>

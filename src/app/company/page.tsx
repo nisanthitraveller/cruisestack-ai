@@ -188,7 +188,7 @@ const missionImagePlaceholder = {
   return (
     <div className={styles.page}>
 
-      <Header /> {/* Assuming you have a Header component to include here */}
+      <Header /> 
 
       {/* ── Hero ── */}
       <section className={styles.hero}>
