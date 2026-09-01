@@ -7,6 +7,7 @@ const allowedActions = new Set(["add", "delete", "import", "sync_all", "update"]
 const cruiseNameAliases = new Map([
   ["crystal cruises", "crystal"],
   ["fred oslen", "fred olsen"],
+  ["holland america", "holland america line"],
   ["oceania cruise lines", "oceania cruises"],
   ["resorts world cruises", "star dreams cruises"],
   ["viking ocean cruises", "viking ocean"],
@@ -54,6 +55,51 @@ function parseCommissionPercentage(value) {
 
   if (percentage < 0 || percentage > 100) return null;
   return Number(percentage.toFixed(4));
+}
+
+function levenshteinDistance(left, right) {
+  const a = String(left || "");
+  const b = String(right || "");
+  const previous = Array.from({ length: b.length + 1 }, (_, index) => index);
+
+  for (let row = 1; row <= a.length; row += 1) {
+    const current = [row];
+    for (let column = 1; column <= b.length; column += 1) {
+      current[column] = Math.min(
+        current[column - 1] + 1,
+        previous[column] + 1,
+        previous[column - 1] + (a[row - 1] === b[column - 1] ? 0 : 1),
+      );
+    }
+    previous.splice(0, previous.length, ...current);
+  }
+
+  return previous[b.length];
+}
+
+function getCruiseSuggestions(value, cruises) {
+  const normalizedInput = normalizeCruiseName(value);
+  if (!normalizedInput) return [];
+
+  return cruises
+    .map((cruise) => {
+      const normalizedCruise = normalizeCruiseName(cruise.name);
+      const maxLength = Math.max(normalizedInput.length, normalizedCruise.length, 1);
+      let score = 1 - levenshteinDistance(normalizedInput, normalizedCruise) / maxLength;
+
+      if (
+        normalizedInput.includes(normalizedCruise) ||
+        normalizedCruise.includes(normalizedInput)
+      ) {
+        score = Math.max(score, 0.8);
+      }
+
+      return { id: Number(cruise.id), name: cruise.name, score };
+    })
+    .filter((cruise) => cruise.score >= 0.25)
+    .sort((left, right) => right.score - left.score || left.name.localeCompare(right.name))
+    .slice(0, 3)
+    .map(({ id, name }) => ({ id, name }));
 }
 
 function normalizeCommissionPayload(body) {
@@ -433,6 +479,7 @@ export async function POST(request) {
     if (action === "import") {
       const planId = Number(body.subscription_plan_id || 0);
       const importRows = Array.isArray(body.rows) ? body.rows : [];
+      const previewOnly = body.preview === true;
 
       if (!planId) {
         throw new Error("Select a subscription plan before uploading");
@@ -467,6 +514,7 @@ export async function POST(request) {
         skippedUnmatchedCruise: [],
         tenantTablesUpdated: 0,
       };
+      const previewRows = [];
 
       for (let index = 0; index < importRows.length; index += 1) {
         const importRow = importRows[index];
@@ -477,23 +525,76 @@ export async function POST(request) {
         const commissionValue = getImportCell(importRow, ["commission"]);
         const percentage = parseCommissionPercentage(commissionValue);
         if (percentage === null) {
-          summary.skippedInvalidCommission.push({
+          const item = {
             commission: String(commissionValue || ""),
             cruiseName,
             rowNumber,
+          };
+          summary.skippedInvalidCommission.push(item);
+          previewRows.push({
+            inputCommission: item.commission,
+            inputCruiseName: cruiseName,
+            matchedCruiseId: null,
+            matchedCruiseName: "",
+            parsedCommission: null,
+            rowNumber,
+            status: "invalid",
+            suggestions: [],
           });
           continue;
         }
         const cruise = cruiseByName.get(normalizeCruiseName(cruiseName));
 
         if (!cruise) {
-          summary.skippedUnmatchedCruise.push({ cruiseName, rowNumber });
+          const suggestions = getCruiseSuggestions(cruiseName, cruises);
+          summary.skippedUnmatchedCruise.push({ cruiseName, rowNumber, suggestions });
+          previewRows.push({
+            inputCommission: String(commissionValue || ""),
+            inputCruiseName: cruiseName,
+            matchedCruiseId: null,
+            matchedCruiseName: "",
+            parsedCommission: percentage,
+            rowNumber,
+            status: "unmatched",
+            suggestions,
+          });
           continue;
         }
 
         const cruiseId = Number(cruise.id);
         if (existingCruiseIds.has(cruiseId) || seenCruiseIds.has(cruiseId)) {
           summary.skippedExisting.push({
+            cruiseName: cruise.name,
+            rowNumber,
+          });
+          previewRows.push({
+            inputCommission: String(commissionValue || ""),
+            inputCruiseName: cruiseName,
+            matchedCruiseId: cruiseId,
+            matchedCruiseName: cruise.name,
+            parsedCommission: percentage,
+            rowNumber,
+            status: "existing",
+            suggestions: [],
+          });
+          continue;
+        }
+
+        previewRows.push({
+          inputCommission: String(commissionValue || ""),
+          inputCruiseName: cruiseName,
+          matchedCruiseId: cruiseId,
+          matchedCruiseName: cruise.name,
+          parsedCommission: percentage,
+          rowNumber,
+          status: "ready",
+          suggestions: [],
+        });
+        seenCruiseIds.add(cruiseId);
+
+        if (previewOnly) {
+          summary.inserted.push({
+            commission: percentage,
             cruiseName: cruise.name,
             rowNumber,
           });
@@ -517,11 +618,10 @@ export async function POST(request) {
           cruiseName: cruise.name,
           rowNumber,
         });
-        seenCruiseIds.add(cruiseId);
       }
 
       await connection.commit();
-      return NextResponse.json({ success: true, summary });
+      return NextResponse.json({ previewOnly, previewRows, success: true, summary });
     }
 
     const id = Number(body.id || 0);

@@ -46,6 +46,17 @@ type ImportSummary = {
   tenantTablesUpdated: number;
 };
 
+type ImportPreviewRow = {
+  inputCommission: string;
+  inputCruiseName: string;
+  matchedCruiseId: number | null;
+  matchedCruiseName: string;
+  parsedCommission: number | null;
+  rowNumber: number;
+  status: "existing" | "invalid" | "ready" | "unmatched";
+  suggestions: Array<{ id: number; name: string }>;
+};
+
 function normalizeSpreadsheetHeader(value: unknown) {
   return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 }
@@ -125,6 +136,8 @@ export default function CommissionControlClient({
     plans[0]?.id ? String(plans[0].id) : "",
   );
   const [importSummary, setImportSummary] = useState<ImportSummary | null>(null);
+  const [importPreview, setImportPreview] = useState<ImportPreviewRow[]>([]);
+  const [pendingImportRows, setPendingImportRows] = useState<Array<Record<string, unknown>>>([]);
   const [selectedPlan, setSelectedPlan] = useState(
     plans[0]?.id ? String(plans[0].id) : "all",
   );
@@ -233,8 +246,10 @@ export default function CommissionControlClient({
       return;
     }
 
-    setBusyAction("import");
+    setBusyAction("preview_import");
     setImportSummary(null);
+    setImportPreview([]);
+    setPendingImportRows([]);
 
     try {
       const XLSX = await import("xlsx");
@@ -258,15 +273,44 @@ export default function CommissionControlClient({
       const spreadsheetRows = extractCommissionRows(sheetRows);
       const result = await postCommissionAction({
         action: "import",
+        preview: true,
         rows: spreadsheetRows,
         subscription_plan_id: importPlan,
       });
 
+      setImportPreview(result.previewRows as ImportPreviewRow[]);
+      setPendingImportRows(spreadsheetRows);
+    } catch (error) {
+      window.alert(
+        error instanceof Error ? error.message : "Unable to import commission Excel",
+      );
+    } finally {
+      setBusyAction(null);
+    }
+  }
+
+  async function handleConfirmImport() {
+    if (!importPlan || pendingImportRows.length === 0) return;
+
+    const readyCount = importPreview.filter((row) => row.status === "ready").length;
+    if (!readyCount) {
+      window.alert("There are no new matched rows to insert");
+      return;
+    }
+    if (!window.confirm(`Insert ${readyCount} new commission rows?`)) return;
+
+    setBusyAction("import");
+    try {
+      const result = await postCommissionAction({
+        action: "import",
+        rows: pendingImportRows,
+        subscription_plan_id: importPlan,
+      });
       setImportSummary(result.summary as ImportSummary);
       router.refresh();
     } catch (error) {
       window.alert(
-        error instanceof Error ? error.message : "Unable to import commission Excel",
+        error instanceof Error ? error.message : "Unable to import commissions",
       );
     } finally {
       setBusyAction(null);
@@ -318,7 +362,12 @@ export default function CommissionControlClient({
         <label>
           <span>Plan</span>
           <select
-            onChange={(event) => setImportPlan(event.target.value)}
+            onChange={(event) => {
+              setImportPlan(event.target.value);
+              setImportPreview([]);
+              setPendingImportRows([]);
+              setImportSummary(null);
+            }}
             required
             value={importPlan}
           >
@@ -334,7 +383,12 @@ export default function CommissionControlClient({
           <span>Excel file</span>
           <input
             accept=".xlsx,.xls"
-            onChange={(event) => setImportFile(event.target.files?.[0] || null)}
+            onChange={(event) => {
+              setImportFile(event.target.files?.[0] || null);
+              setImportPreview([]);
+              setPendingImportRows([]);
+              setImportSummary(null);
+            }}
             required
             type="file"
           />
@@ -344,9 +398,78 @@ export default function CommissionControlClient({
           disabled={busyAction !== null}
           type="submit"
         >
-          {busyAction === "import" ? "Importing..." : "Upload Excel"}
+          {busyAction === "preview_import" ? "Reading..." : "Preview Excel"}
         </button>
       </form>
+
+      {importPreview.length > 0 ? (
+        <section className="commission-import-preview">
+          <div className="commission-import-preview-header">
+            <div>
+              <strong>Excel preview — nothing inserted yet</strong>
+              <span>
+                Review the matched database cruise name and ID before confirming.
+              </span>
+            </div>
+            <button
+              className="adminmaster-button activate"
+              disabled={
+                busyAction !== null ||
+                !importPreview.some((row) => row.status === "ready")
+              }
+              onClick={handleConfirmImport}
+              type="button"
+            >
+              {busyAction === "import" ? "Inserting..." : "Confirm insert"}
+            </button>
+          </div>
+          <div className="adminmaster-table-wrap">
+            <table className="adminmaster-table commission-import-preview-table">
+              <thead>
+                <tr>
+                  <th>Excel row</th>
+                  <th>Excel cruise name</th>
+                  <th>DB cruise name</th>
+                  <th>Cruise ID</th>
+                  <th>Excel commission</th>
+                  <th>Parsed %</th>
+                  <th>Status / suggestions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {importPreview.map((row) => (
+                  <tr key={`${row.rowNumber}-${row.inputCruiseName}`}>
+                    <td>{row.rowNumber}</td>
+                    <td>{row.inputCruiseName || "—"}</td>
+                    <td>{row.matchedCruiseName || "—"}</td>
+                    <td>{row.matchedCruiseId ?? "—"}</td>
+                    <td>{row.inputCommission || "—"}</td>
+                    <td>{row.parsedCommission ?? "—"}</td>
+                    <td>
+                      <span className={`commission-import-status ${row.status}`}>
+                        {row.status === "ready"
+                          ? "Ready to insert"
+                          : row.status === "existing"
+                            ? "Already exists — skipped"
+                            : row.status === "invalid"
+                              ? "In progress/invalid — skipped"
+                              : "No exact DB match"}
+                      </span>
+                      {row.suggestions.length > 0 ? (
+                        <small>
+                          Closest DB names: {row.suggestions
+                            .map((suggestion) => `${suggestion.name} (ID ${suggestion.id})`)
+                            .join(", ")}
+                        </small>
+                      ) : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
 
       {importSummary ? (
         <div className="commission-import-summary" role="status">
