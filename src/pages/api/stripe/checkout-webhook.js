@@ -5,6 +5,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const planNames = new Set(["Beginner", "Professional", "Enterprise"]);
 
+class UnmappedStripeObjectError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "UnmappedStripeObjectError";
+  }
+}
+
 export const config = {
   api: {
     bodyParser: false,
@@ -158,6 +165,24 @@ async function findCompanyBySubscription(connection, stripeSubscriptionId) {
   return companies[0] || null;
 }
 
+async function findCompanyByStripeCustomer(connection, stripeCustomerId) {
+  if (!stripeCustomerId) return null;
+
+  const [companies] = await connection.query(
+    `
+    SELECT DISTINCT c.id, c.slug, c.plan_type, c.enable_commission_sync
+    FROM company_subscriptions cs
+    INNER JOIN companies c ON c.id = cs.company_id
+    WHERE cs.stripe_customer_id = ?
+    LIMIT 2
+    `,
+    [stripeCustomerId]
+  );
+
+  // A Stripe customer must never be used to guess between multiple companies.
+  return companies.length === 1 ? companies[0] : null;
+}
+
 async function findCompanyForStripeSubscription(connection, stripeSubscriptionId) {
   const existingCompany = await findCompanyBySubscription(
     connection,
@@ -180,6 +205,17 @@ async function findCompanyForStripeSubscription(connection, stripeSubscriptionId
   );
 
   if (companyBySlug) return companyBySlug;
+
+  const stripeCustomerId =
+    typeof subscription.customer === "string"
+      ? subscription.customer
+      : subscription.customer?.id || null;
+  const companyByCustomer = await findCompanyByStripeCustomer(
+    connection,
+    stripeCustomerId
+  );
+
+  if (companyByCustomer) return companyByCustomer;
 
   const customer =
     typeof subscription.customer === "string"
@@ -462,7 +498,12 @@ if (typeof fullSession.subscription === "string") {
     cancelAtPeriodEnd: subscription?.cancel_at_period_end || false,
   });
 
-  await copyMasterCommissionToCompany(connection, company, plan?.id || null);
+  try {
+    await copyMasterCommissionToCompany(connection, company, plan?.id || null);
+  } catch (error) {
+    // Commission provisioning is secondary and must not roll back a paid checkout.
+    console.error("Stripe checkout commission copy failed:", error);
+  }
 
   if (plan?.plan_name && planNames.has(plan.plan_name)) {
     await connection.query("UPDATE companies SET plan_type = ? WHERE id = ?", [
@@ -481,7 +522,9 @@ async function handleSubscriptionEvent(connection, subscription) {
   );
 
   if (!company) {
-    throw new Error(`Company not found for subscription: ${subscription.id}`);
+    throw new UnmappedStripeObjectError(
+      `Company not found for subscription: ${subscription.id}`
+    );
   }
 
   const item = subscription.items?.data?.[0];
@@ -502,8 +545,12 @@ async function handleSubscriptionEvent(connection, subscription) {
       typeof price?.product === "string" ? price.product : price?.product?.id || null,
     stripeStatus: subscription.status,
     paymentStatus: subscription.status === "active" ? "paid" : "pending",
-    currentPeriodStart: stripeDateToMysql(subscription.current_period_start),
-    currentPeriodEnd: stripeDateToMysql(subscription.current_period_end),
+    currentPeriodStart: stripeDateToMysql(
+      subscription.current_period_start || item?.current_period_start
+    ),
+    currentPeriodEnd: stripeDateToMysql(
+      subscription.current_period_end || item?.current_period_end
+    ),
     cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
   });
 
@@ -518,17 +565,25 @@ async function handleSubscriptionEvent(connection, subscription) {
 }
 
 async function upsertBillingHistory(connection, invoice, paymentStatus, failureMessage) {
-  const stripeSubscriptionId =
+  const legacySubscriptionId =
     typeof invoice.subscription === "string"
       ? invoice.subscription
       : invoice.subscription?.id || null;
+  const parentSubscription = invoice.parent?.subscription_details?.subscription;
+  const stripeSubscriptionId =
+    legacySubscriptionId ||
+    (typeof parentSubscription === "string"
+      ? parentSubscription
+      : parentSubscription?.id || null);
   const company = await findCompanyForStripeSubscription(
     connection,
     stripeSubscriptionId
   );
 
   if (!company) {
-    throw new Error(`Company not found for invoice subscription: ${stripeSubscriptionId}`);
+    throw new UnmappedStripeObjectError(
+      `Company not found for invoice subscription: ${stripeSubscriptionId || "none"}`
+    );
   }
 
   const totalAmount = amountToDecimal(invoice.amount_paid || invoice.amount_due);
@@ -699,10 +754,7 @@ export default async function handler(req, res) {
       case "invoice.payment_failed": {
         const invoice = event.data.object;
         const failureMessage =
-          invoice.last_payment_error?.message ||
-          invoice.status_transitions?.finalized_at
-            ? "Invoice payment failed"
-            : null;
+          invoice.last_payment_error?.message || "Invoice payment failed";
 
         companyId = await upsertBillingHistory(
           connection,
@@ -729,6 +781,21 @@ export default async function handler(req, res) {
   } catch (error) {
     if (connection) {
       await connection.rollback();
+
+      if (error instanceof UnmappedStripeObjectError) {
+        try {
+          await markWebhookEventById(event.id, {
+            processingStatus: "Processed",
+            errorMessage: `Ignored: ${error.message}`,
+          });
+        } catch (logError) {
+          console.error("Stripe Webhook Log Update Error:", logError);
+          return res.status(500).json({ message: "Webhook handler failed" });
+        }
+
+        console.warn("Stripe webhook ignored:", error.message);
+        return res.status(200).json({ received: true, ignored: true });
+      }
 
       try {
         await markWebhookEventById(event.id, {
