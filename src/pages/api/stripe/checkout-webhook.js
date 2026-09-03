@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import pool from "../../../lib/db_mysql";
+import { tableSafePrefix } from "../../../lib/agentAuth";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -679,6 +680,167 @@ async function upsertBillingHistory(connection, invoice, paymentStatus, failureM
   return company.id;
 }
 
+async function handleInvoiceCreated(connection, invoice) {
+  if (invoice.billing_reason !== "subscription_cycle") return null;
+
+  const legacySubscriptionId =
+    typeof invoice.subscription === "string"
+      ? invoice.subscription
+      : invoice.subscription?.id || null;
+  const parentSubscription = invoice.parent?.subscription_details?.subscription;
+  const stripeSubscriptionId =
+    legacySubscriptionId ||
+    (typeof parentSubscription === "string"
+      ? parentSubscription
+      : parentSubscription?.id || null);
+
+  if (!stripeSubscriptionId) return null;
+
+  const stripeCustomerId =
+    typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id || null;
+
+  const [rows] = await connection.query(
+    `
+    SELECT
+      cs.company_id,
+      c.slug,
+      c.billing_metric,
+      sp.booking_fee,
+      sp.trip_summary_fee
+    FROM company_subscriptions cs
+    INNER JOIN companies c ON c.id = cs.company_id
+    LEFT JOIN subscription_plans sp ON sp.id = cs.plan_id
+    WHERE cs.stripe_subscription_id = ?
+    ORDER BY cs.id DESC
+    LIMIT 1
+    `,
+    [stripeSubscriptionId]
+  );
+
+  const subscription = rows[0];
+
+  if (!subscription) {
+    throw new UnmappedStripeObjectError(
+      `Company not found for invoice subscription: ${stripeSubscriptionId}`
+    );
+  }
+
+  if (subscription.billing_metric !== "booking_count" && subscription.billing_metric !== "trip_summary_count") {
+    // Flat-fee only ("none") — no usage line for this company, ever.
+    return subscription.company_id;
+  }
+
+  // invoice.period_start/end mark when items may still be attached to this invoice,
+  // not the service period — the actual billed cycle lives on the line item.
+  const usageLine = invoice.lines?.data?.find((line) => line.period) || null;
+  const periodStartSeconds = usageLine?.period?.start || invoice.period_start || invoice.created;
+  const periodEndSeconds = usageLine?.period?.end || invoice.period_end || invoice.created;
+  const periodStart = stripeDateToMysql(periodStartSeconds);
+  const periodEnd = stripeDateToMysql(periodEndSeconds);
+
+  const tablePrefix = tableSafePrefix(subscription.slug);
+  const bookingsTable = `${tablePrefix}_bookings`;
+  const metric = subscription.billing_metric === "trip_summary_count" ? "trip_summary_count" : "booking_count";
+
+  let count = 0;
+
+  try {
+    const whereClause =
+      metric === "trip_summary_count" ? "package_url IS NOT NULL" : "advance_paid = 1";
+    const [usageRows] = await connection.query(
+      `
+      SELECT COUNT(*) AS cnt
+      FROM \`${bookingsTable}\`
+      WHERE ${whereClause}
+        AND created_at >= ?
+        AND created_at < ?
+      `,
+      [periodStart, periodEnd]
+    );
+
+    count = Number(usageRows[0]?.cnt || 0);
+  } catch (error) {
+    if (error.code !== "ER_NO_SUCH_TABLE") throw error;
+  }
+
+  const fee =
+    Number(metric === "trip_summary_count" ? subscription.trip_summary_fee : subscription.booking_fee) || 0;
+  const amount = Math.round(count * fee * 100) / 100;
+
+  try {
+    await connection.query(
+      `
+      INSERT INTO company_billing_usage
+        (
+          company_id,
+          stripe_subscription_id,
+          stripe_invoice_id,
+          billing_period_start,
+          billing_period_end,
+          billing_metric,
+          booking_count,
+          booking_fee,
+          booking_amount,
+          trip_summary_count,
+          trip_summary_fee,
+          trip_summary_amount
+        )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      [
+        subscription.company_id,
+        stripeSubscriptionId,
+        invoice.id,
+        periodStart,
+        periodEnd,
+        metric,
+        metric === "booking_count" ? count : 0,
+        metric === "booking_count" ? fee : 0,
+        metric === "booking_count" ? amount : 0,
+        metric === "trip_summary_count" ? count : 0,
+        metric === "trip_summary_count" ? fee : 0,
+        metric === "trip_summary_count" ? amount : 0,
+      ]
+    );
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      // Already processed for this invoice on an earlier delivery of this webhook.
+      return subscription.company_id;
+    }
+
+    throw error;
+  }
+
+  if (amount > 0 && stripeCustomerId) {
+    const invoiceItem = await stripe.invoiceItems.create({
+      amount: Math.round(amount * 100),
+      currency: invoice.currency || "usd",
+      customer: stripeCustomerId,
+      description:
+        metric === "trip_summary_count"
+          ? `Trip summary usage - ${count} x $${fee.toFixed(2)}`
+          : `Booking usage - ${count} x $${fee.toFixed(2)}`,
+      invoice: invoice.id,
+    });
+
+    await connection.query(
+      `
+      UPDATE company_billing_usage
+      SET stripe_invoice_item_id = ?, processed_at = NOW()
+      WHERE stripe_invoice_id = ?
+      `,
+      [invoiceItem.id, invoice.id]
+    );
+  } else {
+    await connection.query(
+      `UPDATE company_billing_usage SET processed_at = NOW() WHERE stripe_invoice_id = ?`,
+      [invoice.id]
+    );
+  }
+
+  return subscription.company_id;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
@@ -739,6 +901,14 @@ export default async function handler(req, res) {
         const subscription = event.data.object;
 
         companyId = await handleSubscriptionEvent(connection, subscription);
+
+        break;
+      }
+
+      case "invoice.created": {
+        const invoice = event.data.object;
+
+        companyId = await handleInvoiceCreated(connection, invoice);
 
         break;
       }

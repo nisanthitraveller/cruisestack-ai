@@ -103,6 +103,7 @@ export default async function AdminMasterCompaniesPage() {
               Companies
             </Link>
             <Link href="/adminmaster/subscription-plans">Subscription plans</Link>
+            <Link href="/adminmaster/billing-usage">Billing usage</Link>
             <Link href="/adminmaster/email-config">Email configuration</Link>
             <Link href="/adminmaster/direct-booking">Direct booking</Link>
             <form action="/api/adminmaster/logout" method="post">

@@ -170,6 +170,9 @@ export default async function AdminMasterOnlinePaymentPage() {
             <Link href="/adminmaster/subscription-plans">
               Subscription plans
             </Link>
+            <Link href="/adminmaster/billing-usage">
+              Billing usage
+            </Link>
             <Link href="/adminmaster/email-config">
               Email configuration
             </Link>

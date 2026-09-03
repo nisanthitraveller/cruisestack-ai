@@ -129,6 +129,7 @@ export default async function AdminMasterDirectBookingPage() {
             <Link href="/adminmaster/commission-control">Commission Control</Link>
             <Link href="/adminmaster/companies">Companies</Link>
             <Link href="/adminmaster/subscription-plans">Subscription plans</Link>
+            <Link href="/adminmaster/billing-usage">Billing usage</Link>
             <Link href="/adminmaster/email-config">Email configuration</Link>
             <Link className="active" href="/adminmaster/direct-booking">
               Direct booking

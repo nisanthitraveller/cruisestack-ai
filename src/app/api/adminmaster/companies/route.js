@@ -12,7 +12,7 @@ const allowedActions = new Set([
 ]);
 const allowedCompanyTypes = new Set(["B2B", "B2C"]);
 const allowedPlans = new Set(["Beginner", "Professional", "Enterprise"]);
-const allowedBillingMetrics = new Set(["booking_count", "trip_summary_count"]);
+const allowedBillingMetrics = new Set(["none", "booking_count", "trip_summary_count"]);
 const reservedWorkspacePrefixes = new Set([
   "company",
   "cruisestack",

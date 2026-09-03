@@ -1,0 +1,3 @@
+ALTER TABLE companies
+  MODIFY COLUMN billing_metric ENUM('none', 'booking_count', 'trip_summary_count')
+  NOT NULL DEFAULT 'booking_count';
