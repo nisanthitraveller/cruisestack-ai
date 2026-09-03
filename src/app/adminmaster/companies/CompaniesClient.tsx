@@ -14,6 +14,8 @@ export type CompanyRow = {
   company_type: string | null;
   created_at: string | null;
   currency: string | null;
+  current_period_end: string | null;
+  current_period_start: string | null;
   domain: string | null;
   id: number;
   logo: string | null;
@@ -520,6 +522,11 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                         <strong>{billingMetricLabel(company.billing_metric)}</strong>
                         <span>{selectedAmount(company)} per unit</span>
                         <span>Max {company.monthly_booking_limit ?? "Not set"}</span>
+                        <span>
+                          {company.current_period_start && company.current_period_end
+                            ? `${formatDate(company.current_period_start)} - ${formatDate(company.current_period_end)}`
+                            : "No active cycle"}
+                        </span>
                       </div>
                     </td>
                     <td>

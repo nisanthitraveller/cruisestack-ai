@@ -112,7 +112,7 @@ async function getCompanies(): Promise<CompanyRow[]> {
     );
 
     const companyRows = rows as Array<
-      Omit<CompanyRow, "created_at"> & {
+      Omit<CompanyRow, "created_at" | "current_period_end" | "current_period_start"> & {
         created_at: Date | string | null;
         current_period_end: Date | string | null;
         current_period_start: Date | string | null;
@@ -129,6 +129,14 @@ async function getCompanies(): Promise<CompanyRow[]> {
           company.created_at instanceof Date
             ? company.created_at.toISOString()
             : company.created_at,
+        current_period_start:
+          company.current_period_start instanceof Date
+            ? company.current_period_start.toISOString()
+            : company.current_period_start,
+        current_period_end:
+          company.current_period_end instanceof Date
+            ? company.current_period_end.toISOString()
+            : company.current_period_end,
         bookingCount: usageByCompany[index].bookingCount,
         tripSummaryCount: usageByCompany[index].tripSummaryCount,
       }));
