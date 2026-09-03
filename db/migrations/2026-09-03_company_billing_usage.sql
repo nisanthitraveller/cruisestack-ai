@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS company_billing_usage (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  company_id INT NOT NULL,
+  stripe_subscription_id VARCHAR(255) NOT NULL,
+  stripe_invoice_id VARCHAR(255) NOT NULL,
+  billing_period_start DATETIME NOT NULL,
+  billing_period_end DATETIME NOT NULL,
+  billing_metric ENUM('booking_count', 'trip_summary_count') NOT NULL,
+  booking_count INT NOT NULL DEFAULT 0,
+  booking_fee DECIMAL(12,2) NOT NULL DEFAULT 0,
+  booking_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  trip_summary_count INT NOT NULL DEFAULT 0,
+  trip_summary_fee DECIMAL(12,2) NOT NULL DEFAULT 0,
+  trip_summary_amount DECIMAL(12,2) NOT NULL DEFAULT 0,
+  stripe_invoice_item_id VARCHAR(255) DEFAULT NULL,
+  processed_at DATETIME DEFAULT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_company_billing_usage_invoice (stripe_invoice_id),
+  KEY idx_company_billing_usage_company (company_id)
+);

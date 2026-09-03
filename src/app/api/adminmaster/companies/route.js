@@ -12,6 +12,7 @@ const allowedActions = new Set([
 ]);
 const allowedCompanyTypes = new Set(["B2B", "B2C"]);
 const allowedPlans = new Set(["Beginner", "Professional", "Enterprise"]);
+const allowedBillingMetrics = new Set(["booking_count", "trip_summary_count"]);
 const reservedWorkspacePrefixes = new Set([
   "company",
   "cruisestack",
@@ -45,6 +46,7 @@ function normalizeCompanyUpdate(body) {
     deals_enabled: Number(body.deals_enabled) === 1 ? 1 : 0,
     enable_commission_sync:
       Number(body.enable_commission_sync) === 1 ? 1 : 0,
+    billing_metric: String(body.billing_metric || "").trim(),
     company_name: String(body.company_name || "").trim(),
     company_type: String(body.company_type || "").trim().toUpperCase(),
     currency: String(body.currency || "").trim().toUpperCase(),
@@ -86,6 +88,10 @@ function validateCompanyUpdate(company) {
 
   if (!allowedCompanyTypes.has(company.company_type)) {
     throw httpError("Invalid company type");
+  }
+
+  if (!allowedBillingMetrics.has(company.billing_metric)) {
+    throw httpError("Invalid billing metric");
   }
 
   if (
@@ -470,7 +476,8 @@ export async function POST(request) {
           status = ?,
           chatbot = ?,
           deals_enabled = ?,
-          enable_commission_sync = ?
+          enable_commission_sync = ?,
+          billing_metric = ?
         WHERE id = ?
         LIMIT 1
         `,
@@ -489,6 +496,7 @@ export async function POST(request) {
           update.chatbot,
           update.deals_enabled,
           update.enable_commission_sync,
+          update.billing_metric,
           company.id,
         ],
       );

@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export type CompanyRow = {
+  billing_metric: string | null;
   chatbot: number | null;
   deals_enabled: number | null;
   enable_commission_sync: number | null;
@@ -29,6 +30,7 @@ export type CompanyRow = {
 };
 
 type CompanyForm = {
+  billing_metric: string;
   chatbot: string;
   deals_enabled: string;
   enable_commission_sync: string;
@@ -67,6 +69,7 @@ const emptyAgentForm = {
 
 function formFromCompany(company: CompanyRow): CompanyForm {
   return {
+    billing_metric: company.billing_metric || "booking_count",
     chatbot: Number(company.chatbot) === 1 ? "1" : "0",
     deals_enabled: Number(company.deals_enabled) === 1 ? "1" : "0",
     enable_commission_sync:
@@ -707,6 +710,13 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                   type="checkbox"
                 />
                 <span>Enable commission sync</span>
+              </label>
+              <label>
+                <span>Billing metric</span>
+                <select onChange={(event) => updateField("billing_metric", event.target.value)} value={form.billing_metric}>
+                  <option value="booking_count">Booking count</option>
+                  <option value="trip_summary_count">Trip summary count</option>
+                </select>
               </label>
 
               <div className="companies-readonly-details">

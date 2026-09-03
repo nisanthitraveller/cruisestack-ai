@@ -33,6 +33,7 @@ async function getCompanies(): Promise<CompanyRow[]> {
         c.chatbot,
         c.deals_enabled,
         c.enable_commission_sync,
+        c.billing_metric,
         cs.payment_method,
         cs.payment_status,
         cs.status AS subscription_status,
@@ -101,6 +102,7 @@ export default async function AdminMasterCompaniesPage() {
             <Link className="active" href="/adminmaster/companies">
               Companies
             </Link>
+            <Link href="/adminmaster/subscription-plans">Subscription plans</Link>
             <Link href="/adminmaster/email-config">Email configuration</Link>
             <Link href="/adminmaster/direct-booking">Direct booking</Link>
             <form action="/api/adminmaster/logout" method="post">
