@@ -8,6 +8,60 @@ import "../adminmaster.css";
 
 export const dynamic = "force-dynamic";
 
+function tableSafePrefix(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 100);
+}
+
+type UsageRow = {
+  billing_metric: string | null;
+  current_period_end: Date | string | null;
+  current_period_start: Date | string | null;
+  slug: string;
+};
+
+async function getUsageCounts(
+  connection: Awaited<ReturnType<typeof pool.getConnection>>,
+  company: UsageRow,
+) {
+  const tablePrefix = tableSafePrefix(company.slug);
+  const bookingsTable = `${tablePrefix}_bookings`;
+  const hasPeriod = Boolean(company.current_period_start && company.current_period_end);
+
+  try {
+    const [rows] = await connection.query(
+      `
+      SELECT
+        SUM(CASE WHEN advance_paid = 1 THEN 1 ELSE 0 END) AS booking_count,
+        SUM(CASE WHEN package_url IS NOT NULL THEN 1 ELSE 0 END) AS trip_summary_count
+      FROM \`${bookingsTable}\`
+      ${hasPeriod ? "WHERE created_at >= ? AND created_at < ?" : ""}
+      `,
+      hasPeriod ? [company.current_period_start, company.current_period_end] : [],
+    );
+
+    const usageRows = rows as Array<{
+      booking_count: number | string | null;
+      trip_summary_count: number | string | null;
+    }>;
+
+    return {
+      bookingCount: Number(usageRows[0]?.booking_count || 0),
+      tripSummaryCount: Number(usageRows[0]?.trip_summary_count || 0),
+    };
+  } catch (error) {
+    if ((error as { code?: string })?.code !== "ER_NO_SUCH_TABLE") {
+      throw error;
+    }
+
+    return { bookingCount: 0, tripSummaryCount: 0 };
+  }
+}
+
 async function getCompanies(): Promise<CompanyRow[]> {
   const connection = await pool.getConnection();
 
@@ -37,7 +91,12 @@ async function getCompanies(): Promise<CompanyRow[]> {
         cs.payment_method,
         cs.payment_status,
         cs.status AS subscription_status,
-        sp.plan_name AS subscription_plan
+        cs.current_period_start,
+        cs.current_period_end,
+        sp.plan_name AS subscription_plan,
+        sp.monthly_booking_limit,
+        sp.booking_fee,
+        sp.trip_summary_fee
       FROM companies c
       LEFT JOIN company_subscriptions cs
         ON cs.id = (
@@ -53,15 +112,25 @@ async function getCompanies(): Promise<CompanyRow[]> {
     );
 
     const companyRows = rows as Array<
-      Omit<CompanyRow, "created_at"> & { created_at: Date | string | null }
+      Omit<CompanyRow, "created_at"> & {
+        created_at: Date | string | null;
+        current_period_end: Date | string | null;
+        current_period_start: Date | string | null;
+      }
     >;
 
-    return companyRows.map((company) => ({
+    const usageByCompany = await Promise.all(
+      companyRows.map((company) => getUsageCounts(connection, company)),
+    );
+
+    return companyRows.map((company, index) => ({
         ...company,
         created_at:
           company.created_at instanceof Date
             ? company.created_at.toISOString()
             : company.created_at,
+        bookingCount: usageByCompany[index].bookingCount,
+        tripSummaryCount: usageByCompany[index].tripSummaryCount,
       }));
   } finally {
     connection.release();

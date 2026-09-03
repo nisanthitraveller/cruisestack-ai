@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 
 export type CompanyRow = {
   billing_metric: string | null;
+  booking_fee: number | string | null;
+  bookingCount: number;
   chatbot: number | null;
   deals_enabled: number | null;
   enable_commission_sync: number | null;
@@ -15,6 +17,7 @@ export type CompanyRow = {
   domain: string | null;
   id: number;
   logo: string | null;
+  monthly_booking_limit: number | null;
   payment_method: string | null;
   payment_status: string | null;
   plan_type: string | null;
@@ -27,6 +30,8 @@ export type CompanyRow = {
   subscription_plan: string | null;
   subscription_status: number | null;
   support_email: string | null;
+  trip_summary_fee: number | string | null;
+  tripSummaryCount: number;
 };
 
 type CompanyForm = {
@@ -89,6 +94,32 @@ function formFromCompany(company: CompanyRow): CompanyForm {
     status: Number(company.status) === 1 ? "1" : "0",
     support_email: company.support_email || "",
   };
+}
+
+function formatMoney(value: number | string | null) {
+  if (value === null || value === undefined || value === "") return "-";
+
+  return new Intl.NumberFormat("en", {
+    currency: "USD",
+    maximumFractionDigits: 2,
+    style: "currency",
+  }).format(Number(value));
+}
+
+const billingMetricLabels: Record<string, string> = {
+  booking_count: "Booking count",
+  none: "None (flat fee)",
+  trip_summary_count: "Trip summary count",
+};
+
+function billingMetricLabel(value: string | null) {
+  return billingMetricLabels[value || "none"] || value || "None (flat fee)";
+}
+
+function selectedAmount(company: CompanyRow) {
+  if (company.billing_metric === "booking_count") return formatMoney(company.booking_fee);
+  if (company.billing_metric === "trip_summary_count") return formatMoney(company.trip_summary_fee);
+  return "-";
 }
 
 function formatDate(value: string | null) {
@@ -418,6 +449,8 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                 <th>Domain</th>
                 <th>Plan</th>
                 <th>Type</th>
+                <th>Billing</th>
+                <th>Usage</th>
                 <th>Created</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -480,6 +513,19 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                             ? `${company.special_discount_percentage ?? 30}% special discount`
                             : "Special discount off"}
                         </span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="adminmaster-company">
+                        <strong>{billingMetricLabel(company.billing_metric)}</strong>
+                        <span>{selectedAmount(company)} per unit</span>
+                        <span>Max {company.monthly_booking_limit ?? "Not set"}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="adminmaster-company">
+                        <span>{company.tripSummaryCount} trip summaries</span>
+                        <span>{company.bookingCount} bookings</span>
                       </div>
                     </td>
                     <td>{formatDate(company.created_at)}</td>
