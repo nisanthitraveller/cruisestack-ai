@@ -1464,14 +1464,14 @@
 }
 
 .companies-table {
-  min-width: 1120px;
+  min-width: 1420px;
 }
 
 .companies-table th:last-child,
 .companies-table td:last-child {
   background: #fff;
   box-shadow: -10px 0 18px rgba(15, 23, 42, 0.06);
-  min-width: 245px;
+  min-width: 280px;
   position: sticky;
   right: 0;
   z-index: 2;
@@ -1484,9 +1484,20 @@
 
 .companies-row-actions {
   align-items: center;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  grid-template-columns: 38px minmax(105px, 1fr) 38px;
+}
+
+.companies-row-actions .adminmaster-button {
+  flex: 1 1 auto;
+  min-width: 76px;
+  padding: 9px 10px;
+  white-space: nowrap;
+}
+
+.companies-row-actions .companies-icon-button {
+  flex: 0 0 38px;
 }
 
 .companies-company-cell {
