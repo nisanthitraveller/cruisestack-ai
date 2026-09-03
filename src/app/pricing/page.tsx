@@ -268,7 +268,8 @@ function PricingContent() {
   const searchParams = useSearchParams();
   const companySlug = searchParams?.get("company") || undefined;
   const payTestActive =
-    companySlug === "travel-days" && searchParams?.get("pay_test") === "1";
+    searchParams?.get("pay_test") === "1" &&
+    searchParams?.get("test_tenant") === "travel-days";
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
   const [subscriptionStatus, setSubscriptionStatus] =
     useState<CompanySubscriptionStatus | null>(null);
