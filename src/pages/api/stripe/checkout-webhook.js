@@ -283,8 +283,8 @@ async function upsertCompanySubscription(connection, details) {
         stripe_price_id = ?,
         stripe_product_id = ?,
         stripe_status = ?,
-        current_period_start = ?,
-        current_period_end = ?,
+        current_period_start = COALESCE(?, current_period_start),
+        current_period_end = COALESCE(?, current_period_end),
         cancel_at_period_end = ?,
         status = ?
       WHERE id = ?
@@ -494,8 +494,12 @@ if (typeof fullSession.subscription === "string") {
       typeof product === "string" ? product : product?.id || null,
     stripeStatus: subscription?.status || fullSession.payment_status,
     paymentStatus: fullSession.payment_status,
-    currentPeriodStart: stripeDateToMysql(subscription?.current_period_start),
-    currentPeriodEnd: stripeDateToMysql(subscription?.current_period_end),
+    currentPeriodStart: stripeDateToMysql(
+      subscription?.current_period_start || subscription?.items?.data?.[0]?.current_period_start
+    ),
+    currentPeriodEnd: stripeDateToMysql(
+      subscription?.current_period_end || subscription?.items?.data?.[0]?.current_period_end
+    ),
     cancelAtPeriodEnd: subscription?.cancel_at_period_end || false,
   });
 

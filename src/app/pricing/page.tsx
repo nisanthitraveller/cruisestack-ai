@@ -2,6 +2,7 @@
 
 import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Script from "next/script";
 import '../style.css';
 import logoMain from "../../assets/logo.png";
 import logoft from "../../assets/logo-white.png";
@@ -266,6 +267,8 @@ function PricingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const companySlug = searchParams?.get("company") || undefined;
+  const payTestActive =
+    companySlug === "travel-days" && searchParams?.get("pay_test") === "1";
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
   const [subscriptionStatus, setSubscriptionStatus] =
     useState<CompanySubscriptionStatus | null>(null);
@@ -403,6 +406,26 @@ function PricingContent() {
           <p>Pay as your business grows.</p>
 
         </section>
+
+        {payTestActive ? (
+          <>
+            <Script
+              async
+              src="https://js.stripe.com/v3/buy-button.js"
+              strategy="afterInteractive"
+            />
+            <section className="pricing-hero" style={{ marginBottom: 40 }}>
+              <h2>$1 test payment</h2>
+              <p>Internal test button - Silver plan, $1.</p>
+              <div className="stripe-button-wrapper">
+                <stripe-buy-button
+                  buy-button-id="buy_btn_1Te6QOEmqvBXj5NHQ6BVpdva"
+                  publishable-key="pk_live_51GJbyfEmqvBXj5NHMQL7JwIH8XpeW0PnZn4LvhWKI2ZntEo3gcsorswHdiwWTGcKB8dG8ICB8lCPirX2DEq1U5n400CCAPWkPb"
+                ></stripe-buy-button>
+              </div>
+            </section>
+          </>
+        ) : null}
 
         {companySlug && checkingSubscription ? (
           <section className="pricing-subscription-card">
