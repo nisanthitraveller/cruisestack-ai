@@ -268,8 +268,7 @@ function PricingContent() {
   const searchParams = useSearchParams();
   const companySlug = searchParams?.get("company") || undefined;
   const payTestActive =
-    searchParams?.get("pay_test") === "1" &&
-    searchParams?.get("test_tenant") === "travel-days";
+    companySlug === "travel-days" && searchParams?.get("pay_test") === "1";
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
   const [subscriptionStatus, setSubscriptionStatus] =
     useState<CompanySubscriptionStatus | null>(null);
@@ -428,14 +427,14 @@ function PricingContent() {
           </>
         ) : null}
 
-        {companySlug && checkingSubscription ? (
+        {!payTestActive && companySlug && checkingSubscription ? (
           <section className="pricing-subscription-card">
             <span>Checking subscription</span>
             <strong>Please wait...</strong>
           </section>
         ) : null}
 
-        {companySlug && subscriptionStatus?.companyFound === false ? (
+        {!payTestActive && companySlug && subscriptionStatus?.companyFound === false ? (
           <section className="pricing-subscription-card warning">
             <span>Company not found</span>
             <strong>{companySlug}</strong>
