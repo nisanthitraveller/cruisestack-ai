@@ -49,7 +49,7 @@ const plans = [
     },
     pricingdetails: {
       "Monthly fee": "$499/month",
-      "$0.50/trip summary": "$0.50/trip summary",
+      "$0.25/trip summary": "$0.25/trip summary",
     }
   },
 
@@ -59,8 +59,8 @@ const plans = [
     displayName: "Professional",
     colorClass: "professional",
     
-    buyButtonId: "buy_btn_1Tc2xMEmqvBXj5NHgUanmIGl",
-    stripePriceId: "price_1TXERoEmqvBXj5NHejeHS6Kk",
+    buyButtonId: "buy_btn_1UCusoEmqvBXj5NH6cTbvCaT",
+    stripePriceId: "price_1UCumLEmqvBXj5NHRkep8iTI",
 
     features: {
       "Best agency commissions": "Yes",
@@ -92,9 +92,9 @@ const plans = [
     },
      pricingdetails: {
 
-      "Monthly fee": "$999/month",
+      "Monthly fee": "$599/month",
 
-      "$0.30/trip summary": "$0.30/trip summary",
+      "$7/booking": "$7/booking",
     }
   },
   {
@@ -102,7 +102,7 @@ const plans = [
     colorClass: "enterprise",
     displayName: "Enterprise",
     buyButtonId: "buy_btn_1Tc2z7EmqvBXj5NHUQVP4Rwx",
-    stripePriceId: "price_1TXESAEmqvBXj5NHO4QDybcN",
+    stripePriceId: "price_1Tbw1IEmqvBXj5NHwrWRNdGo",
 
     features: {
       "Best agency commissions": "Yes",
@@ -133,12 +133,12 @@ const plans = [
     },
      pricingdetails: {
 
-      "Monthly fee": "$1999/month",
-       "$0.10/trip summary": "$0.10/trip summary",
+      "Monthly fee": "$999/month",
+       "$4/booking": "$4/booking",
 
 
     }
-  },  
+  },
 ];
 
 type AgentSummary = {

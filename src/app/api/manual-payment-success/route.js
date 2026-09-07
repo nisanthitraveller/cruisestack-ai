@@ -50,6 +50,8 @@ async function findProfessionalPlan(connection) {
     SELECT id, plan_name
     FROM subscription_plans
     WHERE plan_name = ?
+      AND status = 1
+    ORDER BY id DESC
     LIMIT 1
     `,
     ["Professional"],

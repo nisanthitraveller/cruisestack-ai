@@ -30,6 +30,8 @@ export async function POST(request) {
       FROM subscription_plans
       WHERE plan_name = ?
         AND stripe_price_id IS NOT NULL
+        AND status = 1
+      ORDER BY id DESC
       LIMIT 1
       `,
       [planName],
