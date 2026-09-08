@@ -8,6 +8,7 @@ export type CompanyRow = {
   booking_fee: number | string | null;
   bookingCount: number;
   chatbot: number | null;
+  Blockingonly_flag: number | null;
   deals_enabled: number | null;
   enable_commission_sync: number | null;
   company_name: string;
@@ -39,6 +40,7 @@ export type CompanyRow = {
 type CompanyForm = {
   billing_metric: string;
   chatbot: string;
+  Blockingonly_flag: string;
   deals_enabled: string;
   enable_commission_sync: string;
   company_name: string;
@@ -78,6 +80,8 @@ function formFromCompany(company: CompanyRow): CompanyForm {
   return {
     billing_metric: company.billing_metric || "none",
     chatbot: Number(company.chatbot) === 1 ? "1" : "0",
+    Blockingonly_flag:
+      Number(company.Blockingonly_flag) === 1 ? "1" : "0",
     deals_enabled: Number(company.deals_enabled) === 1 ? "1" : "0",
     enable_commission_sync:
       Number(company.enable_commission_sync ?? 1) === 1 ? "1" : "0",
@@ -749,6 +753,18 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                 <select onChange={(event) => updateField("deals_enabled", event.target.value)} value={form.deals_enabled}>
                   <option value="1">Enabled</option>
                   <option value="0">Disabled</option>
+                </select>
+              </label>
+              <label>
+                <span>Popup payment</span>
+                <select
+                  onChange={(event) =>
+                    updateField("Blockingonly_flag", event.target.value)
+                  }
+                  value={form.Blockingonly_flag}
+                >
+                  <option value="1">Enabled</option>
+                  <option value="0">Disabled (block cabin only)</option>
                 </select>
               </label>
               <label className="companies-checkbox-field">

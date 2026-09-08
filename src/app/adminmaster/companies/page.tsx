@@ -85,6 +85,7 @@ async function getCompanies(): Promise<CompanyRow[]> {
         c.special_discount_percentage,
         c.created_at,
         c.chatbot,
+        c.Blockingonly_flag,
         c.deals_enabled,
         c.enable_commission_sync,
         c.billing_metric,

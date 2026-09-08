@@ -43,6 +43,7 @@ function httpError(message, statusCode = 400) {
 function normalizeCompanyUpdate(body) {
   return {
     chatbot: Number(body.chatbot) === 1 ? 1 : 0,
+    Blockingonly_flag: Number(body.Blockingonly_flag) === 1 ? 1 : 0,
     deals_enabled: Number(body.deals_enabled) === 1 ? 1 : 0,
     enable_commission_sync:
       Number(body.enable_commission_sync) === 1 ? 1 : 0,
@@ -475,6 +476,7 @@ export async function POST(request) {
           secondary_color = ?,
           status = ?,
           chatbot = ?,
+          Blockingonly_flag = ?,
           deals_enabled = ?,
           enable_commission_sync = ?,
           billing_metric = ?
@@ -494,6 +496,7 @@ export async function POST(request) {
           update.secondary_color,
           update.status,
           update.chatbot,
+          update.Blockingonly_flag,
           update.deals_enabled,
           update.enable_commission_sync,
           update.billing_metric,
