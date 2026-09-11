@@ -9,6 +9,7 @@ export type CompanyRow = {
   bookingCount: number;
   chatbot: number | null;
   Blockingonly_flag: number | null;
+  gratuity_section_enabled: number | null;
   deals_enabled: number | null;
   enable_commission_sync: number | null;
   company_name: string;
@@ -41,6 +42,7 @@ type CompanyForm = {
   billing_metric: string;
   chatbot: string;
   Blockingonly_flag: string;
+  gratuity_section_enabled: string;
   deals_enabled: string;
   enable_commission_sync: string;
   company_name: string;
@@ -81,7 +83,9 @@ function formFromCompany(company: CompanyRow): CompanyForm {
     billing_metric: company.billing_metric || "none",
     chatbot: Number(company.chatbot) === 1 ? "1" : "0",
     Blockingonly_flag:
-      Number(company.Blockingonly_flag) === 1 ? "1" : "0",
+      Number(company.Blockingonly_flag ?? 1) === 1 ? "1" : "0",
+    gratuity_section_enabled:
+      Number(company.gratuity_section_enabled ?? 0) === 1 ? "1" : "0",
     deals_enabled: Number(company.deals_enabled) === 1 ? "1" : "0",
     enable_commission_sync:
       Number(company.enable_commission_sync ?? 1) === 1 ? "1" : "0",
@@ -765,6 +769,18 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                 >
                   <option value="1">Enabled</option>
                   <option value="0">Disabled (block cabin only)</option>
+                </select>
+              </label>
+              <label>
+                <span>Trip summary gratuity</span>
+                <select
+                  onChange={(event) =>
+                    updateField("gratuity_section_enabled", event.target.value)
+                  }
+                  value={form.gratuity_section_enabled}
+                >
+                  <option value="0">Hidden</option>
+                  <option value="1">Enabled</option>
                 </select>
               </label>
               <label className="companies-checkbox-field">
