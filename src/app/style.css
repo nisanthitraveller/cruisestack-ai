@@ -366,6 +366,7 @@ body{
   align-items: center;
   gap: 48px;
   flex-wrap: wrap;
+  row-gap: 30px;
 }
 .cruise-page-body .trust-logo {
   font-size: 16px;

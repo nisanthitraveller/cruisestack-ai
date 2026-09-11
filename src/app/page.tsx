@@ -42,6 +42,10 @@ import logtwo from "../assets/Satguru.png";
 import logthree from "../assets/toptraveltrip.png";
 import logofour from "../assets/travelwings.png";
 import logofive from "../assets/travtips.png";
+import logosix from "../assets/kesari.png";
+import logoseven from "../assets/sotc.png";
+import logoeight from "../assets/triploft.png";
+import logonine from "../assets/thomascook.png";
 import Footer from '@/components/Footer/footer';
 import Header from '@/components/Header/header';
 
@@ -130,7 +134,10 @@ const ftrimgsect = {
       {/* ───── TRUST BAR ───── */}
       <section className="trust-bar">
         <p>Trusted by leading travel brands worldwide</p>
-        <div className="trust-logos">
+        <div className="trust-logos container">
+           <span className="trust-logo">
+            <Image src={logonine} alt="Thomas Cook" width={180} />
+          </span>
           <span className="trust-logo script">
             <Image src={logoone} alt="Aerticket" width={180} />
           </span>
@@ -146,6 +153,16 @@ const ftrimgsect = {
           <span className="trust-logo">
             <Image src={logofive} alt="Travtips" width={180} />
           </span>
+           <span className="trust-logo">
+            <Image src={logosix} alt="Kesari" width={60} />
+          </span>
+           <span className="trust-logo">
+            <Image src={logoseven} alt="SOTC" width={180} />
+          </span>
+           <span className="trust-logo">
+            <Image src={logoeight} alt="Triploft" width={60} />
+          </span>
+          
          
         </div>
       </section>

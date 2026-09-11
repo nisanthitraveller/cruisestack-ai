@@ -33,6 +33,7 @@ export default function Header() {
     { href: "/solutions", label: "Solutions" },
     { href: "/resources", label: "Resources" },
     { href: "/company", label: "Company" },
+    { href: "/faq", label: "FAQ" },
   ];
 
   const isActive = (href: string) => pathname ? (pathname === href || pathname.startsWith(`${href}/`)) : false;

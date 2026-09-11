@@ -13,6 +13,10 @@ import logtwo from "../../assets/Satguru.png";
 import logthree from "../../assets/toptraveltrip.png";
 import logofour from "../../assets/travelwings.png";
 import logofive from "../../assets/travtips.png";
+import logosix from "../../assets/kesari.png";
+import logoseven from "../../assets/sotc.png";
+import logoeight from "../../assets/triploft.png";
+import logonine from "../../assets/thomascook.png";
 // ─── Icon Components ────────────────────────────────────────────────────────
 
 const IconCruiseLines = () => (
@@ -331,11 +335,12 @@ const missionImagePlaceholder = {
       </section>
 
       {/* ── Partners ── */}
-      <section className={styles.partnersSection}>
-        <div className={styles.container}>
-          <p className={styles.partnersLabel}>Trusted by leading travel brands worldwide</p>
-          <div className={styles.partnersGrid}>
-                    <div className="trust-logos" style={{display:'flex', gap:'24px', flexWrap:'wrap', justifyContent:'center', alignItems:'center'}}  >
+          <section className="trust-bar">
+        <p>Trusted by leading travel brands worldwide</p>
+        <div className="trust-logos container">
+           <span className="trust-logo">
+            <Image src={logonine} alt="Thomas Cook" width={180} />
+          </span>
           <span className="trust-logo script">
             <Image src={logoone} alt="Aerticket" width={180} />
           </span>
@@ -351,9 +356,17 @@ const missionImagePlaceholder = {
           <span className="trust-logo">
             <Image src={logofive} alt="Travtips" width={180} />
           </span>
+           <span className="trust-logo">
+            <Image src={logosix} alt="Kesari" width={60} />
+          </span>
+           <span className="trust-logo">
+            <Image src={logoseven} alt="SOTC" width={180} />
+          </span>
+           <span className="trust-logo">
+            <Image src={logoeight} alt="Triploft" width={60} />
+          </span>
+          
          
-        </div>
-          </div>
         </div>
       </section>
 
