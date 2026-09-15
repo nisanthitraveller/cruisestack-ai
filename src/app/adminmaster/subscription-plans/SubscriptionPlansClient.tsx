@@ -66,6 +66,11 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
   const [form, setForm] = useState<PlanForm | null>(null);
   const [busy, setBusy] = useState(false);
   const [creatingStripePriceFor, setCreatingStripePriceFor] = useState<number | null>(null);
+  const [deactivatingPlanId, setDeactivatingPlanId] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<"active" | "inactive">("active");
+  const visiblePlans = plans.filter((plan) =>
+    activeTab === "active" ? Number(plan.status) === 1 : Number(plan.status) !== 1,
+  );
 
   function openEdit(plan: SubscriptionPlanRow) {
     setEditingPlan(plan);
@@ -143,16 +148,57 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
     }
   }
 
+  async function deactivatePlan(plan: SubscriptionPlanRow) {
+    if (!window.confirm(`Make the current ${plan.plan_name} plan inactive? It will no longer be available for new subscriptions. Existing subscriptions will not be changed.`)) {
+      return;
+    }
+
+    setDeactivatingPlanId(plan.id);
+
+    try {
+      const result = await postPlanUpdate({
+        action: "deactivate",
+        planId: plan.id,
+      });
+      window.alert(
+        result.stripePriceArchived === false
+          ? `${plan.plan_name} was made inactive in CruiseStack, but its Stripe price could not be archived. Please check Stripe.`
+          : `${plan.plan_name} was made inactive successfully.`,
+      );
+      router.refresh();
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Unable to deactivate plan");
+    } finally {
+      setDeactivatingPlanId(null);
+    }
+  }
+
   return (
     <section className="adminmaster-panel companies-panel">
       <div className="adminmaster-panel-header">
         <div>
-          <h2>All plans</h2>
-          <span>{plans.length} plans</span>
+          <h2>{activeTab === "active" ? "Active plans" : "Inactive plans"}</h2>
+          <span>{visiblePlans.length} plans</span>
+        </div>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            className={activeTab === "active" ? "adminmaster-button update" : "adminmaster-refresh"}
+            onClick={() => setActiveTab("active")}
+            type="button"
+          >
+            Active ({plans.filter((plan) => Number(plan.status) === 1).length})
+          </button>
+          <button
+            className={activeTab === "inactive" ? "adminmaster-button update" : "adminmaster-refresh"}
+            onClick={() => setActiveTab("inactive")}
+            type="button"
+          >
+            Inactive ({plans.filter((plan) => Number(plan.status) !== 1).length})
+          </button>
         </div>
       </div>
 
-      {plans.length ? (
+      {visiblePlans.length ? (
         <div className="adminmaster-table-wrap">
           <table className="adminmaster-table">
             <thead>
@@ -169,7 +215,7 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
               </tr>
             </thead>
             <tbody>
-              {plans.map((plan) => (
+              {visiblePlans.map((plan) => (
                 <tr key={plan.id}>
                   <td>
                     <strong>{plan.plan_name}</strong>
@@ -191,14 +237,24 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
                       Edit
                     </button>
                     {Number(plan.status) === 1 && (plan.plan_name === "Professional" || plan.plan_name === "Enterprise") ? (
-                      <button
-                        className="adminmaster-button update"
-                        disabled={busy || creatingStripePriceFor !== null}
-                        onClick={() => createStripePrice(plan)}
-                        type="button"
-                      >
-                        {creatingStripePriceFor === plan.id ? "Creating..." : "Create Stripe Price"}
-                      </button>
+                      <>
+                        <button
+                          className="adminmaster-button update"
+                          disabled={busy || creatingStripePriceFor !== null || deactivatingPlanId !== null}
+                          onClick={() => createStripePrice(plan)}
+                          type="button"
+                        >
+                          {creatingStripePriceFor === plan.id ? "Creating..." : "Create Stripe Price"}
+                        </button>
+                        <button
+                          className="adminmaster-refresh"
+                          disabled={busy || creatingStripePriceFor !== null || deactivatingPlanId !== null}
+                          onClick={() => deactivatePlan(plan)}
+                          type="button"
+                        >
+                          {deactivatingPlanId === plan.id ? "Making inactive..." : "Make Inactive"}
+                        </button>
+                      </>
                     ) : null}
                   </td>
                 </tr>
@@ -207,7 +263,7 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
           </table>
         </div>
       ) : (
-        <div className="adminmaster-empty">No subscription plans found.</div>
+        <div className="adminmaster-empty">No {activeTab} subscription plans found.</div>
       )}
 
       {editingPlan && form ? (

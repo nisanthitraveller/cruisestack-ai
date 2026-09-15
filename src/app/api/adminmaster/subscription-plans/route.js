@@ -63,7 +63,7 @@ export async function POST(request) {
     const action = String(body.action || "");
     const planId = Number(body.planId || 0);
 
-    if (!planId || !["update", "create_stripe_price"].includes(action)) {
+    if (!planId || !["update", "create_stripe_price", "deactivate"].includes(action)) {
       return NextResponse.json(
         { message: "Invalid subscription plan action" },
         { status: 400 },
@@ -71,6 +71,44 @@ export async function POST(request) {
     }
 
     connection = await pool.getConnection();
+
+    if (action === "deactivate") {
+      const [plans] = await connection.query(
+        `SELECT id, plan_name, status, stripe_price_id FROM subscription_plans WHERE id = ? LIMIT 1`,
+        [planId],
+      );
+      const currentPlan = plans[0];
+
+      if (!currentPlan) {
+        throw httpError("Subscription plan was not found", 404);
+      }
+      if (Number(currentPlan.status) !== 1) {
+        throw httpError("Subscription plan is already inactive");
+      }
+      if (!["Professional", "Enterprise"].includes(currentPlan.plan_name)) {
+        throw httpError("Only Professional and Enterprise plans can be made inactive here");
+      }
+
+      await connection.query(
+        `UPDATE subscription_plans SET status = 0 WHERE id = ? LIMIT 1`,
+        [planId],
+      );
+
+      let stripePriceArchived = null;
+      if (currentPlan.stripe_price_id) {
+        stripePriceArchived = false;
+        if (stripe) {
+          try {
+            await stripe.prices.update(currentPlan.stripe_price_id, { active: false });
+            stripePriceArchived = true;
+          } catch (archiveError) {
+            console.error("Unable to archive deactivated Stripe price:", archiveError);
+          }
+        }
+      }
+
+      return NextResponse.json({ success: true, stripePriceArchived });
+    }
 
     if (action === "create_stripe_price") {
       if (!stripe) {
@@ -101,11 +139,42 @@ export async function POST(request) {
         throw httpError("Stripe price creation is only available for Professional and Enterprise plans");
       }
 
-      let stripeProductId = currentPlan.stripe_product_id;
+      const [productCandidates] = await connection.query(
+        `
+        SELECT DISTINCT stripe_product_id
+        FROM subscription_plans
+        WHERE plan_name = ?
+          AND stripe_product_id IS NOT NULL
+        ORDER BY (id = ?) DESC, status DESC, id DESC
+        `,
+        [currentPlan.plan_name, currentPlan.id],
+      );
+
+      let stripeProductId = null;
       let createdProductId = null;
       let newStripePrice = null;
 
       try {
+        for (const candidate of productCandidates) {
+          try {
+            const product = await stripe.products.retrieve(candidate.stripe_product_id);
+            if (
+              !product.deleted &&
+              product.active !== false &&
+              product.name.trim().toLowerCase() ===
+                currentPlan.plan_name.trim().toLowerCase()
+            ) {
+              stripeProductId = product.id;
+              break;
+            }
+          } catch (productError) {
+            console.warn(
+              `Unable to verify Stripe product ${candidate.stripe_product_id}:`,
+              productError,
+            );
+          }
+        }
+
         if (!stripeProductId) {
           const product = await stripe.products.create({
             name: currentPlan.plan_name,
