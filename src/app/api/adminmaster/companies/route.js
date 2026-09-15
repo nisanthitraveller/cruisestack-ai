@@ -46,6 +46,8 @@ function normalizeCompanyUpdate(body) {
     Blockingonly_flag: Number(body.Blockingonly_flag) === 1 ? 1 : 0,
     gratuity_section_enabled:
       Number(body.gratuity_section_enabled) === 1 ? 1 : 0,
+    search_only_landing_enabled:
+      Number(body.search_only_landing_enabled) === 1 ? 1 : 0,
     deals_enabled: Number(body.deals_enabled) === 1 ? 1 : 0,
     enable_commission_sync:
       Number(body.enable_commission_sync) === 1 ? 1 : 0,
@@ -480,6 +482,7 @@ export async function POST(request) {
           chatbot = ?,
           Blockingonly_flag = ?,
           gratuity_section_enabled = ?,
+          search_only_landing_enabled = ?,
           deals_enabled = ?,
           enable_commission_sync = ?,
           billing_metric = ?
@@ -501,6 +504,7 @@ export async function POST(request) {
           update.chatbot,
           update.Blockingonly_flag,
           update.gratuity_section_enabled,
+          update.search_only_landing_enabled,
           update.deals_enabled,
           update.enable_commission_sync,
           update.billing_metric,

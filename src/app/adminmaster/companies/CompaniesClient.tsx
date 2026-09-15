@@ -10,6 +10,7 @@ export type CompanyRow = {
   chatbot: number | null;
   Blockingonly_flag: number | null;
   gratuity_section_enabled: number | null;
+  search_only_landing_enabled: number | null;
   deals_enabled: number | null;
   enable_commission_sync: number | null;
   company_name: string;
@@ -43,6 +44,7 @@ type CompanyForm = {
   chatbot: string;
   Blockingonly_flag: string;
   gratuity_section_enabled: string;
+  search_only_landing_enabled: string;
   deals_enabled: string;
   enable_commission_sync: string;
   company_name: string;
@@ -86,6 +88,8 @@ function formFromCompany(company: CompanyRow): CompanyForm {
       Number(company.Blockingonly_flag ?? 1) === 1 ? "1" : "0",
     gratuity_section_enabled:
       Number(company.gratuity_section_enabled ?? 0) === 1 ? "1" : "0",
+    search_only_landing_enabled:
+      Number(company.search_only_landing_enabled ?? 0) === 1 ? "1" : "0",
     deals_enabled: Number(company.deals_enabled) === 1 ? "1" : "0",
     enable_commission_sync:
       Number(company.enable_commission_sync ?? 1) === 1 ? "1" : "0",
@@ -780,6 +784,21 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                   value={form.gratuity_section_enabled}
                 >
                   <option value="0">Hidden</option>
+                  <option value="1">Enabled</option>
+                </select>
+              </label>
+              <label>
+                <span>Search-only landing page</span>
+                <select
+                  onChange={(event) =>
+                    updateField(
+                      "search_only_landing_enabled",
+                      event.target.value,
+                    )
+                  }
+                  value={form.search_only_landing_enabled}
+                >
+                  <option value="0">Disabled</option>
                   <option value="1">Enabled</option>
                 </select>
               </label>
