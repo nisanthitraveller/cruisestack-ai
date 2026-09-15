@@ -250,10 +250,6 @@ export async function POST(request) {
       if (Number(currentPlan.status) !== 1) {
         throw httpError("Subscription plan is already inactive");
       }
-      if (!["Professional", "Enterprise"].includes(currentPlan.plan_name)) {
-        throw httpError("Only Professional and Enterprise plans can be made inactive here");
-      }
-
       await connection.query(
         `UPDATE subscription_plans SET status = 0 WHERE id = ? LIMIT 1`,
         [planId],

@@ -325,24 +325,24 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
                       Edit
                     </button>
                     {Number(plan.status) === 1 && (plan.plan_name === "Professional" || plan.plan_name === "Enterprise") ? (
-                      <>
-                        <button
-                          className="adminmaster-button update"
-                          disabled={busy || creatingStripePriceFor !== null || deactivatingPlanId !== null}
-                          onClick={() => createStripePrice(plan)}
-                          type="button"
-                        >
-                          {creatingStripePriceFor === plan.id ? "Creating..." : "Create Stripe Price"}
-                        </button>
-                        <button
-                          className="adminmaster-refresh"
-                          disabled={busy || creatingStripePriceFor !== null || deactivatingPlanId !== null}
-                          onClick={() => deactivatePlan(plan)}
-                          type="button"
-                        >
-                          {deactivatingPlanId === plan.id ? "Making inactive..." : "Make Inactive"}
-                        </button>
-                      </>
+                      <button
+                        className="adminmaster-button update"
+                        disabled={busy || creatingStripePriceFor !== null || deactivatingPlanId !== null}
+                        onClick={() => createStripePrice(plan)}
+                        type="button"
+                      >
+                        {creatingStripePriceFor === plan.id ? "Creating..." : "Create Stripe Price"}
+                      </button>
+                    ) : null}
+                    {Number(plan.status) === 1 ? (
+                      <button
+                        className="adminmaster-refresh"
+                        disabled={busy || creatingStripePriceFor !== null || deactivatingPlanId !== null}
+                        onClick={() => deactivatePlan(plan)}
+                        type="button"
+                      >
+                        {deactivatingPlanId === plan.id ? "Making inactive..." : "Make Inactive"}
+                      </button>
                     ) : null}
                     {Number(plan.status) !== 1 ? (
                       <button
