@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db_mysql";
 import { getAdminMasterFromSession } from "@/lib/adminMasterAuth";
+import Stripe from "stripe";
+
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY)
+  : null;
 
 function httpError(message, statusCode = 400) {
   const error = new Error(message);
@@ -58,7 +63,7 @@ export async function POST(request) {
     const action = String(body.action || "");
     const planId = Number(body.planId || 0);
 
-    if (!planId || action !== "update") {
+    if (!planId || !["update", "create_stripe_price"].includes(action)) {
       return NextResponse.json(
         { message: "Invalid subscription plan action" },
         { status: 400 },
@@ -66,6 +71,114 @@ export async function POST(request) {
     }
 
     connection = await pool.getConnection();
+
+    if (action === "create_stripe_price") {
+      if (!stripe) {
+        throw httpError("Stripe secret key is not configured", 500);
+      }
+
+      const monthlyPrice = Number(body.monthlyPrice);
+      if (!Number.isFinite(monthlyPrice) || monthlyPrice <= 0) {
+        throw httpError("Monthly price must be greater than zero");
+      }
+
+      const unitAmount = Math.round(monthlyPrice * 100);
+      if (Math.abs(unitAmount / 100 - monthlyPrice) > 0.000001) {
+        throw httpError("Monthly price can have a maximum of two decimal places");
+      }
+
+      const [plans] = await connection.query(
+        `SELECT * FROM subscription_plans WHERE id = ? AND status = 1 LIMIT 1`,
+        [planId],
+      );
+      const currentPlan = plans[0];
+
+      if (!currentPlan) {
+        throw httpError("The active subscription plan was not found", 404);
+      }
+
+      if (!["Professional", "Enterprise"].includes(currentPlan.plan_name)) {
+        throw httpError("Stripe price creation is only available for Professional and Enterprise plans");
+      }
+
+      let stripeProductId = currentPlan.stripe_product_id;
+      let createdProductId = null;
+      let newStripePrice = null;
+
+      try {
+        if (!stripeProductId) {
+          const product = await stripe.products.create({
+            name: currentPlan.plan_name,
+            metadata: { subscription_plan_id: String(currentPlan.id) },
+          });
+          stripeProductId = product.id;
+          createdProductId = product.id;
+        }
+
+        newStripePrice = await stripe.prices.create({
+          currency: "usd",
+          nickname: `${currentPlan.plan_name} $${monthlyPrice}/month`,
+          product: stripeProductId,
+          recurring: { interval: "month" },
+          unit_amount: unitAmount,
+          metadata: {
+            previous_plan_id: String(currentPlan.id),
+            plan_name: currentPlan.plan_name,
+          },
+        });
+
+        await connection.beginTransaction();
+        await connection.query(
+          `UPDATE subscription_plans SET status = 0 WHERE id = ? LIMIT 1`,
+          [planId],
+        );
+        const [insertResult] = await connection.query(
+          `
+          INSERT INTO subscription_plans (
+            plan_name, one_time_deposit, monthly_fee, booking_fee,
+            trip_summary_fee, api_scan_fee, booking_limit, api_enabled,
+            crm_enabled, white_label_enabled, status, stripe_product_id,
+            stripe_price_id, monthly_booking_limit
+          )
+          SELECT
+            plan_name, ?, ?, booking_fee,
+            trip_summary_fee, api_scan_fee, booking_limit, api_enabled,
+            crm_enabled, white_label_enabled, 1, ?, ?, monthly_booking_limit
+          FROM subscription_plans
+          WHERE id = ?
+          `,
+          [monthlyPrice, monthlyPrice, stripeProductId, newStripePrice.id, planId],
+        );
+        await connection.commit();
+
+        let oldStripePriceArchived = false;
+        if (currentPlan.stripe_price_id) {
+          try {
+            await stripe.prices.update(currentPlan.stripe_price_id, { active: false });
+            oldStripePriceArchived = true;
+          } catch (archiveError) {
+            console.error("Unable to archive previous Stripe price:", archiveError);
+          }
+        }
+
+        return NextResponse.json({
+          success: true,
+          planId: insertResult.insertId,
+          stripePriceId: newStripePrice.id,
+          stripeProductId,
+          oldStripePriceArchived,
+        });
+      } catch (error) {
+        await connection.rollback().catch(() => {});
+        if (newStripePrice?.id) {
+          await stripe.prices.update(newStripePrice.id, { active: false }).catch(() => {});
+        }
+        if (createdProductId) {
+          await stripe.products.update(createdProductId, { active: false }).catch(() => {});
+        }
+        throw error;
+      }
+    }
 
     const [existing] = await connection.query(
       "SELECT id FROM subscription_plans WHERE id = ? LIMIT 1",

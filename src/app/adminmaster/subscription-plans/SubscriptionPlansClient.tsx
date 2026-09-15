@@ -8,7 +8,9 @@ export type SubscriptionPlanRow = {
   booking_fee: number | string | null;
   id: number;
   monthly_booking_limit: number | null;
+  monthly_fee: number | string | null;
   plan_name: string;
+  status: number | null;
   stripe_price_id: string | null;
   stripe_product_id: string | null;
   trip_summary_fee: number | string | null;
@@ -63,6 +65,7 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlanRow | null>(null);
   const [form, setForm] = useState<PlanForm | null>(null);
   const [busy, setBusy] = useState(false);
+  const [creatingStripePriceFor, setCreatingStripePriceFor] = useState<number | null>(null);
 
   function openEdit(plan: SubscriptionPlanRow) {
     setEditingPlan(plan);
@@ -102,6 +105,44 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
     }
   }
 
+  async function createStripePrice(plan: SubscriptionPlanRow) {
+    const suggestedPrice = plan.plan_name === "Professional" ? "799" : plan.plan_name === "Enterprise" ? "1299" : String(plan.monthly_fee ?? "");
+    const enteredPrice = window.prompt(
+      `Enter the new monthly price in USD for ${plan.plan_name}`,
+      suggestedPrice,
+    );
+
+    if (enteredPrice === null) return;
+
+    const monthlyPrice = Number(enteredPrice);
+    if (!Number.isFinite(monthlyPrice) || monthlyPrice <= 0) {
+      window.alert("Enter a valid monthly price greater than zero");
+      return;
+    }
+
+    if (!window.confirm(`Create a new Stripe price of $${monthlyPrice}/month for ${plan.plan_name}? The current plan and Stripe price will be made inactive for new sales.`)) {
+      return;
+    }
+
+    setCreatingStripePriceFor(plan.id);
+
+    try {
+      const result = await postPlanUpdate({
+        action: "create_stripe_price",
+        monthlyPrice,
+        planId: plan.id,
+      });
+      window.alert(
+        `${plan.plan_name} is now $${monthlyPrice}/month. New Stripe price: ${result.stripePriceId}`,
+      );
+      router.refresh();
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Unable to create Stripe price");
+    } finally {
+      setCreatingStripePriceFor(null);
+    }
+  }
+
   return (
     <section className="adminmaster-panel companies-panel">
       <div className="adminmaster-panel-header">
@@ -117,6 +158,8 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
             <thead>
               <tr>
                 <th>Plan</th>
+                <th>Status</th>
+                <th>Monthly price</th>
                 <th>Booking fee</th>
                 <th>Monthly booking limit</th>
                 <th>Trip summary fee</th>
@@ -131,6 +174,8 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
                   <td>
                     <strong>{plan.plan_name}</strong>
                   </td>
+                  <td>{Number(plan.status) === 1 ? "Active" : "Inactive"}</td>
+                  <td>{formatMoney(plan.monthly_fee)}</td>
                   <td>{formatMoney(plan.booking_fee)}</td>
                   <td>{plan.monthly_booking_limit ?? "Not set"}</td>
                   <td>{formatMoney(plan.trip_summary_fee)}</td>
@@ -145,6 +190,16 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
                     >
                       Edit
                     </button>
+                    {Number(plan.status) === 1 && (plan.plan_name === "Professional" || plan.plan_name === "Enterprise") ? (
+                      <button
+                        className="adminmaster-button update"
+                        disabled={busy || creatingStripePriceFor !== null}
+                        onClick={() => createStripePrice(plan)}
+                        type="button"
+                      >
+                        {creatingStripePriceFor === plan.id ? "Creating..." : "Create Stripe Price"}
+                      </button>
+                    ) : null}
                   </td>
                 </tr>
               ))}

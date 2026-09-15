@@ -17,6 +17,8 @@ async function getSubscriptionPlans(): Promise<SubscriptionPlanRow[]> {
       SELECT
         id,
         plan_name,
+        monthly_fee,
+        status,
         stripe_product_id,
         stripe_price_id,
         booking_fee,
@@ -24,7 +26,7 @@ async function getSubscriptionPlans(): Promise<SubscriptionPlanRow[]> {
         trip_summary_fee,
         api_scan_fee
       FROM subscription_plans
-      ORDER BY id ASC
+      ORDER BY plan_name ASC, status DESC, id DESC
       `,
     );
 
