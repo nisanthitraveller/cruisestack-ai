@@ -12,6 +12,8 @@ export type SubscriptionPlanRow = {
   plan_name: string;
   status: number | null;
   stripe_price_id: string | null;
+  stripe_payment_link_id: string | null;
+  stripe_payment_link_url: string | null;
   stripe_product_id: string | null;
   trip_summary_fee: number | string | null;
 };
@@ -85,6 +87,7 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
   const [busy, setBusy] = useState(false);
   const [creatingStripePriceFor, setCreatingStripePriceFor] = useState<number | null>(null);
   const [deactivatingPlanId, setDeactivatingPlanId] = useState<number | null>(null);
+  const [deletingPlanId, setDeletingPlanId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"active" | "inactive">("active");
   const [newPlanForm, setNewPlanForm] = useState<NewPlanForm | null>(null);
   const visiblePlans = plans.filter((plan) =>
@@ -192,6 +195,23 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
     }
   }
 
+  async function deletePlan(plan: SubscriptionPlanRow) {
+    if (!window.confirm(`Permanently delete the inactive ${plan.plan_name} plan? This cannot be undone.`)) {
+      return;
+    }
+
+    setDeletingPlanId(plan.id);
+    try {
+      await postPlanUpdate({ action: "delete", planId: plan.id });
+      window.alert(`${plan.plan_name} was deleted successfully.`);
+      router.refresh();
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Unable to delete plan");
+    } finally {
+      setDeletingPlanId(null);
+    }
+  }
+
   function updateNewPlanField(field: keyof NewPlanForm, value: string) {
     setNewPlanForm((current) => current ? { ...current, [field]: value } : current);
   }
@@ -264,6 +284,7 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
                 <th>Trip summary fee</th>
                 <th>API scan fee</th>
                 <th>Stripe price</th>
+                <th>Payment link</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -280,6 +301,20 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
                   <td>{formatMoney(plan.trip_summary_fee)}</td>
                   <td>{formatMoney(plan.api_scan_fee)}</td>
                   <td>{plan.stripe_price_id || "Not set"}</td>
+                  <td>
+                    {plan.stripe_payment_link_url ? (
+                      <button
+                        className="adminmaster-refresh"
+                        onClick={() => {
+                          navigator.clipboard.writeText(plan.stripe_payment_link_url || "");
+                          window.alert("Payment link copied");
+                        }}
+                        type="button"
+                      >
+                        Copy link
+                      </button>
+                    ) : "Not set"}
+                  </td>
                   <td>
                     <button
                       className="adminmaster-button update"
@@ -308,6 +343,16 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
                           {deactivatingPlanId === plan.id ? "Making inactive..." : "Make Inactive"}
                         </button>
                       </>
+                    ) : null}
+                    {Number(plan.status) !== 1 ? (
+                      <button
+                        className="adminmaster-refresh"
+                        disabled={deletingPlanId !== null}
+                        onClick={() => deletePlan(plan)}
+                        type="button"
+                      >
+                        {deletingPlanId === plan.id ? "Deleting..." : "Delete"}
+                      </button>
                     ) : null}
                   </td>
                 </tr>

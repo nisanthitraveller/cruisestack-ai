@@ -21,6 +21,8 @@ async function getSubscriptionPlans(): Promise<SubscriptionPlanRow[]> {
         status,
         stripe_product_id,
         stripe_price_id,
+        stripe_payment_link_id,
+        stripe_payment_link_url,
         booking_fee,
         monthly_booking_limit,
         trip_summary_fee,

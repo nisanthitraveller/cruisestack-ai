@@ -11,7 +11,7 @@ import Link from "next/link";
 import Footer from "@/components/Footer/footer";
 import Header from "@/components/Header/header";
 
-const plans = [
+const planTemplates = [
 
   {
     name: "beginner",
@@ -170,6 +170,25 @@ type CompanySubscriptionStatus = {
   stripeStatus?: string | null;
 };
 
+type DatabasePlan = {
+  api_scan_fee: number | string | null;
+  booking_fee: number | string | null;
+  id: number;
+  monthly_booking_limit: number | null;
+  monthly_fee: number | string | null;
+  plan_name: string;
+  stripe_payment_link_url: string | null;
+  stripe_price_id: string | null;
+  trip_summary_fee: number | string | null;
+};
+
+function money(value: number | string | null) {
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+  }).format(Number(value || 0));
+}
+
 function PricingNavActions() {
   const [agent, setAgent] = useState<AgentSummary | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
@@ -279,6 +298,43 @@ function PricingContent() {
   const [contactMobile, setContactMobile] = useState("");
   const [checkoutPlan, setCheckoutPlan] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState("");
+  const [databasePlans, setDatabasePlans] = useState<DatabasePlan[]>([]);
+  const [billingMetric, setBillingMetric] = useState("none");
+
+  const plans = databasePlans.map((databasePlan) => {
+    const template = planTemplates.find(
+      (item) => item.displayName.toLowerCase() === databasePlan.plan_name.toLowerCase(),
+    ) as ((typeof planTemplates)[number] & { recommended?: string }) | undefined;
+    const bookingFee = Number(databasePlan.booking_fee || 0);
+    const tripSummaryFee = Number(databasePlan.trip_summary_fee || 0);
+    const pricingdetails: Record<string, string> = {
+      "Monthly fee": `$${money(databasePlan.monthly_fee)}/month`,
+    };
+
+    if (bookingFee > 0 && tripSummaryFee > 0) {
+      if (billingMetric === "trip_summary_count") {
+        pricingdetails["Trip summary fee"] = `$${money(tripSummaryFee)}/trip summary`;
+      } else {
+        pricingdetails["Booking fee"] = `$${money(bookingFee)}/booking`;
+      }
+    } else if (bookingFee > 0) {
+      pricingdetails["Booking fee"] = `$${money(bookingFee)}/booking`;
+    } else if (tripSummaryFee > 0) {
+      pricingdetails["Trip summary fee"] = `$${money(tripSummaryFee)}/trip summary`;
+    }
+
+    return {
+      ...(template || {
+        colorClass: "professional",
+        features: {},
+      }),
+      displayName: databasePlan.plan_name,
+      name: databasePlan.plan_name,
+      pricingdetails,
+      recommended: template?.recommended,
+      stripePriceId: databasePlan.stripe_price_id,
+    };
+  });
 
   async function startCheckout(planName: string) {
     setCheckoutPlan(planName);
@@ -374,6 +430,29 @@ function PricingContent() {
     }
 
     loadSubscriptionStatus();
+
+    return () => {
+      active = false;
+    };
+  }, [companySlug]);
+
+  useEffect(() => {
+    let active = true;
+    const query = companySlug ? `?company=${encodeURIComponent(companySlug)}` : "";
+
+    fetch(`/api/public/subscription-plans${query}`, { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Unable to load plans");
+        return response.json();
+      })
+      .then((data) => {
+        if (!active) return;
+        setDatabasePlans(Array.isArray(data?.plans) ? data.plans : []);
+        setBillingMetric(String(data?.billingMetric || "none"));
+      })
+      .catch(() => {
+        if (active) setDatabasePlans([]);
+      });
 
     return () => {
       active = false;

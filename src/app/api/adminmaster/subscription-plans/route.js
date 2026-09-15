@@ -64,7 +64,7 @@ export async function POST(request) {
     const planId = Number(body.planId || 0);
 
     if (
-      !["update", "create_stripe_price", "deactivate", "create_plan"].includes(action) ||
+      !["update", "create_stripe_price", "deactivate", "create_plan", "delete"].includes(action) ||
       (action !== "create_plan" && !planId)
     ) {
       return NextResponse.json(
@@ -74,6 +74,58 @@ export async function POST(request) {
     }
 
     connection = await pool.getConnection();
+
+    if (action === "delete") {
+      const [plans] = await connection.query(
+        `SELECT id, plan_name, status, stripe_product_id, stripe_price_id, stripe_payment_link_id FROM subscription_plans WHERE id = ? LIMIT 1`,
+        [planId],
+      );
+      const plan = plans[0];
+
+      if (!plan) {
+        throw httpError("Subscription plan was not found", 404);
+      }
+      if (Number(plan.status) === 1) {
+        throw httpError("Make the plan inactive before deleting it");
+      }
+
+      const [subscriptions] = await connection.query(
+        `SELECT id FROM company_subscriptions WHERE plan_id = ? LIMIT 1`,
+        [planId],
+      );
+      if (subscriptions[0]) {
+        throw httpError("This plan cannot be deleted because company subscriptions reference it", 409);
+      }
+
+      const [sharedProducts] = plan.stripe_product_id
+        ? await connection.query(
+            `SELECT id FROM subscription_plans WHERE stripe_product_id = ? AND id <> ? LIMIT 1`,
+            [plan.stripe_product_id, planId],
+          )
+        : [[]];
+
+      await connection.query(`DELETE FROM subscription_plans WHERE id = ? LIMIT 1`, [planId]);
+
+      if (stripe) {
+        if (plan.stripe_payment_link_id) {
+          await stripe.paymentLinks.update(plan.stripe_payment_link_id, { active: false }).catch((error) => {
+            console.error("Unable to archive deleted plan payment link:", error);
+          });
+        }
+        if (plan.stripe_price_id) {
+          await stripe.prices.update(plan.stripe_price_id, { active: false }).catch((error) => {
+            console.error("Unable to archive deleted plan price:", error);
+          });
+        }
+        if (plan.stripe_product_id && !sharedProducts[0]) {
+          await stripe.products.update(plan.stripe_product_id, { active: false }).catch((error) => {
+            console.error("Unable to archive deleted plan product:", error);
+          });
+        }
+      }
+
+      return NextResponse.json({ success: true });
+    }
 
     if (action === "create_plan") {
       if (!stripe) {
@@ -117,6 +169,7 @@ export async function POST(request) {
 
       let product = null;
       let price = null;
+      let paymentLink = null;
 
       try {
         product = await stripe.products.create({
@@ -131,6 +184,10 @@ export async function POST(request) {
           unit_amount: Math.round(monthlyPrice * 100),
           metadata: { plan_name: planName },
         });
+        paymentLink = await stripe.paymentLinks.create({
+          line_items: [{ price: price.id, quantity: 1 }],
+          metadata: { plan_name: planName },
+        });
 
         const [insertResult] = await connection.query(
           `
@@ -138,8 +195,9 @@ export async function POST(request) {
             plan_name, one_time_deposit, monthly_fee, booking_fee,
             trip_summary_fee, api_scan_fee, booking_limit, api_enabled,
             crm_enabled, white_label_enabled, status, stripe_product_id,
-            stripe_price_id, monthly_booking_limit
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 1, ?, ?, ?)
+            stripe_price_id, monthly_booking_limit, stripe_payment_link_id,
+            stripe_payment_link_url
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 1, ?, ?, ?, ?, ?)
           `,
           [
             planName,
@@ -152,6 +210,8 @@ export async function POST(request) {
             product.id,
             price.id,
             monthlyBookingLimit,
+            paymentLink.id,
+            paymentLink.url,
           ],
         );
 
@@ -160,8 +220,13 @@ export async function POST(request) {
           planId: insertResult.insertId,
           stripePriceId: price.id,
           stripeProductId: product.id,
+          stripePaymentLinkId: paymentLink.id,
+          stripePaymentLinkUrl: paymentLink.url,
         });
       } catch (error) {
+        if (paymentLink?.id) {
+          await stripe.paymentLinks.update(paymentLink.id, { active: false }).catch(() => {});
+        }
         if (price?.id) {
           await stripe.prices.update(price.id, { active: false }).catch(() => {});
         }
@@ -174,7 +239,7 @@ export async function POST(request) {
 
     if (action === "deactivate") {
       const [plans] = await connection.query(
-        `SELECT id, plan_name, status, stripe_price_id FROM subscription_plans WHERE id = ? LIMIT 1`,
+        `SELECT id, plan_name, status, stripe_price_id, stripe_payment_link_id FROM subscription_plans WHERE id = ? LIMIT 1`,
         [planId],
       );
       const currentPlan = plans[0];
@@ -195,6 +260,18 @@ export async function POST(request) {
       );
 
       let stripePriceArchived = null;
+      let stripePaymentLinkArchived = null;
+      if (currentPlan.stripe_payment_link_id) {
+        stripePaymentLinkArchived = false;
+        if (stripe) {
+          try {
+            await stripe.paymentLinks.update(currentPlan.stripe_payment_link_id, { active: false });
+            stripePaymentLinkArchived = true;
+          } catch (archiveError) {
+            console.error("Unable to archive deactivated Stripe payment link:", archiveError);
+          }
+        }
+      }
       if (currentPlan.stripe_price_id) {
         stripePriceArchived = false;
         if (stripe) {
@@ -207,7 +284,7 @@ export async function POST(request) {
         }
       }
 
-      return NextResponse.json({ success: true, stripePriceArchived });
+      return NextResponse.json({ success: true, stripePriceArchived, stripePaymentLinkArchived });
     }
 
     if (action === "create_stripe_price") {
@@ -253,6 +330,7 @@ export async function POST(request) {
       let stripeProductId = null;
       let createdProductId = null;
       let newStripePrice = null;
+      let newPaymentLink = null;
 
       try {
         for (const candidate of productCandidates) {
@@ -295,6 +373,13 @@ export async function POST(request) {
             plan_name: currentPlan.plan_name,
           },
         });
+        newPaymentLink = await stripe.paymentLinks.create({
+          line_items: [{ price: newStripePrice.id, quantity: 1 }],
+          metadata: {
+            previous_plan_id: String(currentPlan.id),
+            plan_name: currentPlan.plan_name,
+          },
+        });
 
         await connection.beginTransaction();
         await connection.query(
@@ -308,17 +393,29 @@ export async function POST(request) {
             trip_summary_fee, api_scan_fee, booking_limit, api_enabled,
             crm_enabled, white_label_enabled, status, stripe_product_id,
             stripe_price_id, monthly_booking_limit
+            , stripe_payment_link_id, stripe_payment_link_url
           )
           SELECT
             plan_name, ?, ?, booking_fee,
             trip_summary_fee, api_scan_fee, booking_limit, api_enabled,
-            crm_enabled, white_label_enabled, 1, ?, ?, monthly_booking_limit
+            crm_enabled, white_label_enabled, 1, ?, ?, monthly_booking_limit,
+            ?, ?
           FROM subscription_plans
           WHERE id = ?
           `,
-          [monthlyPrice, monthlyPrice, stripeProductId, newStripePrice.id, planId],
+          [monthlyPrice, monthlyPrice, stripeProductId, newStripePrice.id, newPaymentLink.id, newPaymentLink.url, planId],
         );
         await connection.commit();
+
+        let oldStripePaymentLinkArchived = false;
+        if (currentPlan.stripe_payment_link_id) {
+          try {
+            await stripe.paymentLinks.update(currentPlan.stripe_payment_link_id, { active: false });
+            oldStripePaymentLinkArchived = true;
+          } catch (archiveError) {
+            console.error("Unable to archive previous Stripe payment link:", archiveError);
+          }
+        }
 
         let oldStripePriceArchived = false;
         if (currentPlan.stripe_price_id) {
@@ -335,10 +432,16 @@ export async function POST(request) {
           planId: insertResult.insertId,
           stripePriceId: newStripePrice.id,
           stripeProductId,
+          stripePaymentLinkId: newPaymentLink.id,
+          stripePaymentLinkUrl: newPaymentLink.url,
+          oldStripePaymentLinkArchived,
           oldStripePriceArchived,
         });
       } catch (error) {
         await connection.rollback().catch(() => {});
+        if (newPaymentLink?.id) {
+          await stripe.paymentLinks.update(newPaymentLink.id, { active: false }).catch(() => {});
+        }
         if (newStripePrice?.id) {
           await stripe.prices.update(newStripePrice.id, { active: false }).catch(() => {});
         }
