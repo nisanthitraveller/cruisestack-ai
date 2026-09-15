@@ -63,7 +63,10 @@ export async function POST(request) {
     const action = String(body.action || "");
     const planId = Number(body.planId || 0);
 
-    if (!planId || !["update", "create_stripe_price", "deactivate"].includes(action)) {
+    if (
+      !["update", "create_stripe_price", "deactivate", "create_plan"].includes(action) ||
+      (action !== "create_plan" && !planId)
+    ) {
       return NextResponse.json(
         { message: "Invalid subscription plan action" },
         { status: 400 },
@@ -71,6 +74,103 @@ export async function POST(request) {
     }
 
     connection = await pool.getConnection();
+
+    if (action === "create_plan") {
+      if (!stripe) {
+        throw httpError("Stripe secret key is not configured", 500);
+      }
+
+      const planName = String(body.planName || "").trim();
+      const monthlyPrice = Number(body.monthlyPrice);
+      const bookingFee = Number(body.bookingFee);
+      const monthlyBookingLimit = Number(body.monthlyBookingLimit);
+      const tripSummaryFee = Number(body.tripSummaryFee);
+      const apiScanFee = Number(body.apiScanFee);
+      const moneyValues = [monthlyPrice, bookingFee, tripSummaryFee, apiScanFee];
+
+      if (!planName || planName.length > 100) {
+        throw httpError("Plan name is required and must be 100 characters or fewer");
+      }
+      if (!Number.isFinite(monthlyPrice) || monthlyPrice <= 0) {
+        throw httpError("Monthly price must be greater than zero");
+      }
+      if (moneyValues.some((value) => !Number.isFinite(value) || value < 0)) {
+        throw httpError("Plan prices and fees must be valid positive amounts");
+      }
+      if (
+        !Number.isInteger(monthlyBookingLimit) ||
+        monthlyBookingLimit < 0
+      ) {
+        throw httpError("Monthly booking limit must be a whole number of zero or greater");
+      }
+      if (moneyValues.some((value) => Math.abs(Math.round(value * 100) / 100 - value) > 0.000001)) {
+        throw httpError("Prices and fees can have a maximum of two decimal places");
+      }
+
+      const [duplicatePlans] = await connection.query(
+        `SELECT id FROM subscription_plans WHERE LOWER(plan_name) = LOWER(?) AND status = 1 LIMIT 1`,
+        [planName],
+      );
+      if (duplicatePlans[0]) {
+        throw httpError("An active plan with this name already exists");
+      }
+
+      let product = null;
+      let price = null;
+
+      try {
+        product = await stripe.products.create({
+          name: planName,
+          metadata: { managed_by: "cruisestack_master_admin" },
+        });
+        price = await stripe.prices.create({
+          currency: "usd",
+          nickname: `${planName} $${monthlyPrice}/month`,
+          product: product.id,
+          recurring: { interval: "month" },
+          unit_amount: Math.round(monthlyPrice * 100),
+          metadata: { plan_name: planName },
+        });
+
+        const [insertResult] = await connection.query(
+          `
+          INSERT INTO subscription_plans (
+            plan_name, one_time_deposit, monthly_fee, booking_fee,
+            trip_summary_fee, api_scan_fee, booking_limit, api_enabled,
+            crm_enabled, white_label_enabled, status, stripe_product_id,
+            stripe_price_id, monthly_booking_limit
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 1, ?, ?, ?)
+          `,
+          [
+            planName,
+            monthlyPrice,
+            monthlyPrice,
+            bookingFee,
+            tripSummaryFee,
+            apiScanFee,
+            monthlyBookingLimit,
+            product.id,
+            price.id,
+            monthlyBookingLimit,
+          ],
+        );
+
+        return NextResponse.json({
+          success: true,
+          planId: insertResult.insertId,
+          stripePriceId: price.id,
+          stripeProductId: product.id,
+        });
+      } catch (error) {
+        if (price?.id) {
+          await stripe.prices.update(price.id, { active: false }).catch(() => {});
+        }
+        if (product?.id) {
+          await stripe.products.update(product.id, { active: false }).catch(() => {});
+        }
+        throw error;
+      }
+    }
 
     if (action === "deactivate") {
       const [plans] = await connection.query(

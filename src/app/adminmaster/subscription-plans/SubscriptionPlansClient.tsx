@@ -25,6 +25,24 @@ type PlanForm = {
   trip_summary_fee: string;
 };
 
+type NewPlanForm = {
+  apiScanFee: string;
+  bookingFee: string;
+  monthlyBookingLimit: string;
+  monthlyPrice: string;
+  planName: string;
+  tripSummaryFee: string;
+};
+
+const emptyNewPlanForm: NewPlanForm = {
+  apiScanFee: "0",
+  bookingFee: "0",
+  monthlyBookingLimit: "0",
+  monthlyPrice: "",
+  planName: "",
+  tripSummaryFee: "0",
+};
+
 function formFromPlan(plan: SubscriptionPlanRow): PlanForm {
   return {
     api_scan_fee: String(plan.api_scan_fee ?? "0"),
@@ -68,6 +86,7 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
   const [creatingStripePriceFor, setCreatingStripePriceFor] = useState<number | null>(null);
   const [deactivatingPlanId, setDeactivatingPlanId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"active" | "inactive">("active");
+  const [newPlanForm, setNewPlanForm] = useState<NewPlanForm | null>(null);
   const visiblePlans = plans.filter((plan) =>
     activeTab === "active" ? Number(plan.status) === 1 : Number(plan.status) !== 1,
   );
@@ -173,6 +192,33 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
     }
   }
 
+  function updateNewPlanField(field: keyof NewPlanForm, value: string) {
+    setNewPlanForm((current) => current ? { ...current, [field]: value } : current);
+  }
+
+  async function addPlan(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!newPlanForm) return;
+
+    setBusy(true);
+    try {
+      const result = await postPlanUpdate({
+        action: "create_plan",
+        ...newPlanForm,
+      });
+      window.alert(
+        `${newPlanForm.planName} was created in CruiseStack and Stripe. Price ID: ${result.stripePriceId}`,
+      );
+      setNewPlanForm(null);
+      setActiveTab("active");
+      router.refresh();
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : "Unable to create plan");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <section className="adminmaster-panel companies-panel">
       <div className="adminmaster-panel-header">
@@ -181,6 +227,13 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
           <span>{visiblePlans.length} plans</span>
         </div>
         <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            className="adminmaster-button update"
+            onClick={() => setNewPlanForm({ ...emptyNewPlanForm })}
+            type="button"
+          >
+            Add New Plan
+          </button>
           <button
             className={activeTab === "active" ? "adminmaster-button update" : "adminmaster-refresh"}
             onClick={() => setActiveTab("active")}
@@ -345,6 +398,93 @@ export default function SubscriptionPlansClient({ plans }: { plans: Subscription
                 </button>
                 <button className="adminmaster-button update" disabled={busy} type="submit">
                   {busy ? "Saving..." : "Save changes"}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      ) : null}
+
+      {newPlanForm ? (
+        <div
+          className="companies-modal-backdrop"
+          onMouseDown={() => !busy && setNewPlanForm(null)}
+          role="presentation"
+        >
+          <section
+            aria-labelledby="new-plan-title"
+            aria-modal="true"
+            className="companies-modal"
+            onMouseDown={(event) => event.stopPropagation()}
+            role="dialog"
+          >
+            <div className="companies-modal-header">
+              <div>
+                <p className="adminmaster-kicker">Stripe subscription</p>
+                <h2 id="new-plan-title">Add New Plan</h2>
+              </div>
+              <button
+                aria-label="Close new plan"
+                disabled={busy}
+                onClick={() => setNewPlanForm(null)}
+                type="button"
+              >
+                ×
+              </button>
+            </div>
+
+            <form className="companies-edit-form" onSubmit={addPlan}>
+              <label>
+                <span>Plan name</span>
+                <input
+                  maxLength={100}
+                  onChange={(event) => updateNewPlanField("planName", event.target.value)}
+                  required
+                  value={newPlanForm.planName}
+                />
+              </label>
+              <label>
+                <span>Monthly subscription price (USD)</span>
+                <input
+                  min={0.01}
+                  onChange={(event) => updateNewPlanField("monthlyPrice", event.target.value)}
+                  required
+                  step="0.01"
+                  type="number"
+                  value={newPlanForm.monthlyPrice}
+                />
+              </label>
+              <label>
+                <span>Billing interval</span>
+                <input disabled value="Monthly" />
+              </label>
+              <label>
+                <span>Currency</span>
+                <input disabled value="USD" />
+              </label>
+              <label>
+                <span>Booking fee (USD)</span>
+                <input min={0} onChange={(event) => updateNewPlanField("bookingFee", event.target.value)} required step="0.01" type="number" value={newPlanForm.bookingFee} />
+              </label>
+              <label>
+                <span>Monthly booking limit</span>
+                <input min={0} onChange={(event) => updateNewPlanField("monthlyBookingLimit", event.target.value)} required step="1" type="number" value={newPlanForm.monthlyBookingLimit} />
+              </label>
+              <label>
+                <span>Trip summary fee (USD)</span>
+                <input min={0} onChange={(event) => updateNewPlanField("tripSummaryFee", event.target.value)} required step="0.01" type="number" value={newPlanForm.tripSummaryFee} />
+              </label>
+              <label>
+                <span>API scan fee (USD)</span>
+                <input min={0} onChange={(event) => updateNewPlanField("apiScanFee", event.target.value)} required step="0.01" type="number" value={newPlanForm.apiScanFee} />
+              </label>
+
+              <div className="companies-modal-actions">
+                <button className="adminmaster-refresh" disabled={busy} onClick={() => setNewPlanForm(null)} type="button">
+                  Cancel
+                </button>
+                <button className="adminmaster-button update" disabled={busy} type="submit">
+                  {busy ? "Creating in Stripe..." : "Create Plan"}
                 </button>
               </div>
             </form>
