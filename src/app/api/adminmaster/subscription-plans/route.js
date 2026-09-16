@@ -6,6 +6,8 @@ import Stripe from "stripe";
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY)
   : null;
+const PAYMENT_SUCCESS_URL =
+  "https://cruisestack.ai/success?session_id={CHECKOUT_SESSION_ID}";
 
 function httpError(message, statusCode = 400) {
   const error = new Error(message);
@@ -185,6 +187,10 @@ export async function POST(request) {
           metadata: { plan_name: planName },
         });
         paymentLink = await stripe.paymentLinks.create({
+          after_completion: {
+            redirect: { url: PAYMENT_SUCCESS_URL },
+            type: "redirect",
+          },
           line_items: [{ price: price.id, quantity: 1 }],
           metadata: { plan_name: planName },
         });
@@ -370,6 +376,10 @@ export async function POST(request) {
           },
         });
         newPaymentLink = await stripe.paymentLinks.create({
+          after_completion: {
+            redirect: { url: PAYMENT_SUCCESS_URL },
+            type: "redirect",
+          },
           line_items: [{ price: newStripePrice.id, quantity: 1 }],
           metadata: {
             previous_plan_id: String(currentPlan.id),
