@@ -431,10 +431,13 @@ const FAQ = () => {
               your cruise business.
             </p>
             <div className={styles.ctaActions}>
-              <Link href="/book-a-demo" className={styles.ctaBtn}>
+
+            
+
+              <Link href="/bookdemo" className={styles.ctaBtn}>
                 Book a Demo →
               </Link>
-              <Link href="/contact" className={styles.ctaLink}>
+              <Link href="/company" className={styles.ctaLink}>
                 Contact Us
               </Link>
             </div>

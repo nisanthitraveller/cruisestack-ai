@@ -77,9 +77,10 @@ const ftrimgsect = {
       <section className="hero" style={sectionStyle}>
       <div className='container-hero'>
         <div className="hero-content">
-          <span className="hero-badge">All-in-one Cruise Booking Engine</span>
-          <h1>Built for the next generation of cruise travel businesses</h1>
-          <p>Run your cruise business smarter with live inventory, instant pricing, secure booking workflows, and complete operational control across 30+ international cruise brands.</p>
+          <span className="hero-badge">All-in-one AI Cruise Booking Engine </span>
+
+          <h1>The AI operating system for the next generation of cruise businesses</h1>
+          <p>Search, sell, book, and manage cruises from one intelligent platform - powered by live inventory, automation, and AI.</p>
           <div className="hero-btns">
             <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
             <Link href="/pricing" className="btn-outline" style={{ padding: '11px 28px', fontSize: '15px' }}>View Pricing</Link>
