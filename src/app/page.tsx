@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from "next";
 import './style.css'; // Adjust this path based on where you save the CSS file
-import heroImg from '../assets/hero.png'
+import heroImg from '../assets/hero.webp'
 import ftrImg from '../assets/ftr.png'
 import lg1 from "../assets/1-Carnival.svg";
 import lg2 from "../assets/2-RCL.svg";
