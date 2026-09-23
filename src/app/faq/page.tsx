@@ -25,6 +25,14 @@ interface Category {
 // ─── Icons ───────────────────────────────────────────────────────────────────
 
 const icon = {
+  all: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  ),
   general: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" strokeWidth="1.6" />
@@ -64,7 +72,7 @@ const icon = {
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-const categories: Category[] = [
+const sections: Category[] = [
   {
     id: "general",
     label: "General",
@@ -235,6 +243,16 @@ const categories: Category[] = [
       },
     ],
   },
+];
+
+// "All Questions" combines every section; a question repeated across sections is listed once.
+const allItems = sections
+  .flatMap((c) => c.items)
+  .filter((item, i, arr) => arr.findIndex((x) => x.q === item.q) === i);
+
+const categories: Category[] = [
+  { id: "all", label: "All Questions", icon: icon.all, items: allItems },
+  ...sections,
 ];
 
 // ─── Component ───────────────────────────────────────────────────────────────

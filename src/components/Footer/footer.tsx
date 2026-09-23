@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import logoft from "../../assets/logo-white.png";
+import logoft from "../../assets/cs-logo-reverse.svg";
 import styles from "./Footer.module.css";
 
 export default function Footer() {

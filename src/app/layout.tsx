@@ -3,10 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "cruisestack AI",
-  description: "Dummy Next.js project scaffolded with TypeScript and the App Router.",
-  icons: {
-    icon: "/favicon.ico"
-  }
+  description: "Dummy Next.js project scaffolded with TypeScript and the App Router."
 };
 
 export default function RootLayout({

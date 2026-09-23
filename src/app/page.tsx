@@ -46,6 +46,11 @@ import logosix from "../assets/kesari.png";
 import logoseven from "../assets/sotc.png";
 import logoeight from "../assets/triploft.png";
 import logonine from "../assets/thomascook.png";
+import backerTechstars from "../assets/techstars-logo-vector.png";
+import backerInflection from "../assets/inflection.png";
+import backerAh from "../assets/ah-venture.png";
+import backerDigital from "../assets/digital-futurists.png";
+import cruisestackLogo from "../assets/cs-logo-reverse.svg";
 import Footer from '@/components/Footer/footer';
 import Header from '@/components/Header/header';
 
@@ -79,7 +84,7 @@ const ftrimgsect = {
         <div className="hero-content">
           <span className="hero-badge">All-in-one AI Cruise Booking Engine </span>
 
-          <h1>The AI operating system for the next generation of cruise businesses</h1>
+          <h1>AI operating system for next generation cruise businesses</h1>
           <p>Search, sell, book, and manage cruises from one intelligent platform - powered by live inventory, automation, and AI.</p>
           <div className="hero-btns">
             <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
@@ -90,7 +95,7 @@ const ftrimgsect = {
             <div className="stat"><span className="num">30+</span><span className="label">Cruise Lines</span></div>
             <div className="stat"><span className="num">500+</span><span className="label">Travel Partners</span></div>
             <div className="stat"><span className="num">99.9%</span><span className="label">Uptime</span></div>
-            <div className="stat"><span className="num">4.9/5</span><span className="label">Customer Rating</span></div>
+            <div className="stat"><span className="num">1K+</span><span className="label">Bookings Processed</span></div>
           </div>
         </div>
 
@@ -134,7 +139,7 @@ const ftrimgsect = {
 
       {/* ───── TRUST BAR ───── */}
       <section className="trust-bar">
-        <p>Trusted by leading travel brands worldwide</p>
+        <p>TRUSTED BY TRAVEL BUSINESSES WORLDWIDE</p>
         <div className="trust-logos container">
            <span className="trust-logo">
             <Image src={logonine} alt="Thomas Cook" width={180} />
@@ -234,7 +239,8 @@ const ftrimgsect = {
 
         <div className="dashboard-mockup">
           <div className="db-topbar">
-            <span className="db-logo">⚓ cruisestack</span>
+            <span className="db-logo">
+              <Image src={cruisestackLogo} alt="cruisestack Logo" width={151} height={20} /></span>
             <div className="db-dots"><div className="db-dot"></div><div className="db-dot"></div><div className="db-dot"></div></div>
           </div>
           <div className="db-body">
@@ -439,6 +445,131 @@ const ftrimgsect = {
           <div className="cruise-logo-cell"><span>⬡ HURTIGRUTEN</span></div>
           <div className="cruise-logo-cell more"><span>& MORE</span></div> */}
         </div>
+      </section>
+
+      <section className="media">
+        <div className="section-header">
+          <h2>cruisestack in media</h2>
+        </div>
+
+        <div className="media-grid">
+          <article className="elemt_in">
+            <div className="media-logo">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 152 56" fill="none" role="img" aria-label="News18">
+                <path d="M122.637 14.765H1V54.9506H122.637V14.765Z" stroke="white" strokeWidth="0.678094" strokeMiterlimit="10" />
+                <path d="M122.637 14.765H1V54.9506H122.637V14.765Z" fill="#061836" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M8.98065 22.4405V46.7891H14.8924V31.711L23.6571 46.7989L29.4904 46.7891V22.4405H23.51L23.5002 36.6333L15.0983 22.4307L8.98065 22.4405Z" fill="white" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M32.942 22.4307L32.9125 46.7989H52.0792L52.0694 41.4486H39.0106L39.0204 36.536L50.4713 36.5458L50.4615 31.3803H39.0106L39.0204 27.8005L51.5007 27.8297V22.4307H32.942Z" fill="white" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M53.2468 22.4308L60.2076 46.7989L66.3841 46.7892L69.5997 31.1274L72.9233 46.7989L78.4527 46.7892L85.4723 22.4308H79.188L75.8056 36.7695L72.8448 22.4308H66.2762L63.4723 35.9816L60.3056 22.4308H53.2468Z" fill="white" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M99.5394 30.4557C99.5394 30.4557 100.343 27.4303 95.5394 26.9537C92.2453 26.6326 91.5688 28.9284 92.059 29.7942C93.0688 31.5549 100.677 31.5646 104.314 34.5997C107.441 37.2068 106.686 43.1796 103.383 45.3781C99.4218 48.0144 93.1767 47.5571 90.4316 46.3217C84.8924 43.8314 85.7845 38.4033 85.7845 38.4033H91.6473C91.6473 38.4033 91.3335 42.1485 95.961 42.1582C100.794 42.1582 100.804 39.6484 99.8041 38.6368C98.6963 37.5083 89.5884 37.1289 87.0786 33.374C85.4218 30.8837 85.1767 25.835 89.6277 23.1793C94.0786 20.5236 100.677 21.8271 103.079 24.3077C105.981 27.2941 105.52 30.4654 105.52 30.4654H99.5492L99.5394 30.4557Z" fill="white" />
+                <path d="M110.441 1H151L150.971 41.1661H110.461L110.441 1Z" stroke="white" strokeWidth="0.678094" strokeMiterlimit="10" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M110.441 1H151L150.971 41.1661H110.461L110.441 1Z" fill="#EC2027" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M114.569 8.94757H124.442V33.8799H118.569V14.7064H114.569V8.94757Z" fill="white" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M135.904 34.3179C141.09 34.2303 144.305 30.6408 144.688 27.2944C145.207 22.7321 142.756 21.1756 141.325 20.3099C142.913 19.2009 144.051 17.8779 143.864 14.8428C143.413 10.6501 139.864 8.54894 135.727 8.51003C131.58 8.47112 128.354 10.9712 127.766 14.6775C127.266 17.8779 129.345 19.7262 130.325 20.3001C128.364 21.341 126.521 24.1718 126.894 27.236C127.247 30.1155 130.217 34.4152 135.884 34.3179H135.904Z" fill="white" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M138.344 15.8835C138.344 17.2552 137.275 18.4225 135.893 18.4225C134.51 18.4225 133.344 17.4011 133.383 15.8544C133.422 14.3271 134.746 13.4419 135.893 13.4516C137.275 13.4613 138.344 14.3757 138.344 15.8835Z" fill="#EC2027" />
+                <path fillRule="evenodd" clipRule="evenodd" d="M138.743 25.6797C138.743 27.2653 137.655 28.5591 135.949 28.6272C134.322 28.6855 133.067 27.2653 133.047 25.6894C133.028 24.0162 134.224 22.8391 135.93 22.8294C137.518 22.8294 138.743 24.1524 138.743 25.6797Z" fill="#EC2027" />
+              </svg>
+            </div>
+            <h4>Planning Your First Cruise In 2025? Here&apos;s Everything Indian Travellers Should Know</h4>
+            <span className="dte">Updated: 04 September 2025, 17:53 IST</span>
+            <p>
+              <a href="https://www.news18.com/lifestyle/travel/planning-your-first-cruise-in-2025-heres-everything-indian-travellers-should-know-ws-l-9549631.html" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+          <article className="elemt_in">
+            <div className="media-logo"><img src="/media/insights.png" alt="ET Edge Insights" /></div>
+            <h4>Why cruises are set to dominate India&apos;s outbound travel market</h4>
+            <span className="dte">Updated: 23 August 2025, 9:05:31 AM IST</span>
+            <p>
+              <a href="https://etedge-insights.com/industry/travel-and-leisure/why-cruises-are-set-to-dominate-indias-outbound-travel-market/" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+          <article className="elemt_in">
+            <div className="media-logo"><img src="/media/cnbc.png" alt="CNBC TV18" /></div>
+            <h4>Cruise travel drawing more Indian tourists but tax clarity still a challenge, say experts</h4>
+            <span className="dte">Updated: 01 July 2025, 6:05:31 PM IST</span>
+            <p>
+              <a href="https://www.cnbctv18.com/travel/destinations/cruise-travel-sees-growth-indian-tourists-gst-income-tax-clarity-still-a-challenge-19629907.htm" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+          <article className="elemt_in">
+            <div className="media-logo"><img src="/media/times.png" alt="Times Entertainment" /></div>
+            <h4>5 things Indians always ask before booking a cruise; and they should really be asking</h4>
+            <span className="dte">Updated: 01 July 2025, 9:18 IST</span>
+            <p>
+              <a href="https://timesofindia.indiatimes.com/articleshow/122141337.cms" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+          <article className="elemt_in">
+            <div className="media-logo"><img src="/media/cnbc.png" alt="CNBC TV18" /></div>
+            <h4>Cruise tourism in India booms: How travel insurance can safeguard your voyage</h4>
+            <span className="dte">Updated: 03 June 2025, 5:34:25 PM IST</span>
+            <p>
+              <a href="https://www.cnbctv18.com/travel/lifestyle/cruise-tourism-rise-india-insurance-voyage-domestic-international-policies-19614898.htm" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+          <article className="elemt_in">
+            <div className="media-logo"><img src="/media/mint.png" alt="Mint" /></div>
+            <h4>Startup GetMyCruise raises $700k in seed round led by Inflection Point Ventures</h4>
+            <span className="dte">Updated: 13 Dec 2021, 12:17 PM IST</span>
+            <p>
+              <a href="https://www.livemint.com/companies/start-ups/saas-startup-unremot-raises-700k-in-seed-round-led-by-inflection-point-ventures-11639377533907.html" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+          <article className="elemt_in">
+            <div className="media-logo"><img src="/media/bwdisrupt.png" alt="BW Disrupt" /></div>
+            <h4>Techstars Backed Startup GetMyCruise Raises $700k In A Seed Round</h4>
+            <span className="dte">Updated: 13 Dec 2021, 12:17 PM IST</span>
+            <p>
+              <a href="http://bwdisrupt.businessworld.in/article/Techstars-Backed-SaaS-Startup-unremot-Raises-700k-In-A-Seed-Round/13-12-2021-414583/" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+          <article className="elemt_in">
+            <div className="media-logo"><img src="/media/yourstory.png" alt="YourStory" /></div>
+            <h4>Startup GetMyCruise raises seed round from Inflection Point Ventures</h4>
+            <span className="dte">By Payal Ganguly, December 13, 2021</span>
+            <p>
+              <a href="https://yourstory.com/2021/12/funding-alert-anakin-unremot-pingolearn-oben-ev-fananywhere/amp" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+          <article className="elemt_in">
+            <div className="media-logo"><img src="/media/vccircle.png" alt="VCCircle" /></div>
+            <h4>Inflection Point Ventures Leads Seed Funding Round In Techstars-Backed startup GetMyCruise</h4>
+            <span className="dte">By Nikhil Patwardhan, 13 Dec 2021</span>
+            <p>
+              <a href="https://www.vccircle.com/inflection-point-ventures-leads-seed-funding-round-in-techstars-backed-saas-firm-unremot" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+          <article className="elemt_in">
+            <div className="media-logo"><img src="/media/entrackr.png" alt="Entrackr" /></div>
+            <h4>GetMyCruise secures $700k seed funding</h4>
+            <span className="dte">Satyaki, December 13, 2021</span>
+            <p>
+              <a href="https://entrackr.com/2021/12/unremot-secures-700k-seed-funding/" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+          <article className="elemt_in">
+            <div className="media-logo"><img src="/media/cnbc.png" alt="CNBC TV18" /></div>
+            <h4>Funding Rundown: GetMyCruise raises $700k in seed funding round</h4>
+            <span className="dte">Updated: 13 Dec 2021, 12:17 PM IST</span>
+            <p>
+              <a href="https://www.cnbctv18.com/startup/funding-rundown-flipkart-and-walmart-invest-145-mn-in-ninjacart-fullife-healthcare-raises-22-mn--anakin-secures-2-mn-in-seed-funding-round-11803092.htm" target="_blank" rel="noreferrer nofollow">Read more</a>
+            </p>
+          </article>
+        </div>
+      </section>
+
+      {/* ───── BACKED BY ───── */}
+      <section className="backers">
+        <div className="section-header">
+          <h2>We&apos;re backed by</h2>
+        </div>
+        <ul className="backers-logos">
+          <li><Image src={backerTechstars} alt="Techstars" style={{height:70,width:220}}/></li>
+          <li className="tall"><Image src={backerInflection} alt="Inflection Point Ventures" /></li>
+          <li className="tall"><Image src={backerAh} alt="ah! Ventures" /></li>
+          <li><Image src={backerDigital} alt="Digital Futurists Angels Network" style={{height:70,width:259}}/></li>
+        </ul>
       </section>
 
       {/* ───── CTA ───── */}

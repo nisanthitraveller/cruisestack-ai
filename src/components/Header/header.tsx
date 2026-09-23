@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import logoMain from "../../assets/logo.png";
+import logoMain from "../../assets/cruisestack-logo.svg";
 import styles from "./Header.module.css";
 
 type AgentSummary = {
