@@ -383,7 +383,7 @@ const FAQ = () => {
               </div>
               <h3 className={styles.helpTitle}>Can&apos;t find what you&apos;re looking for?</h3>
               <p className={styles.helpDesc}>Our team is here to help.</p>
-              <Link href="/contact" className={styles.helpLink}>
+              <Link href="/contact-us" className={styles.helpLink}>
                 Contact Support →
               </Link>
             </div>
@@ -455,7 +455,7 @@ const FAQ = () => {
               <Link href="/bookdemo" className={styles.ctaBtn}>
                 Book a Demo →
               </Link>
-              <Link href="/company" className={styles.ctaLink}>
+              <Link href="/contact-us" className={styles.ctaLink}>
                 Contact Us
               </Link>
             </div>
