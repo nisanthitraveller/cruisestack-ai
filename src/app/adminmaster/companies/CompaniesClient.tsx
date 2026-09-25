@@ -85,7 +85,9 @@ function formFromCompany(company: CompanyRow): CompanyForm {
     billing_metric: company.billing_metric || "none",
     chatbot: Number(company.chatbot) === 1 ? "1" : "0",
     Blockingonly_flag:
-      Number(company.Blockingonly_flag ?? 1) === 1 ? "1" : "0",
+      [0, 1, 2, 3, 4].includes(Number(company.Blockingonly_flag))
+        ? String(Number(company.Blockingonly_flag))
+        : "1",
     gratuity_section_enabled:
       Number(company.gratuity_section_enabled ?? 0) === 1 ? "1" : "0",
     search_only_landing_enabled:
@@ -771,8 +773,11 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                   }
                   value={form.Blockingonly_flag}
                 >
-                  <option value="1">Enabled</option>
-                  <option value="0">Disabled (block cabin only)</option>
+                  <option value="0">Block cabin only</option>
+                  <option value="1">USD only</option>
+                  <option value="2">INR only</option>
+                  <option value="3">USD and INR</option>
+                  <option value="4">None</option>
                 </select>
               </label>
               <label>

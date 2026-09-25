@@ -43,7 +43,11 @@ function httpError(message, statusCode = 400) {
 function normalizeCompanyUpdate(body) {
   return {
     chatbot: Number(body.chatbot) === 1 ? 1 : 0,
-    Blockingonly_flag: Number(body.Blockingonly_flag) === 1 ? 1 : 0,
+    Blockingonly_flag: [0, 1, 2, 3, 4].includes(
+      Number(body.Blockingonly_flag),
+    )
+      ? Number(body.Blockingonly_flag)
+      : 1,
     gratuity_section_enabled:
       Number(body.gratuity_section_enabled) === 1 ? 1 : 0,
     search_only_landing_enabled:
