@@ -230,8 +230,10 @@ address .contactSub {
   footer.footer {
     padding: 56px 20px 32px;
   }
+  /* a simple stack: each block takes its own height, so blocks can't overlap in any browser */
   .footer .top {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 44px;
     padding-bottom: 48px;
   }

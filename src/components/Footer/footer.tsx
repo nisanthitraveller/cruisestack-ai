@@ -70,11 +70,9 @@ export default function Footer() {
               <a href="https://www.linkedin.com/company/get-my-cruise/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9.75h4v11H3v-11Zm6.5 0h3.83v1.5h.05c.53-1 1.84-2.06 3.79-2.06 4.05 0 4.8 2.67 4.8 6.13v5.43h-4v-4.82c0-1.15-.02-2.63-1.6-2.63-1.6 0-1.85 1.25-1.85 2.55v4.9h-4v-11Z" /></svg>
               </a>
-              {/* No YouTube channel yet
-              <a href="https://www.youtube.com/" target="_blank" rel="noreferrer" aria-label="YouTube">
+              <a href="https://www.youtube.com/@cruisestackacademy" target="_blank" rel="noreferrer" aria-label="YouTube">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22.5 7.2a2.8 2.8 0 0 0-2-2C18.7 4.7 12 4.7 12 4.7s-6.7 0-8.5.5a2.8 2.8 0 0 0-2 2A29 29 0 0 0 1 12a29 29 0 0 0 .5 4.8 2.8 2.8 0 0 0 2 2c1.8.5 8.5.5 8.5.5s6.7 0 8.5-.5a2.8 2.8 0 0 0 2-2A29 29 0 0 0 23 12a29 29 0 0 0-.5-4.8ZM9.8 15.1V8.9l5.6 3.1-5.6 3.1Z" /></svg>
               </a>
-              */}
               <a href="https://twitter.com/getmycruise" target="_blank" rel="noreferrer" aria-label="X (Twitter)">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.84-6.32L5.46 21H2.38l7.17-8.2L2 3h6.33l4.37 5.78L17.75 3Zm-1.08 16.2h1.7L7.4 4.73H5.58L16.67 19.2Z" /></svg>
               </a>
@@ -121,10 +119,10 @@ export default function Footer() {
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" /></svg>
                 </span>
                 <address className={styles.contactMain}>
-                  Ground Floor, 2gethr@ HSR,
+                  651 N Broad St, Suite 206,
                   <br />
-                  Sector 1, Bangalore.
-                  <span className={styles.contactSub}>India 560102</span>
+                  Middletown, New Castle, DE 19709
+                  <span className={styles.contactSub}>United States</span>
                 </address>
               </li>
             </ul>

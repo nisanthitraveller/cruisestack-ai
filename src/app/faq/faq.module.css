@@ -262,7 +262,7 @@
 
 /* ── Content ── */
 .contentTitle {
-  font-size: clamp(28px, 3.5vw, 40px);
+  font-size: clamp(28px, 3.5vw, 38px);
   font-weight: 800;
   color: #0f2447;
   letter-spacing: -0.02em;
@@ -372,7 +372,7 @@
 }
 
 .ctaTitle {
-  font-size: clamp(28px, 3.6vw, 42px);
+  font-size: clamp(28px, 3.6vw, 38px);
   font-weight: 800;
   color: #0f2447;
   letter-spacing: -0.02em;

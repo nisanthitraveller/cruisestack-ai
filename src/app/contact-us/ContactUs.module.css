@@ -16,7 +16,8 @@
   background: #fff;
   overflow-x: hidden;
 }
-.page * {
+/* :where() gives this reset zero specificity, so the shared Header/Footer styles always win over it */
+:where(.page) * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -363,7 +364,7 @@
   color: var(--text);
 }
 
-/* dotted world map (src/assets/world-dots.svg) with a pulsing Bangalore marker */
+/* dotted world map (src/assets/world-dots.svg) with a pulsing office marker */
 .mapWrap {
   position: relative;
 }
@@ -374,9 +375,9 @@
 }
 .mapDot {
   position: absolute;
-  /* Bangalore's position on world-dots.svg */
-  left: 70.23%;
-  top: 56.81%;
+  /* Middletown, DE on world-dots.svg (Bangalore was left 70.23%, top 56.81%) */
+  left: 27.1%;
+  top: 40.96%;
   width: 12px;
   height: 12px;
   margin: -6px 0 0 -6px;
@@ -431,7 +432,7 @@
   z-index: 2;
 }
 .cta h2 {
-  font-size: 44px;
+  font-size: 38px;
   font-weight: 800;
   letter-spacing: -1px;
   line-height: 1.12;

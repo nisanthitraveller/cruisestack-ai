@@ -422,7 +422,7 @@
 }
 
 .growthTitle {
-  font-size: clamp(26px, 3vw, 40px);
+  font-size: clamp(26px, 3vw, 38px);
   font-weight: 800;
   color: #111827;
   margin: 0;

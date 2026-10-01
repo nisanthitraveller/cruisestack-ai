@@ -16,10 +16,10 @@ export const metadata: Metadata = {
 };
 
 // Contact details shown on the page. Confirm before publishing.
-const CONTACT_EMAIL = "hello@cruisestack.ai";
-const SALES_PHONE = "+91 6235 123 456";
+const CONTACT_EMAIL = "hello@getmycruise.com";
+const SALES_PHONE = "+1 416 838 6479";
 const SALES_HOURS = "Mon – Fri, 9:30 AM – 6:30 PM (IST)";
-const MAPS_URL = "https://www.google.com/maps/search/?api=1&query=Bangalore%2C+Karnataka%2C+India";
+const MAPS_URL = "https://www.google.com/maps/search/?api=1&query=651+N+Broad+St+Suite+206%2C+Middletown%2C+DE+19709%2C+United+States";
 
 const stroke = {
   fill: "none",
@@ -107,11 +107,11 @@ export default function ContactUsPage() {
           <div className={styles.officeCopy}>
             <span className={styles.eyebrow}>Our Office</span>
             <h2>
-              Based in Bangalore,
+              Based in the United States,
               <br />
               Connecting Worldwide
             </h2>
-            <p>We&apos;re a global team with roots in Bangalore, India, working with travel businesses around the world.</p>
+            <p>Our office is in Middletown, Delaware, and our team works with travel businesses around the world.</p>
           </div>
           <div className={styles.location}>
             <span className={styles.pin}>
@@ -119,7 +119,13 @@ export default function ContactUsPage() {
             </span>
             <div>
               <h3>Our Location</h3>
-              <p>Bangalore, Karnataka<br />India</p>
+              <p>
+                651 N Broad St, Suite 206
+                <br />
+                Middletown, New Castle, DE 19709
+                <br />
+                United States
+              </p>
               <a href={MAPS_URL} target="_blank" rel="noreferrer" className={styles.textLink}>
                 View on Maps <Arrow />
               </a>

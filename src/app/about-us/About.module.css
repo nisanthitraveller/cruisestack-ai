@@ -15,7 +15,8 @@
   background: #fff;
   overflow-x: hidden;
 }
-.page * {
+/* :where() gives this reset zero specificity, so the shared Header/Footer styles always win over it */
+:where(.page) * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -38,7 +39,7 @@
   color: var(--blue);
 }
 .title {
-  font-size: 40px;
+  font-size: 38px;
   font-weight: 800;
   letter-spacing: -0.8px;
   line-height: 1.15;
@@ -191,14 +192,14 @@
   gap: 64px;
 }
 .storyCopy h2 {
-  font-size: 40px;
+  font-size: 38px;
   font-weight: 800;
   letter-spacing: -0.8px;
   line-height: 1.15;
   margin-bottom: 24px;
 }
 .storyCopy p {
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.7;
   color: var(--text);
 }
@@ -274,7 +275,7 @@
   align-items: center;
 }
 .mission h2 {
-  font-size: 40px;
+  font-size: 38px;
   font-weight: 800;
   letter-spacing: -0.8px;
   line-height: 1.2;
@@ -426,7 +427,7 @@
   z-index: 2;
 }
 .cta h2 {
-  font-size: 44px;
+  font-size: 38px;
   font-weight: 800;
   letter-spacing: -1px;
   line-height: 1.12;
@@ -484,9 +485,6 @@
     font-size: 30px;
     letter-spacing: -0.5px;
   }
-  .intro {
-    font-size: 16px;
-  }
   .hero {
     min-height: 0;
   }
@@ -527,7 +525,6 @@
   .missionGrid > p {
     padding-left: 0;
     border-left: 0;
-    font-size: 16px;
   }
   .values {
     grid-template-columns: 1fr;
@@ -570,9 +567,6 @@
   }
   .cta h2 {
     font-size: 32px;
-  }
-  .cta p {
-    font-size: 16px;
   }
   .btnPrimary,
   .btnOutline {

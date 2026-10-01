@@ -32,6 +32,7 @@ export default function Header() {
     { href: "/product", label: "Product" },
     { href: "/solutions", label: "Solutions" },
     { href: "/resources", label: "Resources" },
+    { href: "/academy", label: "Academy" },
     { href: "/about-us", label: "About Us" },
     { href: "/faq", label: "FAQ" },
     { href: "/contact-us", label: "Contact" },

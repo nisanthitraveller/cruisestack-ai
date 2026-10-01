@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 440" fill="none">
+  <!-- Placeholder illustration for the Academy pages; replace this file with the final artwork. -->
+  <defs>
+    <radialGradient id="bg" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#e8f1fd"/>
+      <stop offset="1" stop-color="#f6faff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d9e9fc"/>
+      <stop offset="1" stop-color="#f2f7ff"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a9cdf8"/>
+      <stop offset="0.55" stop-color="#6fa8f0"/>
+      <stop offset="1" stop-color="#2f78e2"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="250" cy="215" r="205" fill="url(#bg)"/>
+
+  <!-- window with a ship on the horizon -->
+  <rect x="150" y="38" width="234" height="174" rx="12" fill="#f4f8fe" stroke="#d6e4f7" stroke-width="5"/>
+  <rect x="158" y="46" width="218" height="158" rx="6" fill="url(#sky)"/>
+  <rect x="158" y="152" width="218" height="52" fill="#d3e5fb"/>
+  <path d="M158 152h218" stroke="#c2d9f7" stroke-width="2"/>
+  <path d="M267 46v158" stroke="#d6e4f7" stroke-width="5"/>
+  <path d="M292 148h62l-8 9h-46z" fill="#fff" stroke="#b7d0f2" stroke-width="2" stroke-linejoin="round"/>
+  <rect x="303" y="136" width="38" height="12" rx="2" fill="#fff" stroke="#b7d0f2" stroke-width="2"/>
+  <rect x="320" y="128" width="7" height="9" rx="1.5" fill="#86b5f0"/>
+  <path d="M190 80l6 5 6-5M210 92l5 4 5-4" stroke="#a9c4ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- desk -->
+  <ellipse cx="250" cy="410" rx="195" ry="12" fill="#e3edfb"/>
+  <rect x="104" y="322" width="11" height="84" rx="4" fill="#d5e3f6"/>
+  <rect x="385" y="322" width="11" height="84" rx="4" fill="#d5e3f6"/>
+  <rect x="70" y="298" width="360" height="16" rx="8" fill="#e2ecfa"/>
+  <rect x="82" y="314" width="336" height="10" rx="3" fill="#cfdff5"/>
+
+  <!-- laptop -->
+  <rect x="172" y="196" width="176" height="106" rx="9" fill="#2c3d63"/>
+  <rect x="180" y="204" width="160" height="90" rx="4" fill="url(#screen)"/>
+  <path d="M188 268h82l-10 11h-62z" fill="#fff" fill-opacity=".95"/>
+  <rect x="201" y="254" width="48" height="14" rx="2" fill="#fff" fill-opacity=".95"/>
+  <rect x="222" y="245" width="7" height="10" rx="1.5" fill="#ff8a65"/>
+  <circle cx="231" cy="232" r="13" fill="#fff" fill-opacity=".92"/>
+  <path d="M227 225.5v13l10.5-6.5z" fill="#0a1f44"/>
+  <rect x="290" y="214" width="40" height="70" rx="3" fill="#fff" fill-opacity=".85"/>
+  <rect x="296" y="222" width="8" height="8" rx="2" fill="#3f86e8"/>
+  <rect x="308" y="224" width="16" height="3" rx="1.5" fill="#bcd4f4"/>
+  <rect x="296" y="238" width="8" height="8" rx="2" fill="#3f86e8"/>
+  <rect x="308" y="240" width="16" height="3" rx="1.5" fill="#bcd4f4"/>
+  <rect x="296" y="254" width="8" height="8" rx="2" fill="#3f86e8"/>
+  <rect x="308" y="256" width="16" height="3" rx="1.5" fill="#bcd4f4"/>
+  <rect x="296" y="270" width="8" height="8" rx="2" fill="#3f86e8"/>
+  <rect x="308" y="272" width="16" height="3" rx="1.5" fill="#bcd4f4"/>
+  <path d="M158 302h204l-12 10H170z" fill="#c8d8ee"/>
+
+  <!-- plant -->
+  <path d="M110 262c-22-12-30-36-26-56 16 10 26 32 26 56Z" fill="#7cc4a0"/>
+  <path d="M118 262c4-26 18-44 38-50-2 22-16 40-38 50Z" fill="#5fb08a"/>
+  <path d="M114 262c-6-30-2-56 12-74 8 24 4 52-12 74Z" fill="#8fd0ae"/>
+  <path d="M98 264h36l-5 34h-26z" fill="#fff" stroke="#d6e4f7" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- mug -->
+  <rect x="368" y="272" width="26" height="26" rx="5" fill="#fff" stroke="#d6e4f7" stroke-width="3"/>
+  <path d="M394 278c9 0 9 14 0 14" stroke="#d6e4f7" stroke-width="3" stroke-linecap="round"/>
+  <path d="M376 262c-3-4 3-6 0-10M386 262c-3-4 3-6 0-10" stroke="#c6d9f3" stroke-width="2.4" stroke-linecap="round"/>
+</svg>
