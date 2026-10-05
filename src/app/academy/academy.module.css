@@ -84,7 +84,7 @@
 /* ── hero ── */
 .hero {
   position: relative;
-  min-height: 480px;
+  min-height: 400px;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -109,12 +109,12 @@
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding: 56px 32px 64px;
+  padding: 56px 32px 44px;
 }
 .hero h1 {
   max-width: 640px;
   margin-bottom: 20px;
-  font-size: 56px;
+  font-size: clamp(32px, 4vw, 52px);
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -1.6px;
@@ -592,7 +592,6 @@
     padding: 40px 15px 48px;
   }
   .hero h1 {
-    font-size: 36px;
     letter-spacing: -0.8px;
   }
   .sectionHead h2 {

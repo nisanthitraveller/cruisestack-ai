@@ -34,7 +34,8 @@ body{
 }
 
 /* ───── NAV ───── */
-.cruise-page-body nav {
+/* top-level page nav only; a plain `nav` selector also hit the footer's menu <nav> */
+.cruise-page-body > nav {
   position: sticky;
   top: 0;
   z-index: 100;
@@ -226,16 +227,11 @@ body{
 
 .cruise-page-body .hero h1 {
   font-family: "Inter", sans-serif;
-  font-size: 46px;
+  font-size: clamp(32px, 4vw, 52px);
   font-weight: 800;
   line-height: 1.12;
   color: var(--navy);
   margin-bottom: 18px;
-}
-@media(max-width: 780px){
-  .cruise-page-body .hero h1 {
-    font-size: 32px;
-  }
 }
 
 .cruise-page-body .hero p {
@@ -2887,7 +2883,7 @@ h1 {
 }
 
 .pricing-hero h1 {
-  font-size: 42px;
+  font-size: clamp(32px, 4vw, 52px);
   line-height: 1.1;
   margin: 12px 0;
 }
@@ -3253,9 +3249,6 @@ h1 {
     grid-template-columns: 1fr;
   }
 
-  .pricing-hero h1 {
-    font-size: 34px;
-  }
 }
 @media (max-width: 900px) {
   .login-page {
@@ -3340,7 +3333,7 @@ h1 {
   }
 }
 @media (max-width: 780px) {
-.cruise-page-body nav{
+.cruise-page-body > nav{
   display:block;
 }
 }

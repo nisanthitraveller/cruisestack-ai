@@ -6,7 +6,7 @@ import Header from "@/components/Header/header";
 import styles from "./academy.module.css";
 import { academyModules, moduleHref } from "./data";
 import { ArrowRight, ModuleIconSvg } from "./icons";
-import heroImg from "../../assets/hero-r.png";
+import heroImg from "../../assets/academy-banner.webp";
 import academyIllustration from "../../assets/academy-illustration.svg";
 
 export const metadata: Metadata = {
@@ -28,12 +28,13 @@ export default function AcademyPage() {
         <div className={styles.heroInner}>
           <span className={styles.eyebrow}>cruisestack Academy</span>
           <h1>
-            Learn. Master. Grow
-            <br />
-            your cruise business.
+            Learn, master & grow<br />
+your cruise business
+            
+           
           </h1>
           <p>
-            Step-by-step training, practical guides and video tutorials to help you get the most out of cruisestack. Whether you&apos;re new to the platform or looking to explore advanced features, our academy has everything you need.
+           Step-by-step training, practical guides and video tutorials to help you get the most out of cruisestack.
           </p>
           <Link href={moduleHref(firstModule)} className={styles.btnPrimary}>
             Start learning <ArrowRight size={18} />

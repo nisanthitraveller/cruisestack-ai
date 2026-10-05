@@ -137,7 +137,7 @@
   padding: 88px 32px 150px;
 }
 .hero h1 {
-  font-size: 68px;
+  font-size: clamp(32px, 4vw, 52px);
   font-weight: 800;
   line-height: 1.04;
   letter-spacing: -2px;
@@ -495,7 +495,6 @@
     padding: 56px 15px 120px;
   }
   .hero h1 {
-    font-size: 42px;
     letter-spacing: -1px;
   }
   .hero p {

@@ -45,7 +45,7 @@ export default function ContactUsPage() {
         <Image src={heroImg} alt="" fill priority sizes="100vw" className={styles.heroImg} />
         <div className={styles.heroInner}>
           <span className={styles.eyebrow}>Contact Us</span>
-          <h1>We&apos;re Here to Help</h1>
+          <h1>We&apos;re here to help</h1>
           <p>
             Have questions about CruiseStack, need a demo, or want to discuss how we can help your business? Our team is ready to connect.
           </p>
@@ -55,13 +55,13 @@ export default function ContactUsPage() {
       {/* ───── FORM + DETAILS ───── */}
       <div className={`${styles.container} ${styles.contactGrid}`}>
         <section className={`${styles.card} ${styles.formCard}`}>
-          <h2>Send Us a Message</h2>
+          <h2>Send us a message</h2>
           <p className={styles.cardIntro}>Fill out the form and our team will get back to you shortly.</p>
           <ContactForm />
         </section>
 
         <aside className={`${styles.card} ${styles.touchCard}`}>
-          <h2>Get in Touch</h2>
+          <h2>Get in touch</h2>
           <p className={styles.cardIntro}>Prefer to reach out directly? Here are other ways to connect with us.</p>
 
           <ul className={styles.channels}>
@@ -80,7 +80,7 @@ export default function ContactUsPage() {
                 <svg width="26" height="26" viewBox="0 0 24 24" {...stroke}><path d="M5 4h3.5l1.5 4.5-2.2 1.4a11 11 0 0 0 6.3 6.3l1.4-2.2L20 15.5V19a1.5 1.5 0 0 1-1.6 1.5A16.5 16.5 0 0 1 3.5 5.6 1.5 1.5 0 0 1 5 4Z" /></svg>
               </span>
               <div>
-                <h3>Sales Inquiries</h3>
+                <h3>Sales inquiries</h3>
                 <a href={`tel:${SALES_PHONE.replace(/\s/g, "")}`} className={styles.channelPhone}>{SALES_PHONE}</a>
                 <p>{SALES_HOURS}</p>
               </div>
@@ -90,7 +90,7 @@ export default function ContactUsPage() {
                 <svg width="26" height="26" viewBox="0 0 24 24" {...stroke}><rect x="3.5" y="5" width="17" height="15" rx="2" /><path d="M3.5 9.5h17M8 3v4M16 3v4M8 13h.01M12 13h.01M16 13h.01M8 16.5h.01M12 16.5h.01" /></svg>
               </span>
               <div>
-                <h3>Book a Personalized Demo</h3>
+                <h3>Book a personalized demo</h3>
                 <p>See how CruiseStack can work for your business with a personalized demo from our team.</p>
                 <Link href="/bookdemo" className={styles.btnOutline}>
                   Book a Demo <Arrow />
@@ -109,7 +109,7 @@ export default function ContactUsPage() {
             <h2>
               Based in the United States,
               <br />
-              Connecting Worldwide
+              connecting worldwide
             </h2>
             <p>Our office is in Middletown, Delaware, and our team works with travel businesses around the world.</p>
           </div>
@@ -118,7 +118,7 @@ export default function ContactUsPage() {
               <svg width="26" height="26" viewBox="0 0 24 24" {...stroke}><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11Z" /><circle cx="12" cy="10" r="2.3" /></svg>
             </span>
             <div>
-              <h3>Our Location</h3>
+              <h3>Our location</h3>
               <p>
                 651 N Broad St, Suite 206
                 <br />
@@ -144,9 +144,9 @@ export default function ContactUsPage() {
         <div className={`${styles.container} ${styles.ctaInner}`}>
           <span className={styles.eyebrow}>Let&apos;s Talk</span>
           <h2>
-            Ready to Grow Your
+            Ready to grow your
             <br />
-            Cruise Business?
+            cruise business?
           </h2>
           <p>
             Get in touch with our team to learn how CruiseStack can help you sell more cruises, work smarter and deliver better experiences.

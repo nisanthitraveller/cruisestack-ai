@@ -149,9 +149,9 @@ export default function AboutPage() {
         <div className={styles.heroInner}>
           <span className={styles.eyebrow}>About CruiseStack</span>
           <h1>
-            A Better Way
+            A better way
             <br />
-            to Sell Cruises
+            to sell cruises
           </h1>
           <p>
             CruiseStack is a technology company on a mission to make cruise commerce simpler, smarter and more accessible for travel businesses around the world.

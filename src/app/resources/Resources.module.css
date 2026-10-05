@@ -570,7 +570,7 @@
 
 .heroContent h1 {
   font-family: "Inter", sans-serif;
-  font-size: 46px;
+  font-size: clamp(32px, 4vw, 52px);
   font-weight: 800;
   line-height: 1.12;
   color: var(--navy, #0f2447);
@@ -693,9 +693,6 @@
     display: none; /* hide empty right col on tablet until content is added */
   }
 
-  .heroContent h1 {
-    font-size: 36px;
-  }
 }
 
 @media (max-width: 640px) {
@@ -703,9 +700,6 @@
     padding: 40px 20px;
   }
 
-  .heroContent h1 {
-    font-size: 28px;
-  }
 
   .heroContent p {
     font-size: 16px;

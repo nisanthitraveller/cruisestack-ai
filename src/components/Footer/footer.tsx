@@ -45,7 +45,7 @@ const footerMenus = [
 ];
 
 const CONTACT_EMAIL = "hello@getmycruise.com";
-const CONTACT_PHONE = "+91 96337 98887";
+const CONTACT_PHONE = "+1 416 838 6479";
 const CONTACT_HOURS = "Mon – Fri, 9:00 AM – 6:00 PM (IST)";
 
 export default function Footer() {
@@ -97,7 +97,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div className={styles.contact}>
-            <h4>Get in Touch</h4>
+            <h4>Get in touch</h4>
             <ul>
               <li>
                 <span className={styles.contactIcon}>

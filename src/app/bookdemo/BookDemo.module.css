@@ -78,7 +78,7 @@
 }
 
 .heroTitle {
-  font-size: clamp(36px, 4.5vw, 60px);
+  font-size: clamp(32px, 4vw, 52px);
   font-weight:700;
   color: #ffffff;
   line-height: 1.1;
@@ -277,9 +277,6 @@
     gap: 14px;
   }
 
-  .heroTitle {
-    font-size: 36px;
-  }
 
   .heroDesc {
     font-size: 15px;
