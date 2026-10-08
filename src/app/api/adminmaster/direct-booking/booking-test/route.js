@@ -225,7 +225,43 @@ async function runDiagnostic(action, credentials, token) {
       message: "Agency wallet retrieved separately from booking balance",
     };
   }
+  if (action === "rooms") {
+    return null;
+  }
   return null;
+}
+
+function extractRoomTypes(value, results = new Set()) {
+  if (Array.isArray(value)) {
+    for (const item of value) extractRoomTypes(item, results);
+    return results;
+  }
+  if (!value || typeof value !== "object") return results;
+
+  for (const [key, item] of Object.entries(value)) {
+    if (key === "room_type" && typeof item === "string" && clean(item)) {
+      results.add(clean(item));
+    } else {
+      extractRoomTypes(item, results);
+    }
+  }
+  return results;
+}
+
+async function getRoomTypes(body, credentials, token) {
+  const itinerary = required(body.itinerary, "Itinerary ID");
+  const response = await providerFetch(
+    `/itineraries/rooms?itinerary=${encodeURIComponent(itinerary)}`,
+    {
+      method: "GET",
+      headers: authHeaders(credentials, token),
+    },
+  );
+  const roomTypes = [...extractRoomTypes(response)].sort();
+  if (!roomTypes.length) {
+    fail("Cordelia did not return any room types for this itinerary", 404);
+  }
+  return { itinerary, roomTypes };
 }
 
 function passenger(body) {
@@ -393,6 +429,8 @@ export async function POST(request) {
     const diagnostic = await runDiagnostic(action, credentials, token);
     const result = diagnostic
       ? diagnostic
+      : action === "rooms"
+        ? await getRoomTypes(body, credentials, token)
       : action === "prepare"
         ? await prepareBooking(body, credentials, token)
         : action === "confirm"

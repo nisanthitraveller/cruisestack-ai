@@ -36,6 +36,7 @@ export default function BookingTestClient() {
   const [agentKey, setAgentKey] = useState("");
   const [itinerary, setItinerary] = useState("");
   const [roomType, setRoomType] = useState("");
+  const [roomTypes, setRoomTypes] = useState<string[]>([]);
   const [prepared, setPrepared] = useState<Prepared | null>(null);
   const [guest, setGuest] = useState(initialGuest);
   const [busy, setBusy] = useState("");
@@ -68,6 +69,26 @@ export default function BookingTestClient() {
     } catch (prepareError) {
       setError(
         prepareError instanceof Error ? prepareError.message : "Unable to prepare",
+      );
+    } finally {
+      setBusy("");
+    }
+  }
+
+  async function loadRoomTypes() {
+    setBusy("rooms");
+    setError("");
+    setPrepared(null);
+    setRoomType("");
+    setRoomTypes([]);
+    try {
+      const response = await callApi({ action: "rooms", itinerary });
+      setRoomTypes(response.roomTypes || []);
+    } catch (roomError) {
+      setError(
+        roomError instanceof Error
+          ? roomError.message
+          : "Unable to retrieve room types",
       );
     } finally {
       setBusy("");
@@ -189,21 +210,47 @@ export default function BookingTestClient() {
           <label>
             <span>Itinerary ID *</span>
             <input
-              onChange={(event) => setItinerary(event.target.value)}
+              onChange={(event) => {
+                setItinerary(event.target.value);
+                setRoomType("");
+                setRoomTypes([]);
+                setPrepared(null);
+              }}
               required
               value={itinerary}
             />
           </label>
+          <button
+            disabled={Boolean(busy) || !agentId || !agentKey || !itinerary.trim()}
+            onClick={loadRoomTypes}
+            type="button"
+          >
+            {busy === "rooms" ? "Loading rooms..." : "Get available room types"}
+          </button>
           <label>
             <span>Room type *</span>
-            <input
+            <select
+              disabled={!roomTypes.length}
               onChange={(event) => setRoomType(event.target.value)}
-              placeholder="PENTHOUSEBALCONY2"
               required
               value={roomType}
-            />
+            >
+              <option value="">
+                {roomTypes.length
+                  ? "Select a room type"
+                  : "Retrieve room types first"}
+              </option>
+              {roomTypes.map((availableRoomType) => (
+                <option key={availableRoomType} value={availableRoomType}>
+                  {availableRoomType}
+                </option>
+              ))}
+            </select>
           </label>
-          <button disabled={Boolean(busy) || !agentId || !agentKey} type="submit">
+          <button
+            disabled={Boolean(busy) || !agentId || !agentKey || !roomType}
+            type="submit"
+          >
             {busy === "prepare" ? "Testing..." : "Test availability and pricing"}
           </button>
         </form>
