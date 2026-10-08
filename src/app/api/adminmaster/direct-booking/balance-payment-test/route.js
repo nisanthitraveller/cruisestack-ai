@@ -2,7 +2,6 @@ import crypto from "crypto";
 import { NextResponse } from "next/server";
 import pool from "@/lib/db_mysql";
 import { getAdminMasterFromSession } from "@/lib/adminMasterAuth";
-import { decryptIntegrationCredential } from "@/lib/integrationCredentials";
 
 const BASE_URL = "https://uat.cordeliacruises.com/api/agent";
 const TIMEOUT_MS = 60000;
@@ -154,7 +153,7 @@ async function ensureAuditTable(connection) {
   await connection.query(`
     CREATE TABLE IF NOT EXISTS cordelia_uat_balance_payment_tests (
       id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-      integration_id BIGINT UNSIGNED NOT NULL,
+      credential_fingerprint CHAR(64) NOT NULL,
       booking_reference VARCHAR(100) NOT NULL,
       expected_due_amount DECIMAL(15,2) NOT NULL,
       status VARCHAR(40) NOT NULL,
@@ -164,49 +163,30 @@ async function ensureAuditTable(connection) {
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       PRIMARY KEY (id),
-      UNIQUE KEY uniq_cordelia_uat_balance_booking (integration_id, booking_reference)
+      UNIQUE KEY uniq_cordelia_uat_balance_booking (credential_fingerprint, booking_reference)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
   `);
 }
 
-async function integrationCredentials(connection, integrationId) {
-  const [rows] = await connection.query(
-    `
-    SELECT i.id, i.environment, c.company_name, c.slug,
-           p.provider_code, p.adapter_code
-    FROM company_cruiseline_integrations i
-    JOIN companies c ON c.id = i.company_id
-    JOIN cruise_api_providers p ON p.id = i.provider_id
-    WHERE i.id = ? AND i.is_enabled = 1
-    LIMIT 1
-    `,
-    [integrationId],
-  );
-  const integration = rows[0];
-  if (!integration) fail("Enabled integration was not found", 404);
-  if (integration.environment !== "UAT") fail("This test is restricted to UAT", 409);
-  if (
-    clean(integration.provider_code).toUpperCase() !== "CORDELIA" ||
-    clean(integration.adapter_code).toLowerCase() !== "cordelia-agent-api" ||
-    clean(integration.slug).toLowerCase().replace(/[-_]/g, "") !== "thomascook"
-  ) {
-    fail("Select the Thomas Cook Cordelia UAT integration", 409);
-  }
-
-  const [credentialRows] = await connection.query(
-    `SELECT credential_key, encrypted_value
-     FROM company_integration_credentials WHERE integration_id = ? ORDER BY id`,
-    [integrationId],
-  );
-  const credentials = {};
-  for (const row of credentialRows) {
-    credentials[clean(row.credential_key).toUpperCase()] =
-      decryptIntegrationCredential(row.encrypted_value);
-  }
+function requestCredentials(body) {
+  const credentials = {
+    X_AGENT_ID: clean(body.agentId),
+    X_AGENT_KEY: clean(body.agentKey),
+  };
   if (!credentials.X_AGENT_ID || !credentials.X_AGENT_KEY) {
-    fail("X_AGENT_ID and X_AGENT_KEY are required", 409);
+    fail("UAT Agent ID and Agent Key are required");
+  }
+  if (credentials.X_AGENT_ID.length > 200 || credentials.X_AGENT_KEY.length > 500) {
+    fail("UAT credentials are too long");
   }
   return credentials;
+}
+
+function credentialFingerprint(credentials) {
+  return crypto
+    .createHash("sha256")
+    .update(`${credentials.X_AGENT_ID}:${credentials.X_AGENT_KEY}`)
+    .digest("hex");
 }
 
 async function authenticate(credentials) {
@@ -253,16 +233,17 @@ async function readSupplierState(bookingReference, credentials, token) {
   };
 }
 
-async function inspect(body, credentials, token, integrationId, connection) {
+async function inspect(body, credentials, token, connection) {
   const bookingReference = clean(body.bookingReference);
   if (!bookingReference) fail("Booking reference is required");
   if (bookingReference.length > 100) fail("Booking reference is too long");
   const state = await readSupplierState(bookingReference, credentials, token);
+  const fingerprint = credentialFingerprint(credentials);
   const [attemptRows] = await connection.query(
     `SELECT status, expected_due_amount, last_error, updated_at
      FROM cordelia_uat_balance_payment_tests
-     WHERE integration_id = ? AND booking_reference = ? LIMIT 1`,
-    [integrationId, bookingReference],
+     WHERE credential_fingerprint = ? AND booking_reference = ? LIMIT 1`,
+    [fingerprint, bookingReference],
   );
   const expiresAt = Date.now() + INSPECTION_LIFETIME_MS;
   return {
@@ -276,7 +257,7 @@ async function inspect(body, credentials, token, integrationId, connection) {
       state.outstandingAmount == null
         ? null
         : signInspection({
-            integrationId,
+            credentialFingerprint: fingerprint,
             bookingReference,
             outstandingAmount: state.outstandingAmount,
             expiresAt,
@@ -285,13 +266,14 @@ async function inspect(body, credentials, token, integrationId, connection) {
   };
 }
 
-async function repay(body, credentials, token, integrationId, connection) {
+async function repay(body, credentials, token, connection) {
   if (clean(body.confirmation) !== "PAY UAT BALANCE") {
     fail('Type "PAY UAT BALANCE" to confirm');
   }
   const inspected = verifyInspection(body.inspectionToken);
-  if (Number(inspected.integrationId) !== integrationId) {
-    fail("Balance inspection belongs to another integration", 409);
+  const fingerprint = credentialFingerprint(credentials);
+  if (inspected.credentialFingerprint !== fingerprint) {
+    fail("Balance inspection belongs to different UAT credentials", 409);
   }
   const bookingReference = clean(inspected.bookingReference);
   const before = await readSupplierState(bookingReference, credentials, token);
@@ -310,9 +292,9 @@ async function repay(body, credentials, token, integrationId, connection) {
   try {
     const [result] = await connection.query(
       `INSERT INTO cordelia_uat_balance_payment_tests
-       (integration_id, booking_reference, expected_due_amount, status)
+       (credential_fingerprint, booking_reference, expected_due_amount, status)
        VALUES (?, ?, ?, 'PROCESSING')`,
-      [integrationId, bookingReference, before.outstandingAmount],
+      [fingerprint, bookingReference, before.outstandingAmount],
     );
     attemptId = result.insertId;
   } catch (error) {
@@ -380,18 +362,16 @@ export async function POST(request) {
     const admin = await getAdminMasterFromSession(request);
     if (!admin) fail("Master admin login required", 401);
     const body = await request.json();
-    const integrationId = Number(body.integrationId);
-    if (!integrationId) fail("Select a saved Thomas Cook UAT integration");
     connection = await pool.getConnection();
     await ensureAuditTable(connection);
-    const credentials = await integrationCredentials(connection, integrationId);
+    const credentials = requestCredentials(body);
     const token = await authenticate(credentials);
     const action = clean(body.action);
     const result =
       action === "inspect"
-        ? await inspect(body, credentials, token, integrationId, connection)
+        ? await inspect(body, credentials, token, connection)
         : action === "repay"
-          ? await repay(body, credentials, token, integrationId, connection)
+          ? await repay(body, credentials, token, connection)
           : fail("Unsupported balance-payment test action");
     return NextResponse.json({ success: true, result });
   } catch (error) {

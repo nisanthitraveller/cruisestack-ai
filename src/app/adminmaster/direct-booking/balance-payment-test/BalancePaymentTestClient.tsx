@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-type Integration = { id: number; label: string };
 type Inspection = {
   bookingReference: string;
   outstandingAmount: number | null;
@@ -15,11 +14,18 @@ type Inspection = {
 };
 
 export default function BalancePaymentTestClient({
-  integrations,
+  agentId: suppliedAgentId = "",
+  agentKey: suppliedAgentKey = "",
+  showCredentials = true,
 }: {
-  integrations: Integration[];
+  agentId?: string;
+  agentKey?: string;
+  showCredentials?: boolean;
 }) {
-  const [integrationId, setIntegrationId] = useState(integrations[0]?.id || 0);
+  const [enteredAgentId, setEnteredAgentId] = useState("");
+  const [enteredAgentKey, setEnteredAgentKey] = useState("");
+  const agentId = suppliedAgentId || enteredAgentId;
+  const agentKey = suppliedAgentKey || enteredAgentKey;
   const [bookingReference, setBookingReference] = useState("");
   const [inspection, setInspection] = useState<Inspection | null>(null);
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
@@ -33,7 +39,7 @@ export default function BalancePaymentTestClient({
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ integrationId, ...body }),
+        body: JSON.stringify({ agentId, agentKey, ...body }),
       },
     );
     const data = await response.json().catch(() => null);
@@ -90,23 +96,29 @@ export default function BalancePaymentTestClient({
       </div>
 
       <form className="isolated-booking-form" onSubmit={inspectBooking}>
-        <label>
-          <span>Thomas Cook Cordelia UAT integration *</span>
-          <select
-            onChange={(event) => {
-              setIntegrationId(Number(event.target.value));
-              setInspection(null);
-              setResult(null);
-            }}
-            value={integrationId}
-          >
-            {integrations.map((integration) => (
-              <option key={integration.id} value={integration.id}>
-                {integration.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        {showCredentials ? (
+          <>
+            <label>
+              <span>UAT Agent ID *</span>
+              <input
+                autoComplete="off"
+                onChange={(event) => setEnteredAgentId(event.target.value)}
+                required
+                value={enteredAgentId}
+              />
+            </label>
+            <label>
+              <span>UAT Agent Key *</span>
+              <input
+                autoComplete="new-password"
+                onChange={(event) => setEnteredAgentKey(event.target.value)}
+                required
+                type="password"
+                value={enteredAgentKey}
+              />
+            </label>
+          </>
+        ) : null}
         <label>
           <span>Cordelia booking reference *</span>
           <input
@@ -116,7 +128,7 @@ export default function BalancePaymentTestClient({
             value={bookingReference}
           />
         </label>
-        <button disabled={Boolean(busy) || !integrationId} type="submit">
+        <button disabled={Boolean(busy) || !agentId || !agentKey} type="submit">
           {busy === "inspect" ? "Retrieving..." : "Retrieve current balance"}
         </button>
       </form>

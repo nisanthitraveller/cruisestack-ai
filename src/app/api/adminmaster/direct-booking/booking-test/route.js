@@ -1,8 +1,6 @@
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import pool from "@/lib/db_mysql";
 import { getAdminMasterFromSession } from "@/lib/adminMasterAuth";
-import { decryptIntegrationCredential } from "@/lib/integrationCredentials";
 
 const BASE_URL = "https://uat.cordeliacruises.com/api/agent";
 const TIMEOUT_MS = 60000;
@@ -113,49 +111,18 @@ async function providerFetch(path, options) {
   return data;
 }
 
-async function integrationCredentials(connection, integrationId) {
-  const [integrations] = await connection.query(
-    `
-    SELECT i.id, i.environment, p.provider_code, p.adapter_code
-    FROM company_cruiseline_integrations i
-    JOIN cruise_api_providers p ON p.id = i.provider_id
-    WHERE i.id = ? AND i.is_enabled = 1
-    LIMIT 1
-    `,
-    [integrationId],
-  );
-  const integration = integrations[0];
+function requestCredentials(body) {
+  return {
+    X_AGENT_ID: required(body.agentId, "UAT Agent ID"),
+    X_AGENT_KEY: required(body.agentKey, "UAT Agent Key", 500),
+  };
+}
 
-  if (!integration) fail("Enabled integration was not found", 404);
-  if (integration.environment !== "UAT") {
-    fail("Booking Test is restricted to UAT integrations", 409);
-  }
-  if (
-    clean(integration.provider_code).toUpperCase() !== "CORDELIA" ||
-    clean(integration.adapter_code).toLowerCase() !== "cordelia-agent-api"
-  ) {
-    fail("Booking Test is not available for this provider", 409);
-  }
-
-  const [rows] = await connection.query(
-    `
-    SELECT credential_key, encrypted_value
-    FROM company_integration_credentials
-    WHERE integration_id = ?
-    ORDER BY id
-    `,
-    [integrationId],
-  );
-  const credentials = {};
-  for (const row of rows) {
-    credentials[clean(row.credential_key).toUpperCase()] =
-      decryptIntegrationCredential(row.encrypted_value);
-  }
-
-  if (!credentials.X_AGENT_ID || !credentials.X_AGENT_KEY) {
-    fail("X_AGENT_ID and X_AGENT_KEY are required", 409);
-  }
-  return credentials;
+function credentialFingerprint(credentials) {
+  return crypto
+    .createHash("sha256")
+    .update(`${credentials.X_AGENT_ID}:${credentials.X_AGENT_KEY}`)
+    .digest("hex");
 }
 
 async function authenticate(credentials) {
@@ -181,7 +148,7 @@ function authHeaders(credentials, token) {
   };
 }
 
-async function prepareBooking(body, credentials, token, integrationId) {
+async function prepareBooking(body, credentials, token) {
   const itinerary = required(body.itinerary, "Itinerary ID");
   const roomType = required(body.roomType, "Room type");
   const pricing = await providerFetch("/itineraries/pricing.json", {
@@ -207,7 +174,7 @@ async function prepareBooking(body, credentials, token, integrationId) {
   }
 
   const payload = {
-    integrationId,
+    credentialFingerprint: credentialFingerprint(credentials),
     itinerary,
     roomType: clean(room.room_type) || roomType,
     priceKey: required(room.price_key, "Price key", 2000),
@@ -234,7 +201,31 @@ async function prepareBooking(body, credentials, token, integrationId) {
     totalPrice: payload.totalPrice,
     partialPayableAmount: payload.partialPayableAmount,
     partialPaymentAvailable: Boolean(payload.paymentOptionId),
+    paymentOptionId: payload.paymentOptionId || null,
+    dueDate: pricing.due_date ?? null,
   };
+}
+
+async function runDiagnostic(action, credentials, token) {
+  if (action === "connection") {
+    return {
+      authenticated: true,
+      agentId: credentials.X_AGENT_ID,
+      environment: "UAT",
+      message: "Cordelia UAT authentication succeeded",
+    };
+  }
+  if (action === "wallet") {
+    const wallet = await providerFetch("/wallet/balance", {
+      method: "GET",
+      headers: authHeaders(credentials, token),
+    });
+    return {
+      walletBalance: numberOrNull(wallet?.balance),
+      message: "Agency wallet retrieved separately from booking balance",
+    };
+  }
+  return null;
 }
 
 function passenger(body) {
@@ -267,14 +258,14 @@ function passenger(body) {
   };
 }
 
-async function confirmBooking(body, credentials, token, integrationId) {
+async function confirmBooking(body, credentials, token) {
   if (clean(body.confirmation) !== "CREATE UAT BOOKING") {
     fail('Type "CREATE UAT BOOKING" to confirm');
   }
 
   const prepared = verifyPreparation(body.preparationToken);
-  if (Number(prepared.integrationId) !== integrationId) {
-    fail("Prepared booking belongs to a different integration", 409);
+  if (prepared.credentialFingerprint !== credentialFingerprint(credentials)) {
+    fail("Prepared booking belongs to different UAT credentials", 409);
   }
 
   const usePartial = body.usePartialPayment === true;
@@ -390,25 +381,22 @@ async function confirmBooking(body, credentials, token, integrationId) {
 }
 
 export async function POST(request) {
-  let connection;
   try {
     const admin = await getAdminMasterFromSession(request);
     if (!admin) fail("Master admin login required", 401);
 
     const body = await request.json();
-    const integrationId = Number(body.integrationId);
-    if (!integrationId) fail("Select a saved UAT integration");
-
-    connection = await pool.getConnection();
-    const credentials = await integrationCredentials(connection, integrationId);
+    const credentials = requestCredentials(body);
     const token = await authenticate(credentials);
     const action = clean(body.action);
 
-    const result =
-      action === "prepare"
-        ? await prepareBooking(body, credentials, token, integrationId)
+    const diagnostic = await runDiagnostic(action, credentials, token);
+    const result = diagnostic
+      ? diagnostic
+      : action === "prepare"
+        ? await prepareBooking(body, credentials, token)
         : action === "confirm"
-          ? await confirmBooking(body, credentials, token, integrationId)
+          ? await confirmBooking(body, credentials, token)
           : fail("Unsupported Booking Test action");
 
     return NextResponse.json({ success: true, result });
@@ -421,7 +409,5 @@ export async function POST(request) {
       { message: error?.message || "Unable to run UAT Booking Test" },
       { status: error?.statusCode || 500 },
     );
-  } finally {
-    if (connection) connection.release();
   }
 }

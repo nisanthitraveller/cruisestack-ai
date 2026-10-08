@@ -1,11 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-type Integration = {
-  id: number;
-  label: string;
-};
+import BalancePaymentTestClient from "../balance-payment-test/BalancePaymentTestClient";
 
 type Prepared = {
   preparationToken: string;
@@ -15,6 +11,8 @@ type Prepared = {
   totalPrice: number;
   partialPayableAmount: number | null;
   partialPaymentAvailable: boolean;
+  paymentOptionId: string | null;
+  dueDate: string | null;
 };
 
 const initialGuest = {
@@ -33,12 +31,9 @@ const initialGuest = {
   confirmation: "",
 };
 
-export default function BookingTestClient({
-  integrations,
-}: {
-  integrations: Integration[];
-}) {
-  const [integrationId, setIntegrationId] = useState(integrations[0]?.id || 0);
+export default function BookingTestClient() {
+  const [agentId, setAgentId] = useState("");
+  const [agentKey, setAgentKey] = useState("");
   const [itinerary, setItinerary] = useState("");
   const [roomType, setRoomType] = useState("");
   const [prepared, setPrepared] = useState<Prepared | null>(null);
@@ -46,6 +41,7 @@ export default function BookingTestClient({
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
+  const [diagnostic, setDiagnostic] = useState<Record<string, unknown> | null>(null);
 
   async function callApi(body: Record<string, unknown>) {
     const response = await fetch(
@@ -53,7 +49,7 @@ export default function BookingTestClient({
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ integrationId, ...body }),
+        body: JSON.stringify({ agentId, agentKey, ...body }),
       },
     );
     const data = await response.json().catch(() => null);
@@ -72,6 +68,23 @@ export default function BookingTestClient({
     } catch (prepareError) {
       setError(
         prepareError instanceof Error ? prepareError.message : "Unable to prepare",
+      );
+    } finally {
+      setBusy("");
+    }
+  }
+
+  async function runDiagnostic(action: "connection" | "wallet") {
+    setBusy(action);
+    setError("");
+    setDiagnostic(null);
+    try {
+      setDiagnostic(await callApi({ action }));
+    } catch (diagnosticError) {
+      setError(
+        diagnosticError instanceof Error
+          ? diagnosticError.message
+          : "Diagnostic failed",
       );
     } finally {
       setBusy("");
@@ -108,55 +121,105 @@ export default function BookingTestClient({
 
   return (
     <div className="isolated-booking-test">
-      <div className="isolated-booking-warning">
-        <strong>UAT wallet-debit test</strong>
-        <p>
-          This tool creates a real UAT booking. Cordelia does not provide an
-          idempotency key, so never retry a timed-out booking request.
-        </p>
-      </div>
-
-      <form className="isolated-booking-form" onSubmit={prepare}>
-        <label>
-          <span>UAT integration *</span>
-          <select
-            onChange={(event) => {
-              setIntegrationId(Number(event.target.value));
-              setPrepared(null);
-            }}
-            value={integrationId}
+      <section className="direct-booking-diagnostics">
+        <div className="direct-booking-diagnostics-heading">
+          <div>
+            <h3>UAT diagnostics</h3>
+            <p>These tests do not create a booking or debit the supplier wallet.</p>
+          </div>
+          <span className="uat">UAT</span>
+        </div>
+        <div className="isolated-booking-grid">
+          <label>
+            <span>UAT Agent ID *</span>
+            <input
+              autoComplete="off"
+              onChange={(event) => setAgentId(event.target.value)}
+              required
+              value={agentId}
+            />
+          </label>
+          <label>
+            <span>UAT Agent Key *</span>
+            <input
+              autoComplete="new-password"
+              onChange={(event) => setAgentKey(event.target.value)}
+              required
+              type="password"
+              value={agentKey}
+            />
+          </label>
+        </div>
+        <div className="direct-booking-test-actions">
+          <button
+            disabled={Boolean(busy) || !agentId || !agentKey}
+            onClick={() => runDiagnostic("connection")}
+            type="button"
           >
-            {integrations.map((integration) => (
-              <option key={integration.id} value={integration.id}>
-                {integration.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          <span>Itinerary ID *</span>
-          <input
-            onChange={(event) => setItinerary(event.target.value)}
-            required
-            value={itinerary}
-          />
-        </label>
-        <label>
-          <span>Room type *</span>
-          <input
-            onChange={(event) => setRoomType(event.target.value)}
-            placeholder="PENTHOUSEBALCONY2"
-            required
-            value={roomType}
-          />
-        </label>
-        <button disabled={Boolean(busy) || !integrationId} type="submit">
-          {busy === "prepare" ? "Preparing..." : "Prepare UAT booking"}
-        </button>
-      </form>
+            {busy === "connection" ? "Testing..." : "Test Cordelia connection"}
+          </button>
+          <button
+            disabled={Boolean(busy) || !agentId || !agentKey}
+            onClick={() => runDiagnostic("wallet")}
+            type="button"
+          >
+            {busy === "wallet" ? "Checking..." : "Check agency wallet"}
+          </button>
+        </div>
+        {diagnostic ? (
+          <div className="direct-booking-test-result">
+            <pre>{JSON.stringify(diagnostic, null, 2)}</pre>
+          </div>
+        ) : null}
+      </section>
+
+      <section className="direct-booking-diagnostics">
+        <div className="direct-booking-diagnostics-heading">
+          <div>
+            <h3>Availability and pricing test</h3>
+            <p>
+              Reprice one adult and display Cordelia’s live UAT price,
+              payment option, partial amount, and due date. This does not
+              create a booking or debit the wallet.
+            </p>
+          </div>
+          <span className="uat">UAT</span>
+        </div>
+        <form className="isolated-booking-form" onSubmit={prepare}>
+          <label>
+            <span>Itinerary ID *</span>
+            <input
+              onChange={(event) => setItinerary(event.target.value)}
+              required
+              value={itinerary}
+            />
+          </label>
+          <label>
+            <span>Room type *</span>
+            <input
+              onChange={(event) => setRoomType(event.target.value)}
+              placeholder="PENTHOUSEBALCONY2"
+              required
+              value={roomType}
+            />
+          </label>
+          <button disabled={Boolean(busy) || !agentId || !agentKey} type="submit">
+            {busy === "prepare" ? "Testing..." : "Test availability and pricing"}
+          </button>
+        </form>
+      </section>
 
       {prepared ? (
         <section className="isolated-booking-confirm">
+          <div className="isolated-booking-warning">
+            <strong>Cordelia UAT Booking Test</strong>
+            <p>
+              The availability test is complete. The action below creates a
+              real UAT booking and may debit the UAT supplier wallet. Cordelia
+              does not provide an idempotency key, so never retry a timed-out
+              booking request.
+            </p>
+          </div>
           <div className="isolated-booking-price">
             <span>Room <strong>{prepared.roomType}</strong></span>
             <span>Full amount <strong>₹{prepared.totalPrice}</strong></span>
@@ -167,6 +230,12 @@ export default function BookingTestClient({
                   ? "Not available"
                   : `₹${prepared.partialPayableAmount}`}
               </strong>
+            </span>
+            <span>
+              Payment option <strong>{prepared.paymentOptionId || "Not returned"}</strong>
+            </span>
+            <span>
+              Supplier due date <strong>{prepared.dueDate || "Not returned"}</strong>
             </span>
             <span>
               Valid until{" "}
@@ -219,6 +288,19 @@ export default function BookingTestClient({
           <pre>{JSON.stringify(result, null, 2)}</pre>
         </div>
       ) : null}
+
+      <section className="isolated-booking-confirm">
+        <h3>Existing booking balance and second installment</h3>
+        <p>
+          Retrieve the live booking balance, keep it separate from the agency
+          wallet, and test Cordelia repay_due_amount against the same booking.
+        </p>
+        <BalancePaymentTestClient
+          agentId={agentId}
+          agentKey={agentKey}
+          showCredentials={false}
+        />
+      </section>
     </div>
   );
 }
