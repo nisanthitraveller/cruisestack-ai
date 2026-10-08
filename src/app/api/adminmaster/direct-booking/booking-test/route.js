@@ -264,6 +264,41 @@ async function getRoomTypes(body, credentials, token) {
   return { itinerary, roomTypes };
 }
 
+async function getItineraries(body, credentials, token) {
+  const fromDateInput = required(body.fromDate, "From date", 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fromDateInput)) {
+    fail("From date must use YYYY-MM-DD");
+  }
+  const [year, month, day] = fromDateInput.split("-");
+  const days = Number(body.days || 30);
+  if (!Number.isInteger(days) || days < 1 || days > 90) {
+    fail("Search days must be between 1 and 90");
+  }
+
+  const response = await providerFetch(
+    `/itineraries?from_date=${encodeURIComponent(`${month}/${day}/${year}`)}&days=${days}`,
+    {
+      method: "GET",
+      headers: authHeaders(credentials, token),
+    },
+  );
+  const itineraries = Array.isArray(response?.itineraries)
+    ? response.itineraries
+        .map((item) => ({
+          id: clean(item?.itinerary_id),
+          startDate: clean(item?.start_date),
+          endDate: clean(item?.end_date),
+          ports: Array.isArray(item?.ports)
+            ? item.ports.map(clean).filter(Boolean)
+            : [],
+          nights: numberOrNull(item?.nights),
+        }))
+        .filter((item) => item.id)
+    : [];
+
+  return { fromDate: fromDateInput, days, itineraries };
+}
+
 function passenger(body) {
   const gender = required(body.gender, "Gender");
   const mealType = required(body.mealType, "Meal type");
@@ -429,6 +464,8 @@ export async function POST(request) {
     const diagnostic = await runDiagnostic(action, credentials, token);
     const result = diagnostic
       ? diagnostic
+      : action === "itineraries"
+        ? await getItineraries(body, credentials, token)
       : action === "rooms"
         ? await getRoomTypes(body, credentials, token)
       : action === "prepare"

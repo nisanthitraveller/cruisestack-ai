@@ -15,6 +15,14 @@ type Prepared = {
   dueDate: string | null;
 };
 
+type UatItinerary = {
+  id: string;
+  startDate: string;
+  endDate: string;
+  ports: string[];
+  nights: number | null;
+};
+
 const initialGuest = {
   firstName: "",
   lastName: "",
@@ -35,6 +43,11 @@ export default function BookingTestClient() {
   const [agentId, setAgentId] = useState("");
   const [agentKey, setAgentKey] = useState("");
   const [itinerary, setItinerary] = useState("");
+  const [fromDate, setFromDate] = useState(() =>
+    new Date().toISOString().slice(0, 10),
+  );
+  const [searchDays, setSearchDays] = useState("30");
+  const [itineraries, setItineraries] = useState<UatItinerary[]>([]);
   const [roomType, setRoomType] = useState("");
   const [roomTypes, setRoomTypes] = useState<string[]>([]);
   const [prepared, setPrepared] = useState<Prepared | null>(null);
@@ -93,6 +106,42 @@ export default function BookingTestClient() {
     } finally {
       setBusy("");
     }
+  }
+
+  async function loadItineraries() {
+    setBusy("itineraries");
+    setError("");
+    setPrepared(null);
+    setItinerary("");
+    setRoomType("");
+    setRoomTypes([]);
+    setItineraries([]);
+    try {
+      const response = await callApi({
+        action: "itineraries",
+        fromDate,
+        days: Number(searchDays),
+      });
+      setItineraries(response.itineraries || []);
+      if (!response.itineraries?.length) {
+        setError("Cordelia returned no UAT itineraries for this date range.");
+      }
+    } catch (itineraryError) {
+      setError(
+        itineraryError instanceof Error
+          ? itineraryError.message
+          : "Unable to retrieve itineraries",
+      );
+    } finally {
+      setBusy("");
+    }
+  }
+
+  function selectItinerary(value: string) {
+    setItinerary(value);
+    setRoomType("");
+    setRoomTypes([]);
+    setPrepared(null);
   }
 
   async function runDiagnostic(action: "connection" | "wallet") {
@@ -208,14 +257,52 @@ export default function BookingTestClient() {
         </div>
         <form className="isolated-booking-form" onSubmit={prepare}>
           <label>
+            <span>Search from date *</span>
+            <input
+              onChange={(event) => setFromDate(event.target.value)}
+              required
+              type="date"
+              value={fromDate}
+            />
+          </label>
+          <label>
+            <span>Search days *</span>
+            <input
+              max="90"
+              min="1"
+              onChange={(event) => setSearchDays(event.target.value)}
+              required
+              type="number"
+              value={searchDays}
+            />
+          </label>
+          <button
+            disabled={Boolean(busy) || !agentId || !agentKey || !fromDate}
+            onClick={loadItineraries}
+            type="button"
+          >
+            {busy === "itineraries" ? "Finding..." : "Find current itineraries"}
+          </button>
+          {itineraries.length ? (
+            <label>
+              <span>Current UAT itineraries</span>
+              <select
+                onChange={(event) => selectItinerary(event.target.value)}
+                value={itinerary}
+              >
+                <option value="">Select an itinerary</option>
+                {itineraries.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.startDate} – {item.endDate} | {item.ports.join(" → ")}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <label>
             <span>Itinerary ID *</span>
             <input
-              onChange={(event) => {
-                setItinerary(event.target.value);
-                setRoomType("");
-                setRoomTypes([]);
-                setPrepared(null);
-              }}
+              onChange={(event) => selectItinerary(event.target.value)}
               required
               value={itinerary}
             />
