@@ -270,13 +270,9 @@ async function getItineraries(body, credentials, token) {
     fail("From date must use YYYY-MM-DD");
   }
   const [year, month, day] = fromDateInput.split("-");
-  const days = Number(body.days || 30);
-  if (!Number.isInteger(days) || days < 1 || days > 90) {
-    fail("Search days must be between 1 and 90");
-  }
 
   const response = await providerFetch(
-    `/itineraries?from_date=${encodeURIComponent(`${month}/${day}/${year}`)}&days=${days}`,
+    `/itineraries?from_date=${encodeURIComponent(`${month}/${day}/${year}`)}&pagination=false`,
     {
       method: "GET",
       headers: authHeaders(credentials, token),
@@ -296,7 +292,7 @@ async function getItineraries(body, credentials, token) {
         .filter((item) => item.id)
     : [];
 
-  return { fromDate: fromDateInput, days, itineraries };
+  return { fromDate: fromDateInput, itineraries };
 }
 
 function passenger(body) {

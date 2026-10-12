@@ -46,7 +46,6 @@ export default function BookingTestClient() {
   const [fromDate, setFromDate] = useState(() =>
     new Date().toISOString().slice(0, 10),
   );
-  const [searchDays, setSearchDays] = useState("30");
   const [itineraries, setItineraries] = useState<UatItinerary[]>([]);
   const [roomType, setRoomType] = useState("");
   const [roomTypes, setRoomTypes] = useState<string[]>([]);
@@ -120,11 +119,10 @@ export default function BookingTestClient() {
       const response = await callApi({
         action: "itineraries",
         fromDate,
-        days: Number(searchDays),
       });
       setItineraries(response.itineraries || []);
       if (!response.itineraries?.length) {
-        setError("Cordelia returned no UAT itineraries for this date range.");
+        setError("Cordelia returned no active UAT itineraries from this date.");
       }
     } catch (itineraryError) {
       setError(
@@ -263,17 +261,6 @@ export default function BookingTestClient() {
               required
               type="date"
               value={fromDate}
-            />
-          </label>
-          <label>
-            <span>Search days *</span>
-            <input
-              max="90"
-              min="1"
-              onChange={(event) => setSearchDays(event.target.value)}
-              required
-              type="number"
-              value={searchDays}
             />
           </label>
           <button
