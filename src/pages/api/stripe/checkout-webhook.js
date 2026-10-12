@@ -252,11 +252,10 @@ async function upsertCompanySubscription(connection, details) {
     SELECT id
     FROM company_subscriptions
     WHERE stripe_subscription_id = ?
-      OR (company_id = ? AND status = 1)
     ORDER BY id DESC
     LIMIT 1
     `,
-    [details.stripeSubscriptionId || "", details.companyId]
+    [details.stripeSubscriptionId || ""]
   );
 
   const paymentStatus =
@@ -273,7 +272,7 @@ async function upsertCompanySubscription(connection, details) {
       `
       UPDATE company_subscriptions
       SET
-        plan_id = ?,
+        plan_id = COALESCE(?, plan_id),
         start_date = COALESCE(DATE(?), start_date),
         end_date = COALESCE(DATE(?), end_date),
         payment_status = ?,
@@ -703,22 +702,37 @@ async function handleInvoiceCreated(connection, invoice) {
   const stripeCustomerId =
     typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id || null;
 
+  const company = await findCompanyForStripeSubscription(
+    connection,
+    stripeSubscriptionId
+  );
+
+  if (!company) {
+    throw new UnmappedStripeObjectError(
+      `Company not found for invoice subscription: ${stripeSubscriptionId}`
+    );
+  }
+
+  const invoiceLine = invoice.lines?.data?.find(
+    (line) => line.subscription === stripeSubscriptionId || line.parent?.subscription_item_details
+  ) || invoice.lines?.data?.[0] || null;
+  const invoicePriceId =
+    invoiceLine?.price?.id || invoiceLine?.pricing?.price_details?.price || null;
+
   const [rows] = await connection.query(
     `
     SELECT
-      cs.company_id,
+      c.id AS company_id,
       c.slug,
       c.billing_metric,
       sp.booking_fee,
       sp.trip_summary_fee
-    FROM company_subscriptions cs
-    INNER JOIN companies c ON c.id = cs.company_id
-    LEFT JOIN subscription_plans sp ON sp.id = cs.plan_id
-    WHERE cs.stripe_subscription_id = ?
-    ORDER BY cs.id DESC
+    FROM companies c
+    LEFT JOIN subscription_plans sp ON sp.stripe_price_id = ?
+    WHERE c.id = ?
     LIMIT 1
     `,
-    [stripeSubscriptionId]
+    [invoicePriceId, company.id]
   );
 
   const subscription = rows[0];
@@ -734,11 +748,22 @@ async function handleInvoiceCreated(connection, invoice) {
     return subscription.company_id;
   }
 
-  // invoice.period_start/end mark when items may still be attached to this invoice,
-  // not the service period — the actual billed cycle lives on the line item.
+  const feeValue =
+    subscription.billing_metric === "trip_summary_count"
+      ? subscription.trip_summary_fee
+      : subscription.booking_fee;
+
+  if (!invoicePriceId || feeValue === null || feeValue === undefined) {
+    throw new UnmappedStripeObjectError(
+      `Billing plan not found for invoice price: ${invoicePriceId || "none"}`
+    );
+  }
+
+  // Subscription-cycle invoices charge usage from the completed invoice period.
+  // The subscription line period represents the new/upcoming licensed period.
   const usageLine = invoice.lines?.data?.find((line) => line.period) || null;
-  const periodStartSeconds = usageLine?.period?.start || invoice.period_start || invoice.created;
-  const periodEndSeconds = usageLine?.period?.end || invoice.period_end || invoice.created;
+  const periodStartSeconds = invoice.period_start || usageLine?.period?.start || invoice.created;
+  const periodEndSeconds = invoice.period_end || usageLine?.period?.end || invoice.created;
   const periodStart = stripeDateToMysql(periodStartSeconds);
   const periodEnd = stripeDateToMysql(periodEndSeconds);
 
@@ -767,8 +792,7 @@ async function handleInvoiceCreated(connection, invoice) {
     if (error.code !== "ER_NO_SUCH_TABLE") throw error;
   }
 
-  const fee =
-    Number(metric === "trip_summary_count" ? subscription.trip_summary_fee : subscription.booking_fee) || 0;
+  const fee = Number(feeValue) || 0;
   const amount = Math.round(count * fee * 100) / 100;
 
   try {
@@ -816,16 +840,21 @@ async function handleInvoiceCreated(connection, invoice) {
   }
 
   if (amount > 0 && stripeCustomerId) {
-    const invoiceItem = await stripe.invoiceItems.create({
-      amount: Math.round(amount * 100),
-      currency: invoice.currency || "usd",
-      customer: stripeCustomerId,
-      description:
-        metric === "trip_summary_count"
-          ? `Trip summary usage - ${count} x $${fee.toFixed(2)}`
-          : `Booking usage - ${count} x $${fee.toFixed(2)}`,
-      invoice: invoice.id,
-    });
+    const invoiceItem = await stripe.invoiceItems.create(
+      {
+        amount: Math.round(amount * 100),
+        currency: invoice.currency || "usd",
+        customer: stripeCustomerId,
+        description:
+          metric === "trip_summary_count"
+            ? `Trip summary usage - ${count} x $${fee.toFixed(2)}`
+            : `Booking usage - ${count} x $${fee.toFixed(2)}`,
+        invoice: invoice.id,
+      },
+      {
+        idempotencyKey: `billing-usage-${invoice.id}-${metric}`,
+      }
+    );
 
     await connection.query(
       `
@@ -959,16 +988,16 @@ export default async function handler(req, res) {
       if (error instanceof UnmappedStripeObjectError) {
         try {
           await markWebhookEventById(event.id, {
-            processingStatus: "Processed",
-            errorMessage: `Ignored: ${error.message}`,
+            processingStatus: "Failed",
+            errorMessage: error.message,
           });
         } catch (logError) {
           console.error("Stripe Webhook Log Update Error:", logError);
           return res.status(500).json({ message: "Webhook handler failed" });
         }
 
-        console.warn("Stripe webhook ignored:", error.message);
-        return res.status(200).json({ received: true, ignored: true });
+        console.warn("Stripe webhook mapping failed:", error.message);
+        return res.status(500).json({ message: "Webhook mapping failed" });
       }
 
       try {
