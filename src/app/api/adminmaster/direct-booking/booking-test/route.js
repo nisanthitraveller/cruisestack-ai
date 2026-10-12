@@ -101,10 +101,10 @@ async function providerFetch(path, options) {
   }
 
   if (!response.ok) {
+    const supplierMessage =
+      clean(data.message) || clean(data.error) || `HTTP ${response.status}`;
     fail(
-      clean(data.message) ||
-        clean(data.error) ||
-        `Cordelia returned HTTP ${response.status}`,
+      `Cordelia ${path} returned ${supplierMessage}`,
       response.status === 410 ? 409 : 502,
     );
   }
@@ -389,46 +389,30 @@ async function confirmBooking(body, credentials, token) {
 
   const guest = passenger(body);
   const panNumber = clean(body.panNumber);
-  const latestPriceKey = required(latestRoom.price_key, "Latest price key", 2000);
-  const latestSequenceNumber = Number(latestRoom.seq_no);
-  if (!Number.isInteger(latestSequenceNumber)) {
-    fail("Cordelia did not return a valid latest sequence number", 502);
-  }
 
   const bookingPayload = {
     itinerary: prepared.itinerary,
-    tcs_with_pan: Boolean(panNumber),
-    tds_opted: false,
-    expense_above_7l: false,
-    tax_regime: "new_regime",
-    addons: [],
+    booking_voucher: "",
     rooms: [
       {
-        seq_no: latestSequenceNumber,
-        price_key: latestPriceKey,
         room_type: prepared.roomType,
         adults: [guest],
         children: [],
         infants: [],
       },
     ],
-    pan_no: panNumber,
-    plan_enabled: false,
-    variables: {
-      input: {
-        contact: {
-          name: `${guest.first_name} ${guest.last_name}`,
-          email: guest.email,
-          phoneNumber: guest.phone_number,
-          gstin: clean(body.gstin),
-          pan: panNumber,
-        },
-      },
-    },
+    plan_enabled: "false",
   };
+  if (panNumber) {
+    bookingPayload.tcs_with_pan = true;
+    bookingPayload.tds_opted = false;
+    bookingPayload.expense_above_7l = false;
+    bookingPayload.tax_regime = "new_regime";
+    bookingPayload.pan_no = panNumber;
+  }
   if (usePartial) bookingPayload.payment_option_id = prepared.paymentOptionId;
 
-  const booking = await providerFetch("/bookings.json", {
+  const booking = await providerFetch("/bookings", {
     method: "POST",
     headers: authHeaders(credentials, token),
     body: JSON.stringify(bookingPayload),
