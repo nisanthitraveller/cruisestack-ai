@@ -922,7 +922,7 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
           <section
             aria-labelledby="company-agents-title"
             aria-modal="true"
-            className="companies-modal"
+            className="companies-modal companies-agents-modal"
             onMouseDown={(event) => event.stopPropagation()}
             role="dialog"
           >
@@ -938,7 +938,7 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
             {agentError ? <div className="adminmaster-login-error">{agentError}</div> : null}
 
             <div className="adminmaster-table-wrap">
-              <table className="adminmaster-table">
+              <table className="adminmaster-table companies-agents-table">
                 <thead>
                   <tr><th>Name</th><th>Login</th><th>Type</th><th>Commissions</th><th>Status</th><th>Action</th></tr>
                 </thead>
