@@ -198,6 +198,11 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
   const [agents, setAgents] = useState<AgentRow[]>([]);
   const [agentForm, setAgentForm] = useState(emptyAgentForm);
   const [agentError, setAgentError] = useState("");
+  const [passwordAgent, setPasswordAgent] = useState<AgentRow | null>(null);
+  const [passwordForm, setPasswordForm] = useState({
+    password: "",
+    password_confirmation: "",
+  });
 
   useEffect(() => {
     return () => {
@@ -365,6 +370,8 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
     setAgents([]);
     setAgentForm(emptyAgentForm);
     setAgentError("");
+    setPasswordAgent(null);
+    setPasswordForm({ password: "", password_confirmation: "" });
     setBusyAction(`agents-${company.id}`);
 
     try {
@@ -395,6 +402,34 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
     setAgents([]);
     setAgentForm(emptyAgentForm);
     setAgentError("");
+    setPasswordAgent(null);
+    setPasswordForm({ password: "", password_confirmation: "" });
+  }
+
+  async function changeAgentPassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!agentCompany || !passwordAgent) return;
+
+    setBusyAction(`change-password-${passwordAgent.id}`);
+    setAgentError("");
+
+    try {
+      await postCompanyAction({
+        action: "change_agent_password",
+        agent_id: passwordAgent.id,
+        companyId: agentCompany.id,
+        ...passwordForm,
+      });
+      setPasswordAgent(null);
+      setPasswordForm({ password: "", password_confirmation: "" });
+      window.alert("Password changed successfully. The agent must sign in again.");
+    } catch (error) {
+      setAgentError(
+        error instanceof Error ? error.message : "Unable to change password",
+      );
+    } finally {
+      setBusyAction(null);
+    }
   }
 
   async function addAgent(event: FormEvent<HTMLFormElement>) {
@@ -871,7 +906,7 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
             <div className="adminmaster-table-wrap">
               <table className="adminmaster-table">
                 <thead>
-                  <tr><th>Name</th><th>Login</th><th>Type</th><th>Commissions</th><th>Status</th></tr>
+                  <tr><th>Name</th><th>Login</th><th>Type</th><th>Commissions</th><th>Status</th><th>Action</th></tr>
                 </thead>
                 <tbody>
                   {agents.map((agent) => (
@@ -881,11 +916,78 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                       <td>{agent.type}</td>
                       <td>{Number(agent.commission_count || 0)}</td>
                       <td>{Number(agent.status) === 1 ? "Active" : "Inactive"}</td>
+                      <td>
+                        <button
+                          className="adminmaster-refresh companies-password-button"
+                          disabled={Boolean(busyAction)}
+                          onClick={() => {
+                            setPasswordAgent(agent);
+                            setPasswordForm({ password: "", password_confirmation: "" });
+                            setAgentError("");
+                          }}
+                          type="button"
+                        >
+                          Change password
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+
+            {passwordAgent ? (
+              <form className="companies-edit-form companies-password-form" onSubmit={changeAgentPassword}>
+                <div className="companies-password-heading">
+                  <strong>Change password</strong>
+                  <span>{passwordAgent.name} — {passwordAgent.email}</span>
+                </div>
+                <label>
+                  <span>New password</span>
+                  <input
+                    autoComplete="new-password"
+                    maxLength={128}
+                    minLength={8}
+                    onChange={(event) => setPasswordForm((current) => ({ ...current, password: event.target.value }))}
+                    required
+                    type="password"
+                    value={passwordForm.password}
+                  />
+                </label>
+                <label>
+                  <span>Confirm new password</span>
+                  <input
+                    autoComplete="new-password"
+                    maxLength={128}
+                    minLength={8}
+                    onChange={(event) => setPasswordForm((current) => ({ ...current, password_confirmation: event.target.value }))}
+                    required
+                    type="password"
+                    value={passwordForm.password_confirmation}
+                  />
+                </label>
+                <div className="companies-modal-actions">
+                  <button
+                    className="adminmaster-refresh"
+                    disabled={Boolean(busyAction)}
+                    onClick={() => {
+                      setPasswordAgent(null);
+                      setPasswordForm({ password: "", password_confirmation: "" });
+                    }}
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="adminmaster-button update"
+                    disabled={Boolean(busyAction)}
+                    type="submit"
+                  >
+                    {busyAction?.startsWith("change-password-") ? "Changing..." : "Save new password"}
+                  </button>
+                </div>
+              </form>
+            ) : null}
 
             <form className="companies-edit-form" onSubmit={addAgent}>
               <label>

@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 
 const allowedActions = new Set([
   "add_agent",
+  "change_agent_password",
   "delete",
   "list_agents",
   "set_status",
@@ -360,6 +361,51 @@ async function addCompanyAgent(connection, company, body) {
   };
 }
 
+async function changeCompanyAgentPassword(connection, company, body) {
+  const tablePrefix = tableSafePrefix(company.slug);
+  const agentTable = `${tablePrefix}_agent`;
+  const sessionTable = `${tablePrefix}_whitelabel_sessions`;
+  const agentId = Number(body.agent_id || 0);
+  const password = String(body.password || "");
+  const passwordConfirmation = String(body.password_confirmation || "");
+
+  if (!agentId) {
+    throw httpError("Select an agent", 400);
+  }
+  if (password.length < 8) {
+    throw httpError("Password must be at least 8 characters");
+  }
+  if (password.length > 128) {
+    throw httpError("Password must be 128 characters or fewer");
+  }
+  if (password !== passwordConfirmation) {
+    throw httpError("Password confirmation does not match");
+  }
+  if (!(await tableExists(connection, agentTable))) {
+    throw httpError("Agent table is not available for this company", 409);
+  }
+
+  const [result] = await connection.query(
+    `UPDATE ${quoteIdentifier(agentTable)}
+     SET password = ?
+     WHERE id = ? AND company_id = ?
+     LIMIT 1`,
+    [await bcrypt.hash(password, 10), agentId, company.id],
+  );
+
+  if (result.affectedRows !== 1) {
+    throw httpError("Agent was not found for this company", 404);
+  }
+
+  // Require the agent to sign in again with the new password.
+  if (await tableExists(connection, sessionTable)) {
+    await connection.query(
+      `DELETE FROM ${quoteIdentifier(sessionTable)} WHERE agent_id = ?`,
+      [agentId],
+    );
+  }
+}
+
 async function permanentlyDeleteCompany(connection, company, confirmation) {
   if (confirmation !== company.company_name) {
     throw httpError("Company-name confirmation did not match", 400);
@@ -462,6 +508,13 @@ export async function POST(request) {
       const result = await addCompanyAgent(connection, company, body);
       await connection.commit();
       return NextResponse.json({ success: true, ...result });
+    }
+
+    if (action === "change_agent_password") {
+      await connection.beginTransaction();
+      await changeCompanyAgentPassword(connection, company, body);
+      await connection.commit();
+      return NextResponse.json({ success: true });
     }
 
     if (action === "update") {
