@@ -8,6 +8,7 @@ const allowedActions = new Set([
   "change_agent_password",
   "delete",
   "list_agents",
+  "set_agent_status",
   "set_status",
   "update",
 ]);
@@ -406,6 +407,40 @@ async function changeCompanyAgentPassword(connection, company, body) {
   }
 }
 
+async function setCompanyAgentStatus(connection, company, body) {
+  const tablePrefix = tableSafePrefix(company.slug);
+  const agentTable = `${tablePrefix}_agent`;
+  const sessionTable = `${tablePrefix}_whitelabel_sessions`;
+  const agentId = Number(body.agent_id || 0);
+  const status = Number(body.status);
+
+  if (!agentId || ![0, 1].includes(status)) {
+    throw httpError("Invalid agent status request", 400);
+  }
+  if (!(await tableExists(connection, agentTable))) {
+    throw httpError("Agent table is not available for this company", 409);
+  }
+
+  const [result] = await connection.query(
+    `UPDATE ${quoteIdentifier(agentTable)}
+     SET status = ?
+     WHERE id = ? AND company_id = ?
+     LIMIT 1`,
+    [status, agentId, company.id],
+  );
+
+  if (result.affectedRows !== 1) {
+    throw httpError("Agent was not found for this company", 404);
+  }
+
+  if (status === 0 && (await tableExists(connection, sessionTable))) {
+    await connection.query(
+      `DELETE FROM ${quoteIdentifier(sessionTable)} WHERE agent_id = ?`,
+      [agentId],
+    );
+  }
+}
+
 async function permanentlyDeleteCompany(connection, company, confirmation) {
   if (confirmation !== company.company_name) {
     throw httpError("Company-name confirmation did not match", 400);
@@ -513,6 +548,13 @@ export async function POST(request) {
     if (action === "change_agent_password") {
       await connection.beginTransaction();
       await changeCompanyAgentPassword(connection, company, body);
+      await connection.commit();
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === "set_agent_status") {
+      await connection.beginTransaction();
+      await setCompanyAgentStatus(connection, company, body);
       await connection.commit();
       return NextResponse.json({ success: true });
     }

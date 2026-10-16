@@ -432,6 +432,40 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
     }
   }
 
+  async function toggleAgentStatus(agent: AgentRow) {
+    if (!agentCompany) return;
+
+    const nextStatus = Number(agent.status) === 1 ? 0 : 1;
+    const actionLabel = nextStatus === 1 ? "Activate" : "Deactivate";
+
+    if (!window.confirm(`${actionLabel} ${agent.name}?`)) return;
+
+    setBusyAction(`agent-status-${agent.id}`);
+    setAgentError("");
+
+    try {
+      await postCompanyAction({
+        action: "set_agent_status",
+        agent_id: agent.id,
+        companyId: agentCompany.id,
+        status: nextStatus,
+      });
+      setAgents((current) =>
+        current.map((currentAgent) =>
+          currentAgent.id === agent.id
+            ? { ...currentAgent, status: nextStatus }
+            : currentAgent,
+        ),
+      );
+    } catch (error) {
+      setAgentError(
+        error instanceof Error ? error.message : "Unable to update agent status",
+      );
+    } finally {
+      setBusyAction(null);
+    }
+  }
+
   async function addAgent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!agentCompany) return;
@@ -917,18 +951,32 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                       <td>{Number(agent.commission_count || 0)}</td>
                       <td>{Number(agent.status) === 1 ? "Active" : "Inactive"}</td>
                       <td>
-                        <button
-                          className="adminmaster-refresh companies-password-button"
-                          disabled={Boolean(busyAction)}
-                          onClick={() => {
-                            setPasswordAgent(agent);
-                            setPasswordForm({ password: "", password_confirmation: "" });
-                            setAgentError("");
-                          }}
-                          type="button"
-                        >
-                          Change password
-                        </button>
+                        <div className="companies-agent-actions">
+                          <button
+                            className="adminmaster-refresh companies-password-button"
+                            disabled={Boolean(busyAction)}
+                            onClick={() => {
+                              setPasswordAgent(agent);
+                              setPasswordForm({ password: "", password_confirmation: "" });
+                              setAgentError("");
+                            }}
+                            type="button"
+                          >
+                            Change password
+                          </button>
+                          <button
+                            className={`adminmaster-refresh companies-agent-status ${Number(agent.status) === 1 ? "deactivate" : "activate"}`}
+                            disabled={Boolean(busyAction)}
+                            onClick={() => toggleAgentStatus(agent)}
+                            type="button"
+                          >
+                            {busyAction === `agent-status-${agent.id}`
+                              ? "Saving..."
+                              : Number(agent.status) === 1
+                                ? "Deactivate"
+                                : "Activate"}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
