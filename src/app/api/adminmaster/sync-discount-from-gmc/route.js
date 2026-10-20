@@ -156,16 +156,24 @@ async function buildPreview(connection) {
 
   for (const context of contexts) {
     const table = quoteIdentifier(context.tableName);
-    const [rows] = await connection.query(
-      `SELECT COUNT(*) AS row_count
-       FROM ${table} tenant
-       INNER JOIN ${quoteIdentifier(MASTER_TABLE)} master
-         ON master.subscription_plan_id = ?
-        AND master.cruiseline_id = tenant.cruiseline_id
-       WHERE master.gmc_discount IS NOT NULL
-         AND NOT (tenant.discount <=> master.gmc_discount)`,
-      [context.subscriptionPlanId],
-    );
+    const usesTenantFallback = context.subscriptionPlanId <= 0;
+    const [rows] = usesTenantFallback
+      ? await connection.query(
+          `SELECT COUNT(*) AS row_count
+           FROM ${table} tenant
+           WHERE tenant.gmc_discount IS NOT NULL
+             AND NOT (tenant.discount <=> tenant.gmc_discount)`,
+        )
+      : await connection.query(
+          `SELECT COUNT(*) AS row_count
+           FROM ${table} tenant
+           INNER JOIN ${quoteIdentifier(MASTER_TABLE)} master
+             ON master.subscription_plan_id = ?
+            AND master.cruiseline_id = tenant.cruiseline_id
+           WHERE master.gmc_discount IS NOT NULL
+             AND NOT (tenant.discount <=> master.gmc_discount)`,
+          [context.subscriptionPlanId],
+        );
     const rowCount = Number(rows[0]?.row_count || 0);
     tenantRows += rowCount;
     tenantChanges.push({
@@ -173,6 +181,7 @@ async function buildPreview(connection) {
       slug: context.slug,
       table: context.tableName,
       subscriptionPlanId: context.subscriptionPlanId,
+      source: usesTenantFallback ? "tenant_gmc_discount" : "master_gmc_discount",
       rowsToChange: rowCount,
     });
   }
@@ -227,37 +236,68 @@ async function applySync(connection, admin) {
 
     for (const context of contexts) {
       const table = quoteIdentifier(context.tableName);
-      await connection.query(
-        `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
-          (run_id, source_table, source_row_id, old_discount, new_discount,
-           gmc_discount, subscription_plan_id, cruiseline_id)
-         SELECT ?, ?, tenant.id, CAST(tenant.discount AS CHAR),
-                CAST(master.gmc_discount AS CHAR), CAST(master.gmc_discount AS CHAR),
-                ?, tenant.cruiseline_id
-         FROM ${table} tenant
-         INNER JOIN ${quoteIdentifier(MASTER_TABLE)} master
-           ON master.subscription_plan_id = ?
-          AND master.cruiseline_id = tenant.cruiseline_id
-         WHERE master.gmc_discount IS NOT NULL
-           AND NOT (tenant.discount <=> master.gmc_discount)`,
-        [runId, context.tableName, context.subscriptionPlanId, context.subscriptionPlanId],
-      );
+      const usesTenantFallback = context.subscriptionPlanId <= 0;
+      let result;
 
-      const [result] = await connection.query(
-        `UPDATE ${table} tenant
-         INNER JOIN ${quoteIdentifier(MASTER_TABLE)} master
-           ON master.subscription_plan_id = ?
-          AND master.cruiseline_id = tenant.cruiseline_id
-         SET tenant.discount = master.gmc_discount
-         WHERE master.gmc_discount IS NOT NULL
-           AND NOT (tenant.discount <=> master.gmc_discount)`,
-        [context.subscriptionPlanId],
-      );
+      if (usesTenantFallback) {
+        await connection.query(
+          `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
+            (run_id, source_table, source_row_id, old_discount, new_discount,
+             gmc_discount, subscription_plan_id, cruiseline_id)
+           SELECT ?, ?, tenant.id, CAST(tenant.discount AS CHAR),
+                  CAST(tenant.gmc_discount AS CHAR), CAST(tenant.gmc_discount AS CHAR),
+                  ?, tenant.cruiseline_id
+           FROM ${table} tenant
+           WHERE tenant.gmc_discount IS NOT NULL
+             AND NOT (tenant.discount <=> tenant.gmc_discount)`,
+          [runId, context.tableName, context.subscriptionPlanId],
+        );
+
+        [result] = await connection.query(
+          `UPDATE ${table} tenant
+           SET tenant.discount = tenant.gmc_discount
+           WHERE tenant.gmc_discount IS NOT NULL
+             AND NOT (tenant.discount <=> tenant.gmc_discount)`,
+        );
+      } else {
+        await connection.query(
+          `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
+            (run_id, source_table, source_row_id, old_discount, new_discount,
+             gmc_discount, subscription_plan_id, cruiseline_id)
+           SELECT ?, ?, tenant.id, CAST(tenant.discount AS CHAR),
+                  CAST(master.gmc_discount AS CHAR), CAST(master.gmc_discount AS CHAR),
+                  ?, tenant.cruiseline_id
+           FROM ${table} tenant
+           INNER JOIN ${quoteIdentifier(MASTER_TABLE)} master
+             ON master.subscription_plan_id = ?
+            AND master.cruiseline_id = tenant.cruiseline_id
+           WHERE master.gmc_discount IS NOT NULL
+             AND NOT (tenant.discount <=> master.gmc_discount)`,
+          [runId, context.tableName, context.subscriptionPlanId, context.subscriptionPlanId],
+        );
+
+        [result] = await connection.query(
+          `UPDATE ${table} tenant
+           INNER JOIN ${quoteIdentifier(MASTER_TABLE)} master
+             ON master.subscription_plan_id = ?
+            AND master.cruiseline_id = tenant.cruiseline_id
+           SET tenant.discount = master.gmc_discount
+           WHERE master.gmc_discount IS NOT NULL
+             AND NOT (tenant.discount <=> master.gmc_discount)`,
+          [context.subscriptionPlanId],
+        );
+      }
       const changed = Number(result.affectedRows || 0);
       tenantRows += changed;
       if (changed > 0) {
         tenantTables += 1;
-        changedTables.push({ table: context.tableName, rows: changed });
+        changedTables.push({
+          table: context.tableName,
+          rows: changed,
+          source: usesTenantFallback
+            ? "tenant_gmc_discount"
+            : "master_gmc_discount",
+        });
       }
     }
 
