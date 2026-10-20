@@ -29,6 +29,12 @@ type PlanOption = {
   plan_name: string;
 };
 
+type CompanyOption = {
+  company_name: string;
+  id: number;
+  slug: string;
+};
+
 async function getCommissionRows() {
   const connection = await pool.getConnection();
 
@@ -91,6 +97,25 @@ async function getPlanOptions() {
   }
 }
 
+async function getCompanyOptions() {
+  const connection = await pool.getConnection();
+
+  try {
+    const [rows] = await connection.query(
+      `
+      SELECT id, company_name, slug
+      FROM companies
+      WHERE slug IS NOT NULL AND TRIM(slug) <> ''
+      ORDER BY company_name ASC, id ASC
+      `,
+    );
+
+    return rows as CompanyOption[];
+  } finally {
+    connection.release();
+  }
+}
+
 async function getTenantMasterCommissionCount() {
   const connection = await pool.getConnection();
 
@@ -119,7 +144,8 @@ export default async function AdminMasterCommissionControlPage() {
     redirect("/adminmaster/login");
   }
 
-  const [cruises, plans, rows, tenantTableCount] = await Promise.all([
+  const [companies, cruises, plans, rows, tenantTableCount] = await Promise.all([
+    getCompanyOptions(),
     getCruiseOptions(),
     getPlanOptions(),
     getCommissionRows(),
@@ -199,7 +225,12 @@ export default async function AdminMasterCommissionControlPage() {
             </article>
           </section>
 
-          <CommissionControlClient cruises={cruises} plans={plans} rows={rows} />
+          <CommissionControlClient
+            companies={companies}
+            cruises={cruises}
+            plans={plans}
+            rows={rows}
+          />
         </section>
       </div>
     </main>

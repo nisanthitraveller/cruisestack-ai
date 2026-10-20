@@ -1935,7 +1935,7 @@
   border-bottom: 1px solid #e2e8f0;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(170px, 1.3fr) minmax(220px, 2fr) repeat(4, minmax(90px, 1fr)) minmax(90px, 0.8fr);
+  grid-template-columns: minmax(170px, 1.3fr) minmax(220px, 2fr) repeat(3, minmax(120px, 1fr)) minmax(90px, 0.8fr);
   padding: 18px;
 }
 
@@ -1979,11 +1979,33 @@
 }
 
 .commission-control-table {
-  min-width: 1040px;
+  min-width: 930px;
 }
 
 .commission-control-table td {
   min-width: 92px;
+}
+
+.commission-control-panel.tenant-view .commission-import-form,
+.commission-control-panel.tenant-view .commission-import-preview,
+.commission-control-panel.tenant-view .commission-import-summary,
+.commission-control-panel.tenant-view .commission-add-form {
+  display: none;
+}
+
+.commission-company-warning {
+  background: #fff7ed;
+  border-bottom: 1px solid #fed7aa;
+  color: #9a3412;
+  font-weight: 700;
+  padding: 12px 18px;
+}
+
+.commission-read-only {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .commission-control-table th:first-child,

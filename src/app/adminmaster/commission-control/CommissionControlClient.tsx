@@ -12,6 +12,18 @@ type CommissionRow = {
   markup: string;
   status: number;
   subscription_plan_id: number;
+  tour_agent_id?: number;
+};
+
+type CompanyOption = {
+  company_name: string;
+  id: number;
+  slug: string;
+};
+
+type TenantCompany = CompanyOption & {
+  plan_name: string;
+  subscription_plan_id: number;
 };
 
 type CruiseOption = {
@@ -25,6 +37,7 @@ type PlanOption = {
 };
 
 type CommissionControlClientProps = {
+  companies: CompanyOption[];
   cruises: CruiseOption[];
   plans: PlanOption[];
   rows: CommissionRow[];
@@ -124,6 +137,7 @@ async function postCommissionAction(body: Record<string, unknown>) {
 }
 
 export default function CommissionControlClient({
+  companies,
   cruises,
   plans,
   rows,
@@ -138,15 +152,50 @@ export default function CommissionControlClient({
   const [importSummary, setImportSummary] = useState<ImportSummary | null>(null);
   const [importPreview, setImportPreview] = useState<ImportPreviewRow[]>([]);
   const [pendingImportRows, setPendingImportRows] = useState<Array<Record<string, unknown>>>([]);
+  const [selectedCompany, setSelectedCompany] = useState("master");
+  const [tenantCompany, setTenantCompany] = useState<TenantCompany | null>(null);
+  const [tenantRows, setTenantRows] = useState<CommissionRow[]>([]);
+  const [tenantTableName, setTenantTableName] = useState("");
+  const [tenantWarning, setTenantWarning] = useState("");
   const [selectedPlan, setSelectedPlan] = useState(
     plans[0]?.id ? String(plans[0].id) : "all",
   );
   const cruiseMap = new Map(cruises.map((cruise) => [String(cruise.id), cruise.name]));
   const planMap = new Map(plans.map((plan) => [String(plan.id), plan.plan_name]));
-  const visibleRows =
-    selectedPlan === "all"
+  const isMasterView = selectedCompany === "master";
+  const visibleRows = isMasterView
+    ? selectedPlan === "all"
       ? rows
-      : rows.filter((row) => String(row.subscription_plan_id) === selectedPlan);
+      : rows.filter((row) => String(row.subscription_plan_id) === selectedPlan)
+    : tenantRows;
+
+  async function handleCompanyChange(companyId: string) {
+    setSelectedCompany(companyId);
+    setTenantCompany(null);
+    setTenantRows([]);
+    setTenantTableName("");
+    setTenantWarning("");
+    if (companyId === "master") return;
+
+    setBusyAction("load_company");
+    try {
+      const response = await fetch(
+        `/api/adminmaster/commission-control/company?companyId=${encodeURIComponent(companyId)}`,
+      );
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.message || "Unable to load company commissions");
+      setTenantCompany(data.company as TenantCompany);
+      setTenantRows(Array.isArray(data.rows) ? data.rows : []);
+      setTenantTableName(String(data.tableName || ""));
+      setTenantWarning(String(data.warning || ""));
+    } catch (error) {
+      setTenantWarning(
+        error instanceof Error ? error.message : "Unable to load company commissions",
+      );
+    } finally {
+      setBusyAction(null);
+    }
+  }
 
   function updateForm(field: keyof typeof emptyForm, value: string) {
     setForm((current) => ({
@@ -318,39 +367,64 @@ export default function CommissionControlClient({
   }
 
   return (
-    <section className="adminmaster-panel commission-control-panel">
+    <section className={`adminmaster-panel commission-control-panel${isMasterView ? "" : " tenant-view"}`}>
       <div className="adminmaster-panel-header">
         <div>
-          <h2>Master commission table</h2>
+          <h2>{isMasterView ? "Master commission table" : tenantCompany?.company_name || "Company commissions"}</h2>
           <span>
-            Showing {visibleRows.length} of {rows.length} rows
+            {busyAction === "load_company"
+              ? "Loading company commissions..."
+              : isMasterView
+                ? `Showing ${visibleRows.length} of ${rows.length} rows`
+                : `${tenantCompany?.plan_name || "No plan assigned"} · ${tenantTableName || "No tenant table"} · ${visibleRows.length} rows`}
           </span>
         </div>
         <div className="commission-toolbar">
           <label>
-            <span>Filter plan</span>
+            <span>Filter company</span>
             <select
-              onChange={(event) => setSelectedPlan(event.target.value)}
-              value={selectedPlan}
+              disabled={busyAction !== null}
+              onChange={(event) => handleCompanyChange(event.target.value)}
+              value={selectedCompany}
             >
-              <option value="all">All plans</option>
-              {plans.map((plan) => (
-                <option key={plan.id} value={plan.id}>
-                  {plan.plan_name}
+              <option value="master">Master commissions</option>
+              {companies.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.company_name} ({company.slug})
                 </option>
               ))}
             </select>
           </label>
-          <button
-            className="adminmaster-button update"
-            disabled={busyAction !== null}
-            onClick={handleSyncAll}
-            type="button"
-          >
-            {busyAction === "sync_all" ? "Syncing..." : "Sync enabled companies"}
-          </button>
+          {isMasterView ? (
+            <>
+              <label>
+                <span>Filter plan</span>
+                <select
+                  onChange={(event) => setSelectedPlan(event.target.value)}
+                  value={selectedPlan}
+                >
+                  <option value="all">All plans</option>
+                  {plans.map((plan) => (
+                    <option key={plan.id} value={plan.id}>
+                      {plan.plan_name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                className="adminmaster-button update"
+                disabled={busyAction !== null}
+                onClick={handleSyncAll}
+                type="button"
+              >
+                {busyAction === "sync_all" ? "Syncing..." : "Sync enabled companies"}
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
+
+      {tenantWarning ? <div className="commission-company-warning">{tenantWarning}</div> : null}
 
       <form className="commission-import-form" onSubmit={handleImport}>
         <div>
@@ -521,7 +595,7 @@ export default function CommissionControlClient({
           </select>
         </label>
         <label>
-          <span>Commission</span>
+          <span>Sub-agent Commission</span>
           <input
             onChange={(event) => updateForm("discount", event.target.value)}
             required
@@ -529,15 +603,7 @@ export default function CommissionControlClient({
           />
         </label>
         <label>
-          <span>Markup</span>
-          <input
-            onChange={(event) => updateForm("markup", event.target.value)}
-            required
-            value={form.markup}
-          />
-        </label>
-        <label>
-          <span>GMC discount</span>
+          <span>Agent Commission</span>
           <input
             onChange={(event) => updateForm("gmc_discount", event.target.value)}
             value={form.gmc_discount}
@@ -568,9 +634,8 @@ export default function CommissionControlClient({
             <tr>
               <th>Plan</th>
               <th>Cruiseline</th>
-              <th>Commission</th>
-              <th>Markup</th>
-              <th>GMC</th>
+              <th>Sub-agent Commission</th>
+              <th>Agent Commission</th>
               <th>Status</th>
               <th>Control</th>
             </tr>
@@ -580,33 +645,48 @@ export default function CommissionControlClient({
               <tr key={row.id}>
                 <td className="commission-hidden-field">{row.id}</td>
                 <td>
-                  <select name="subscription_plan_id" form={`commission-${row.id}`} defaultValue={String(row.subscription_plan_id)}>
-                    {planMap.has(String(row.subscription_plan_id)) ? null : (
-                      <option value={row.subscription_plan_id}>
-                        Unknown plan ID {row.subscription_plan_id}
-                      </option>
-                    )}
-                    {plans.map((plan) => (
-                      <option key={plan.id} value={plan.id}>
-                        {plan.plan_name}
-                      </option>
-                    ))}
-                  </select>
-                  <small className="commission-muted-id">ID {row.subscription_plan_id}</small>
+                  {isMasterView ? (
+                    <>
+                      <select name="subscription_plan_id" form={`commission-${row.id}`} defaultValue={String(row.subscription_plan_id)}>
+                        {planMap.has(String(row.subscription_plan_id)) ? null : (
+                          <option value={row.subscription_plan_id}>
+                            Unknown plan ID {row.subscription_plan_id}
+                          </option>
+                        )}
+                        {plans.map((plan) => (
+                          <option key={plan.id} value={plan.id}>
+                            {plan.plan_name}
+                          </option>
+                        ))}
+                      </select>
+                      <small className="commission-muted-id">ID {row.subscription_plan_id}</small>
+                    </>
+                  ) : (
+                    <>
+                      <strong>{tenantCompany?.plan_name || "No plan assigned"}</strong>
+                      {row.tour_agent_id ? (
+                        <small className="commission-muted-id">Agent ID {row.tour_agent_id}</small>
+                      ) : null}
+                    </>
+                  )}
                 </td>
                 <td>
-                  <select name="cruiseline_id" form={`commission-${row.id}`} defaultValue={String(row.cruiseline_id)}>
-                    {cruiseMap.has(String(row.cruiseline_id)) ? null : (
-                      <option value={row.cruiseline_id}>
-                        Unknown cruiseline ID {row.cruiseline_id}
-                      </option>
-                    )}
-                    {cruises.map((cruise) => (
-                      <option key={cruise.id} value={cruise.id}>
-                        {cruise.name}
-                      </option>
-                    ))}
-                  </select>
+                  {isMasterView ? (
+                    <select name="cruiseline_id" form={`commission-${row.id}`} defaultValue={String(row.cruiseline_id)}>
+                      {cruiseMap.has(String(row.cruiseline_id)) ? null : (
+                        <option value={row.cruiseline_id}>
+                          Unknown cruiseline ID {row.cruiseline_id}
+                        </option>
+                      )}
+                      {cruises.map((cruise) => (
+                        <option key={cruise.id} value={cruise.id}>
+                          {cruise.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <strong>{cruiseMap.get(String(row.cruiseline_id)) || "Unknown cruiseline"}</strong>
+                  )}
                   <small className="commission-muted-id">
                     ID {row.cruiseline_id}
                   </small>
@@ -615,51 +695,65 @@ export default function CommissionControlClient({
                   <input name="commission" form={`commission-${row.id}`} defaultValue={row.commission} />
                 </td>
                 <td>
-                  <input name="discount" form={`commission-${row.id}`} defaultValue={row.discount} />
+                  {isMasterView ? (
+                    <input name="discount" form={`commission-${row.id}`} defaultValue={row.discount} />
+                  ) : (
+                    <strong>{row.discount ?? "0"}%</strong>
+                  )}
                 </td>
                 <td>
-                  <input name="markup" form={`commission-${row.id}`} defaultValue={row.markup} />
+                  {isMasterView ? (
+                    <input name="gmc_discount" form={`commission-${row.id}`} defaultValue={row.gmc_discount || "0"} />
+                  ) : (
+                    <strong>{row.gmc_discount ?? "0"}%</strong>
+                  )}
                 </td>
                 <td>
-                  <input name="gmc_discount" form={`commission-${row.id}`} defaultValue={row.gmc_discount || "0"} />
+                  {isMasterView ? (
+                    <select name="status" form={`commission-${row.id}`} defaultValue={String(row.status)}>
+                      <option value="1">Active</option>
+                      <option value="0">Inactive</option>
+                    </select>
+                  ) : Number(row.status) === 1 ? "Active" : "Inactive"}
                 </td>
                 <td>
-                  <select name="status" form={`commission-${row.id}`} defaultValue={String(row.status)}>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                  </select>
-                </td>
-                <td>
-                  <form
-                    className="commission-row-actions"
-                    id={`commission-${row.id}`}
-                    action={handleUpdate}
-                  >
-                    <input name="id" type="hidden" value={row.id} />
-                    <button
-                      className="adminmaster-button update"
-                      disabled={busyAction !== null}
-                      type="submit"
+                  {isMasterView ? (
+                    <form
+                      className="commission-row-actions"
+                      id={`commission-${row.id}`}
+                      action={handleUpdate}
                     >
-                      {busyAction === `update-${row.id}` ? "Saving..." : "Update"}
-                    </button>
-                    <button
-                      className="adminmaster-button delete"
-                      disabled={busyAction !== null}
-                      onClick={() => handleDelete(row)}
-                      type="button"
-                    >
-                      {busyAction === `delete-${row.id}` ? "Deleting..." : "Delete"}
-                    </button>
-                  </form>
+                      <input name="id" type="hidden" value={row.id} />
+                      <input name="markup" type="hidden" value={row.markup} />
+                      <button
+                        className="adminmaster-button update"
+                        disabled={busyAction !== null}
+                        type="submit"
+                      >
+                        {busyAction === `update-${row.id}` ? "Saving..." : "Update"}
+                      </button>
+                      <button
+                        className="adminmaster-button delete"
+                        disabled={busyAction !== null}
+                        onClick={() => handleDelete(row)}
+                        type="button"
+                      >
+                        {busyAction === `delete-${row.id}` ? "Deleting..." : "Delete"}
+                      </button>
+                    </form>
+                  ) : (
+                    <span className="commission-read-only">View only</span>
+                  )}
                 </td>
               </tr>
             ))}
             {visibleRows.length === 0 ? (
               <tr>
-                <td colSpan={7}>
+                <td colSpan={6}>
                   <div className="adminmaster-empty">
-                    No commission rows found for {planMap.get(selectedPlan) || "this plan"}.
+                    {isMasterView
+                      ? `No commission rows found for ${planMap.get(selectedPlan) || "this plan"}.`
+                      : `No agent commission rows found for ${tenantCompany?.company_name || "this company"}.`}
                   </div>
                 </td>
               </tr>
