@@ -146,9 +146,6 @@ export default function CommissionControlClient({
   const [form, setForm] = useState(emptyForm);
   const [busyAction, setBusyAction] = useState<BusyAction>(null);
   const [importFile, setImportFile] = useState<File | null>(null);
-  const [importPlan, setImportPlan] = useState(
-    plans[0]?.id ? String(plans[0].id) : "",
-  );
   const [importSummary, setImportSummary] = useState<ImportSummary | null>(null);
   const [importPreview, setImportPreview] = useState<ImportPreviewRow[]>([]);
   const [pendingImportRows, setPendingImportRows] = useState<Array<Record<string, unknown>>>([]);
@@ -157,17 +154,9 @@ export default function CommissionControlClient({
   const [tenantRows, setTenantRows] = useState<CommissionRow[]>([]);
   const [tenantTableName, setTenantTableName] = useState("");
   const [tenantWarning, setTenantWarning] = useState("");
-  const [selectedPlan, setSelectedPlan] = useState(
-    plans[0]?.id ? String(plans[0].id) : "all",
-  );
   const cruiseMap = new Map(cruises.map((cruise) => [String(cruise.id), cruise.name]));
-  const planMap = new Map(plans.map((plan) => [String(plan.id), plan.plan_name]));
   const isMasterView = selectedCompany === "master";
-  const visibleRows = isMasterView
-    ? selectedPlan === "all"
-      ? rows
-      : rows.filter((row) => String(row.subscription_plan_id) === selectedPlan)
-    : tenantRows;
+  const visibleRows = isMasterView ? rows : tenantRows;
 
   async function handleCompanyChange(companyId: string) {
     setSelectedCompany(companyId);
@@ -237,7 +226,6 @@ export default function CommissionControlClient({
         id,
         markup: String(formData.get("markup") || "0"),
         status: String(formData.get("status") || "0"),
-        subscription_plan_id: String(formData.get("subscription_plan_id") || "0"),
       });
       router.refresh();
     } catch (error) {
@@ -271,7 +259,7 @@ export default function CommissionControlClient({
 
   async function handleSyncAll() {
     const confirmed = window.confirm(
-      "Sync all master commission rows to companies that have commission sync enabled?",
+      "Sync every shared cruise-line commission to all tenant *_agent_commission tables? The tour_agent_commission table is excluded.",
     );
 
     if (!confirmed) return;
@@ -279,7 +267,10 @@ export default function CommissionControlClient({
     setBusyAction("sync_all");
 
     try {
-      await postCommissionAction({ action: "sync_all" });
+      const result = await postCommissionAction({ action: "sync_all" });
+      window.alert(
+        `Sync complete: ${result.rows || 0} cruise lines, ${result.tenantTables || 0} tenant tables, ${result.updatedRows || 0} agent rows updated.`,
+      );
       router.refresh();
     } catch (error) {
       window.alert(error instanceof Error ? error.message : "Unable to sync tenants");
@@ -290,8 +281,8 @@ export default function CommissionControlClient({
 
   async function handleImport(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!importPlan || !importFile) {
-      window.alert("Select a plan and Excel file before uploading");
+    if (!importFile) {
+      window.alert("Select an Excel file before uploading");
       return;
     }
 
@@ -324,7 +315,6 @@ export default function CommissionControlClient({
         action: "import",
         preview: true,
         rows: spreadsheetRows,
-        subscription_plan_id: importPlan,
       });
 
       setImportPreview(result.previewRows as ImportPreviewRow[]);
@@ -339,7 +329,7 @@ export default function CommissionControlClient({
   }
 
   async function handleConfirmImport() {
-    if (!importPlan || pendingImportRows.length === 0) return;
+    if (pendingImportRows.length === 0) return;
 
     const readyCount = importPreview.filter((row) => row.status === "ready").length;
     if (!readyCount) {
@@ -353,7 +343,6 @@ export default function CommissionControlClient({
       const result = await postCommissionAction({
         action: "import",
         rows: pendingImportRows,
-        subscription_plan_id: importPlan,
       });
       setImportSummary(result.summary as ImportSummary);
       router.refresh();
@@ -397,27 +386,13 @@ export default function CommissionControlClient({
           </label>
           {isMasterView ? (
             <>
-              <label>
-                <span>Filter plan</span>
-                <select
-                  onChange={(event) => setSelectedPlan(event.target.value)}
-                  value={selectedPlan}
-                >
-                  <option value="all">All plans</option>
-                  {plans.map((plan) => (
-                    <option key={plan.id} value={plan.id}>
-                      {plan.plan_name}
-                    </option>
-                  ))}
-                </select>
-              </label>
               <button
                 className="adminmaster-button update"
                 disabled={busyAction !== null}
                 onClick={handleSyncAll}
                 type="button"
               >
-                {busyAction === "sync_all" ? "Syncing..." : "Sync enabled companies"}
+                {busyAction === "sync_all" ? "Syncing..." : "Sync all agent tables"}
               </button>
             </>
           ) : null}
@@ -430,29 +405,9 @@ export default function CommissionControlClient({
         <div>
           <strong>Upload commission Excel</strong>
           <span>
-            Existing plan/cruiseline rows and “In progress” values are skipped.
+            Existing cruise-line rows and “In progress” values are skipped.
           </span>
         </div>
-        <label>
-          <span>Plan</span>
-          <select
-            onChange={(event) => {
-              setImportPlan(event.target.value);
-              setImportPreview([]);
-              setPendingImportRows([]);
-              setImportSummary(null);
-            }}
-            required
-            value={importPlan}
-          >
-            <option value="">Select plan</option>
-            {plans.map((plan) => (
-              <option key={plan.id} value={plan.id}>
-                {plan.plan_name}
-              </option>
-            ))}
-          </select>
-        </label>
         <label>
           <span>Excel file</span>
           <input
@@ -565,21 +520,6 @@ export default function CommissionControlClient({
 
       <form className="commission-add-form" onSubmit={handleAdd}>
         <label>
-          <span>Plan</span>
-          <select
-            onChange={(event) => updateForm("subscription_plan_id", event.target.value)}
-            required
-            value={form.subscription_plan_id}
-          >
-            <option value="">Select plan</option>
-            {plans.map((plan) => (
-              <option key={plan.id} value={plan.id}>
-                {plan.plan_name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
           <span>Cruiseline</span>
           <select
             onChange={(event) => updateForm("cruiseline_id", event.target.value)}
@@ -632,7 +572,7 @@ export default function CommissionControlClient({
         <table className="adminmaster-table commission-control-table">
           <thead>
             <tr>
-              <th>Plan</th>
+              <th>Scope</th>
               <th>Cruiseline</th>
               <th>Sub-agent Commission</th>
               <th>Agent Commission</th>
@@ -646,21 +586,7 @@ export default function CommissionControlClient({
                 <td className="commission-hidden-field">{row.id}</td>
                 <td>
                   {isMasterView ? (
-                    <>
-                      <select name="subscription_plan_id" form={`commission-${row.id}`} defaultValue={String(row.subscription_plan_id)}>
-                        {planMap.has(String(row.subscription_plan_id)) ? null : (
-                          <option value={row.subscription_plan_id}>
-                            Unknown plan ID {row.subscription_plan_id}
-                          </option>
-                        )}
-                        {plans.map((plan) => (
-                          <option key={plan.id} value={plan.id}>
-                            {plan.plan_name}
-                          </option>
-                        ))}
-                      </select>
-                      <small className="commission-muted-id">ID {row.subscription_plan_id}</small>
-                    </>
+                    <strong>All plans</strong>
                   ) : (
                     <>
                       <strong>{tenantCompany?.plan_name || "No plan assigned"}</strong>
@@ -752,7 +678,7 @@ export default function CommissionControlClient({
                 <td colSpan={6}>
                   <div className="adminmaster-empty">
                     {isMasterView
-                      ? `No commission rows found for ${planMap.get(selectedPlan) || "this plan"}.`
+                      ? "No shared commission rows found."
                       : `No agent commission rows found for ${tenantCompany?.company_name || "this company"}.`}
                   </div>
                 </td>

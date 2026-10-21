@@ -115,8 +115,8 @@ function normalizeCommissionPayload(body) {
 }
 
 function validateCommissionPayload(payload) {
-  if (!payload.subscription_plan_id || !payload.cruiseline_id) {
-    throw new Error("Plan ID and cruiseline ID are required");
+  if (!payload.cruiseline_id) {
+    throw new Error("Cruiseline ID is required");
   }
 }
 
@@ -170,12 +170,11 @@ async function getDuplicateCommissionRow(connection, payload, excludeId = 0) {
     `
     SELECT id
     FROM cruisestack_master_commission
-    WHERE subscription_plan_id = ?
-      AND cruiseline_id = ?
+    WHERE cruiseline_id = ?
       AND id <> ?
     LIMIT 1
     `,
-    [payload.subscription_plan_id, payload.cruiseline_id, excludeId],
+    [payload.cruiseline_id, excludeId],
   );
 
   return rows[0] || null;
@@ -190,11 +189,113 @@ async function assertUniquePlanCruiseline(connection, payload, excludeId = 0) {
 
   if (duplicate) {
     const error = new Error(
-      "Commission for this plan and cruiseline already exists. You can delete or update the existing row.",
+      "Commission for this cruiseline already exists. You can delete or update the existing row.",
     );
     error.statusCode = 409;
     throw error;
   }
+}
+
+async function getTenantCommissionTables(connection) {
+  const [rows] = await connection.query(
+    `
+    SELECT TABLE_NAME AS table_name
+    FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME LIKE '%\\_agent_commission'
+      AND TABLE_NAME <> 'tour_agent_commission'
+      AND TABLE_NAME NOT LIKE 'tour\\_%'
+    ORDER BY TABLE_NAME ASC
+    `,
+  );
+
+  return rows.map((row) => row.table_name);
+}
+
+async function getCompaniesByCommissionTable(connection) {
+  const [companies] = await connection.query(
+    `SELECT id, slug FROM companies WHERE slug IS NOT NULL AND slug <> ''`,
+  );
+  const companyByTable = new Map();
+
+  for (const company of companies) {
+    const prefix = tableSafePrefix(company.slug);
+    if (prefix) companyByTable.set(`${prefix}_agent_commission`, company);
+  }
+
+  return companyByTable;
+}
+
+async function getSharedMasterCommissionRows(connection) {
+  const [rows] = await connection.query(
+    `
+    SELECT
+      id,
+      subscription_plan_id,
+      cruiseline_id,
+      commission,
+      discount,
+      markup,
+      gmc_discount,
+      status,
+      updated_at
+    FROM cruisestack_master_commission
+    ORDER BY updated_at DESC, id DESC
+    `,
+  );
+  const sharedRows = new Map();
+
+  for (const row of rows) {
+    const cruiseId = Number(row.cruiseline_id);
+    if (!sharedRows.has(cruiseId)) sharedRows.set(cruiseId, row);
+  }
+
+  return Array.from(sharedRows.values()).sort(
+    (left, right) => Number(left.cruiseline_id) - Number(right.cruiseline_id),
+  );
+}
+
+async function syncCommissionRowToAllTenantTables(connection, row) {
+  const tables = await getTenantCommissionTables(connection);
+  const companyByTable = await getCompaniesByCommissionTable(connection);
+  let updatedRows = 0;
+
+  for (const tableName of tables) {
+    const [result] = await connection.query(
+      `
+      UPDATE ${quoteIdentifier(tableName)}
+      SET
+        commission = ?,
+        discount = ?,
+        markup = ?,
+        gmc_discount = ?,
+        updated_at = NOW(),
+        status = ?
+      WHERE cruiseline_id = ?
+      `,
+      [
+        row.commission,
+        row.discount,
+        row.markup,
+        row.gmc_discount,
+        row.status,
+        row.cruiseline_id,
+      ],
+    );
+    updatedRows += Number(result.affectedRows || 0);
+
+    if (Number(result.affectedRows || 0) === 0) {
+      const company = companyByTable.get(tableName);
+      if (company) {
+        const context = await getTenantCommissionContext(connection, company);
+        if (context) {
+          await upsertTenantAgentCommissionRow(connection, context, row);
+        }
+      }
+    }
+  }
+
+  return { tenantTables: tables.length, updatedRows };
 }
 
 async function getSubscribedCompaniesForPlan(connection, planId) {
@@ -401,44 +502,39 @@ async function deleteCommissionRowFromTenants(connection, row) {
 }
 
 async function syncAllCommissionRowsToTenants(connection) {
-  const [rows] = await connection.query(
-    `
-    SELECT
-      id,
-      subscription_plan_id,
-      cruiseline_id,
-      commission,
-      discount,
-      markup,
-      gmc_discount,
-      status
-    FROM cruisestack_master_commission
-    ORDER BY subscription_plan_id ASC, cruiseline_id ASC, id ASC
-    `,
-  );
-  const updatedTenantTables = new Set();
+  const rows = await getSharedMasterCommissionRows(connection);
+  const tables = await getTenantCommissionTables(connection);
+  let updatedRows = 0;
 
   for (const row of rows) {
-    const companies = await getSubscribedCompaniesForPlan(
-      connection,
-      row.subscription_plan_id,
+    await connection.query(
+      `
+      UPDATE cruisestack_master_commission
+      SET
+        commission = ?,
+        discount = ?,
+        markup = ?,
+        gmc_discount = ?,
+        status = ?
+      WHERE cruiseline_id = ?
+      `,
+      [
+        row.commission,
+        row.discount,
+        row.markup,
+        row.gmc_discount,
+        row.status,
+        row.cruiseline_id,
+      ],
     );
-
-    for (const company of companies) {
-      const context = await getTenantCommissionContext(connection, company);
-
-      if (!context) {
-        continue;
-      }
-
-      await upsertTenantAgentCommissionRow(connection, context, row);
-      updatedTenantTables.add(context.commissionTable);
-    }
+    const result = await syncCommissionRowToAllTenantTables(connection, row);
+    updatedRows += result.updatedRows;
   }
 
   return {
     rows: rows.length,
-    tenantTables: updatedTenantTables.size,
+    tenantTables: tables.length,
+    updatedRows,
   };
 }
 
@@ -477,12 +573,18 @@ export async function POST(request) {
     }
 
     if (action === "import") {
-      const planId = Number(body.subscription_plan_id || 0);
+      let planId = Number(body.subscription_plan_id || 0);
       const importRows = Array.isArray(body.rows) ? body.rows : [];
       const previewOnly = body.preview === true;
 
       if (!planId) {
-        throw new Error("Select a subscription plan before uploading");
+        const [plans] = await connection.query(
+          "SELECT id FROM subscription_plans ORDER BY id ASC LIMIT 1",
+        );
+        planId = Number(plans[0]?.id || 0);
+      }
+      if (!planId) {
+        throw new Error("At least one subscription plan must exist");
       }
       if (!importRows.length) {
         throw new Error("The spreadsheet does not contain any data rows");
@@ -499,9 +601,7 @@ export async function POST(request) {
 
       const [existingRows] = await connection.query(
         `SELECT cruiseline_id
-         FROM cruisestack_master_commission
-         WHERE subscription_plan_id = ?`,
-        [planId],
+         FROM cruisestack_master_commission`,
       );
       const existingCruiseIds = new Set(
         existingRows.map((row) => Number(row.cruiseline_id)),
@@ -609,10 +709,11 @@ export async function POST(request) {
           [planId, cruiseId, percentage, percentage],
         );
         const insertedRow = await getMasterCommissionRow(connection, result.insertId);
-        summary.tenantTablesUpdated += await syncCommissionRowToTenants(
+        const syncResult = await syncCommissionRowToAllTenantTables(
           connection,
           insertedRow,
         );
+        summary.tenantTablesUpdated += syncResult.tenantTables;
         summary.inserted.push({
           commission: percentage,
           cruiseName: cruise.name,
@@ -640,15 +741,21 @@ export async function POST(request) {
       await connection.query(
         `
         DELETE FROM cruisestack_master_commission
-        WHERE id = ?
+        WHERE cruiseline_id = ?
         `,
-        [id],
+        [row.cruiseline_id],
       );
-      const tenantTables = await deleteCommissionRowFromTenants(connection, row);
+      const tenantTables = await getTenantCommissionTables(connection);
+      for (const tableName of tenantTables) {
+        await connection.query(
+          `DELETE FROM ${quoteIdentifier(tableName)} WHERE cruiseline_id = ?`,
+          [row.cruiseline_id],
+        );
+      }
 
       await connection.commit();
 
-      return NextResponse.json({ success: true, tenantTables });
+      return NextResponse.json({ success: true, tenantTables: tenantTables.length });
     }
 
     const payload = normalizeCommissionPayload(body);
@@ -656,6 +763,16 @@ export async function POST(request) {
 
     if (action === "add") {
       await assertUniquePlanCruiseline(connection, payload);
+
+      if (!payload.subscription_plan_id) {
+        const [plans] = await connection.query(
+          "SELECT id FROM subscription_plans ORDER BY id ASC LIMIT 1",
+        );
+        payload.subscription_plan_id = Number(plans[0]?.id || 0);
+      }
+      if (!payload.subscription_plan_id) {
+        throw new Error("At least one subscription plan must exist");
+      }
 
       const [result] = await connection.query(
         `
@@ -685,11 +802,11 @@ export async function POST(request) {
         ],
       );
       const row = await getMasterCommissionRow(connection, result.insertId);
-      const tenantTables = await syncCommissionRowToTenants(connection, row);
+      const syncResult = await syncCommissionRowToAllTenantTables(connection, row);
 
       await connection.commit();
 
-      return NextResponse.json({ success: true, tenantTables });
+      return NextResponse.json({ success: true, ...syncResult });
     }
 
     if (action === "update") {
@@ -703,31 +820,25 @@ export async function POST(request) {
         throw new Error("Commission row was not found");
       }
 
-      await assertUniquePlanCruiseline(connection, payload, id);
-
       await connection.query(
         `
         UPDATE cruisestack_master_commission
         SET
-          subscription_plan_id = ?,
-          cruiseline_id = ?,
           commission = ?,
           discount = ?,
           markup = ?,
           gmc_discount = ?,
           updated_at = NOW(),
           status = ?
-        WHERE id = ?
+        WHERE cruiseline_id = ?
         `,
         [
-          payload.subscription_plan_id,
-          payload.cruiseline_id,
           payload.commission,
           payload.discount,
           payload.markup,
           payload.gmc_discount,
           payload.status,
-          id,
+          previousRow.cruiseline_id,
         ],
       );
       const row = await getMasterCommissionRow(connection, id);
@@ -736,18 +847,11 @@ export async function POST(request) {
         throw new Error("Commission row was not found");
       }
 
-      if (
-        previousRow.subscription_plan_id !== row.subscription_plan_id ||
-        previousRow.cruiseline_id !== row.cruiseline_id
-      ) {
-        await deleteCommissionRowFromTenants(connection, previousRow);
-      }
-
-      const tenantTables = await syncCommissionRowToTenants(connection, row);
+      const syncResult = await syncCommissionRowToAllTenantTables(connection, row);
 
       await connection.commit();
 
-      return NextResponse.json({ success: true, tenantTables });
+      return NextResponse.json({ success: true, ...syncResult });
     }
 
     await connection.rollback();

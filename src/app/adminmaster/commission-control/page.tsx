@@ -17,6 +17,7 @@ type CommissionRow = {
   markup: string;
   status: number;
   subscription_plan_id: number;
+  updated_at: string | null;
 };
 
 type CruiseOption = {
@@ -49,13 +50,23 @@ async function getCommissionRows() {
         discount,
         markup,
         gmc_discount,
-        status
+        status,
+        updated_at
       FROM cruisestack_master_commission
-      ORDER BY subscription_plan_id ASC, cruiseline_id ASC, id ASC
+      ORDER BY updated_at DESC, id DESC
       `,
     );
 
-    return rows as CommissionRow[];
+    const sharedRows = new Map<number, CommissionRow>();
+    for (const row of rows as CommissionRow[]) {
+      if (!sharedRows.has(Number(row.cruiseline_id))) {
+        sharedRows.set(Number(row.cruiseline_id), row);
+      }
+    }
+
+    return Array.from(sharedRows.values()).sort(
+      (left, right) => Number(left.cruiseline_id) - Number(right.cruiseline_id),
+    );
   } finally {
     connection.release();
   }
@@ -196,7 +207,7 @@ export default async function AdminMasterCommissionControlPage() {
             <div>
               <p className="adminmaster-kicker">Master commission control</p>
               <h1>Commission Control</h1>
-              <p>Changes sync only to companies with commission sync enabled.</p>
+              <p>One shared commission per cruise line, synced to every tenant agent commission table.</p>
             </div>
             <div className="adminmaster-header-actions">
               <span className="adminmaster-user">Logged in as {admin.name || admin.email}</span>
@@ -221,7 +232,7 @@ export default async function AdminMasterCommissionControlPage() {
             </article>
             <article className="adminmaster-metric-card">
               <span>Sync mode</span>
-              <strong>Company controlled</strong>
+              <strong>All tenant tables</strong>
             </article>
           </section>
 
