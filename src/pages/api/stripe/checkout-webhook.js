@@ -356,7 +356,7 @@ async function upsertCompanySubscription(connection, details) {
 }
 
 async function copyMasterCommissionToCompany(connection, company, planId) {
-  if (!company?.id || !company?.slug || !planId) {
+  if (!company?.id || !company?.slug) {
   console.log("Skipping commission copy. Missing:", {
     companyId: company?.id,
     slug: company?.slug,
@@ -364,11 +364,6 @@ async function copyMasterCommissionToCompany(connection, company, planId) {
   });
   return;
 }
-
-  if (Number(company.enable_commission_sync ?? 1) !== 1) {
-    console.log(`Skipping commission copy for company ${company.id}: sync disabled`);
-    return;
-  }
 
   const tablePrefix = company.slug
     .trim()
@@ -396,19 +391,6 @@ async function copyMasterCommissionToCompany(connection, company, planId) {
 
   const agentId = agents[0].id;
 
-  const [existing] = await connection.query(
-    `
-    SELECT id
-    FROM \`${commissionTable}\`
-    WHERE tour_agent_id = ?
-      AND company_id = ?
-    LIMIT 1
-    `,
-    [agentId, company.id]
-  );
-
-  if (existing.length > 0) return;
-
   await connection.query(
     `
     INSERT INTO \`${commissionTable}\`
@@ -426,22 +408,42 @@ async function copyMasterCommissionToCompany(connection, company, planId) {
       )
     SELECT
       ?,
-      cruiseline_id,
-      commission,
-      discount,
-      markup,
-      gmc_discount,
+      master.cruiseline_id,
+      master.commission,
+      master.discount,
+      master.markup,
+      master.gmc_discount,
       NOW(),
       NOW(),
-      status,
+      master.status,
       ?
-    FROM cruisestack_master_commission
-    WHERE subscription_plan_id = ?
+    FROM cruisestack_master_commission master
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM cruisestack_master_commission newer
+      WHERE newer.cruiseline_id = master.cruiseline_id
+        AND (
+          COALESCE(newer.updated_at, newer.created_at) >
+            COALESCE(master.updated_at, master.created_at)
+          OR (
+            COALESCE(newer.updated_at, newer.created_at) =
+              COALESCE(master.updated_at, master.created_at)
+            AND newer.id > master.id
+          )
+        )
+    )
+      AND NOT EXISTS (
+        SELECT 1
+        FROM \`${commissionTable}\` tenant
+        WHERE tenant.tour_agent_id = ?
+          AND tenant.company_id = ?
+          AND tenant.cruiseline_id = master.cruiseline_id
+      )
     `,
-    [agentId, company.id, planId]
+    [agentId, company.id, agentId, company.id]
   );
   console.log(
-  `Copied commission data into ${commissionTable} for company ${company.id}, agent ${agentId}, plan ${planId}`
+  `Copied shared commission data into ${commissionTable} for company ${company.id}, agent ${agentId}`
 );
 }
 
