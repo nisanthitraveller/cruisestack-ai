@@ -95,7 +95,36 @@ export const academyModules: AcademyModule[] = [
       "Understand room categories, guarantee cabins, special packages, deck selection and cabin inventory.",
     icon: "bed",
     cover: shipBlue,
-    chapters: [],
+    // Playlist: https://www.youtube.com/playlist?list=PLEmv02F5Qthg
+    chapters: [
+      {
+        slug: "choose-destinations-cruise-lines-ports",
+        title: "How to choose cruise destinations, cruise lines & ports",
+        description:
+          "Use the cruisestack search filters to choose destinations, departure ports, cruise lines, sailing dates, duration and passengers.",
+        duration: "3:11",
+        updated: "Oct 2026",
+        videoUrl: "https://www.youtube.com/watch?v=0Dvf3Hy9dH8",
+      },
+      {
+        slug: "choose-cabins-room-categories-decks",
+        title: "How to choose cruise cabins, room categories & decks",
+        description:
+          "Understand interior, oceanview, balcony and suite cabins, read deck plans and match rooms to your customer's preferences and budget.",
+        duration: "2:56",
+        updated: "Oct 2026",
+        videoUrl: "https://www.youtube.com/watch?v=jBXWy4vt3i8",
+      },
+      {
+        slug: "guarantee-cabins-confirmed-cabin-numbers",
+        title: "How to find guarantee cabins & confirmed cabin numbers",
+        description:
+          "Learn the difference between guarantee cabins, where the cabin number is assigned later, and cabins with a confirmed number at booking.",
+        duration: "3:41",
+        updated: "Oct 2026",
+        videoUrl: "https://www.youtube.com/watch?v=WmLahRknPuU",
+      },
+    ],
   },
   {
     slug: "trip-summaries",
