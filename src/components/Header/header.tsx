@@ -33,6 +33,7 @@ export default function Header() {
     { href: "/solutions", label: "Solutions" },
     { href: "/resources", label: "Resources" },
     { href: "/academy", label: "Academy" },
+    { href: "/podcast", label: "Podcast" },
     { href: "/about-us", label: "About Us" },
     { href: "/faq", label: "FAQ" },
     { href: "/contact-us", label: "Contact" },

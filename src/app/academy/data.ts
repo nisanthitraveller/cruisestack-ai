@@ -1,4 +1,5 @@
 import type { StaticImageData } from "next/image";
+import { youtubeId, youtubeThumbnail } from "@/lib/youtube";
 import coverShip from "../../assets/hero-r.png";
 import shipBlue from "../../assets/book.webp";
 import seaDeck from "../../assets/faq-cta.png";
@@ -187,24 +188,11 @@ export function getChapter(moduleSlug: string, chapterSlug: string) {
 
 export const moduleHref = (m: AcademyModule) => `/academy/${m.slug}`;
 
-// YouTube video ID from a watch, youtu.be, shorts or embed link; null for anything else.
-export function youtubeId(url?: string): string | null {
-  if (!url) return null;
-  try {
-    const u = new URL(url);
-    const host = u.hostname.replace(/^www\.|^m\./, "");
-    if (host === "youtu.be") return u.pathname.slice(1) || null;
-    if (host === "youtube.com" || host === "youtube-nocookie.com") {
-      return u.searchParams.get("v") || u.pathname.split("/").filter(Boolean).pop() || null;
-    }
-  } catch {}
-  return null;
-}
+export { youtubeId };
 
 export function chapterThumbnail(m: AcademyModule, c: Chapter): StaticImageData | string {
   if (c.thumbnail) return c.thumbnail;
-  const id = youtubeId(c.videoUrl);
-  return id ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg` : m.cover;
+  return youtubeThumbnail(c.videoUrl) ?? m.cover;
 }
 
 export const chapterHref = (m: AcademyModule, c: Chapter) => `/academy/${m.slug}/${c.slug}`;
