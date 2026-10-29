@@ -643,3 +643,255 @@
     letter-spacing: -0.5px;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Landing hero: Academy logo, "Powered by AERTiCKET" badge,
+   and the AERTiCKET partner card that overlaps the hero
+   ───────────────────────────────────────────────────────────── */
+.heroLanding .heroInner {
+  padding-bottom: 140px;
+}
+.academyLogo {
+  display: block;
+  width: 300px;
+  height: auto;
+  margin-bottom: 22px;
+}
+.poweredBy {
+  position: absolute;
+  top: 56px;
+  right: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 18px 14px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(10, 31, 68, 0.12);
+}
+.poweredBy span {
+  font-size: 15px;
+  color: var(--navy);
+}
+.poweredBy img {
+  display: block;
+  width: 170px;
+  height: auto;
+}
+
+.partner {
+  position: relative;
+  z-index: 3;
+  margin-top: -100px;
+}
+.partnerCard {
+  position: relative;
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  align-items: center;
+  min-height: 300px;
+  overflow: hidden;
+  background: #f7faff;
+  border: 1px solid #d9e6f7;
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(10, 31, 68, 0.08);
+}
+/* the picture fills the right half and fades into the card on its left edge */
+.partnerMedia {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 50%;
+}
+.partnerMedia::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #f7faff 0%, rgba(247, 250, 255, 0.9) 28%, rgba(247, 250, 255, 0) 58%);
+}
+.partnerBg {
+  object-fit: cover;
+  object-position: right center;
+}
+.partnerBrand,
+.partnerBody {
+  position: relative;
+  z-index: 1;
+}
+.partnerBrand {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 32px 0;
+  padding: 0 36px 0 40px;
+  border-right: 1px solid #d6e1f0;
+}
+.partnerEyebrow {
+  display: block;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #5b6f8c;
+}
+.partnerLogo {
+  display: block;
+  width: 240px;
+  max-width: 100%;
+  height: auto;
+}
+.partnerBody {
+  max-width: 700px;
+  padding: 32px 40px;
+}
+.partnerBody h2,
+.partnerBody p {
+  max-width: 560px;
+}
+.partnerBody h2 {
+  margin-bottom: 12px;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.6px;
+}
+.partnerBody p {
+  margin-bottom: 22px;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.partnerHighlights {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 0;
+  margin-bottom: 22px;
+}
+.partnerHighlights li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 18px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--navy);
+}
+.partnerHighlights li + li {
+  padding-left: 18px;
+  border-left: 1px solid #d6e1f0;
+}
+.partnerIcon {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--blue);
+}
+.partnerLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+}
+.partnerLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1100px) {
+  .partnerCard {
+    grid-template-columns: 1fr;
+  }
+  .partnerMedia {
+    width: 100%;
+  }
+  .partnerMedia::after {
+    display: none;
+  }
+  /* text and picture overlap here, so lighten the picture behind the text */
+  .partnerCard::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(247, 250, 255, 0.97) 0%, rgba(247, 250, 255, 0.9) 60%, rgba(247, 250, 255, 0.55) 100%);
+  }
+  .partnerBrand {
+    margin: 32px 40px 0;
+    padding: 0 0 24px;
+    border-right: 0;
+    border-bottom: 1px solid #d6e1f0;
+  }
+  .partnerBrand,
+  .partnerBody {
+    z-index: 2;
+  }
+  .partnerBody {
+    max-width: none;
+    padding: 24px 40px 32px;
+  }
+}
+
+@media (max-width: 780px) {
+  .heroLanding .heroInner {
+    padding-bottom: 100px;
+  }
+  .academyLogo {
+    width: 230px;
+  }
+  .poweredBy {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+    margin-bottom: 20px;
+    padding: 8px 14px;
+  }
+  .poweredBy span {
+    font-size: 13px;
+  }
+  .poweredBy img {
+    width: 120px;
+  }
+  .partner {
+    margin-top: -70px;
+  }
+  .partnerBrand {
+    margin: 24px 20px 0;
+    padding-bottom: 20px;
+  }
+  .partnerEyebrow {
+    margin-bottom: 14px;
+    font-size: 13px;
+  }
+  .partnerLogo {
+    width: 190px;
+  }
+  .partnerBody {
+    padding: 20px 20px 26px;
+  }
+  .partnerBody h2 {
+    font-size: 24px;
+  }
+  .partnerBody p {
+    font-size: 16px;
+  }
+  .partnerHighlights {
+    flex-direction: column;
+  }
+  .partnerHighlights li + li {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
