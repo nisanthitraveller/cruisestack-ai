@@ -36,9 +36,9 @@ const partnerHighlights = [
 ];
 
 export const metadata: Metadata = {
-  title: "Academy - cruisestack",
+  title: "Cruise Selling Training for Travel Agents | cruisestack.ai Academy | Powered by AERTiCKET",
   description:
-    "Step-by-step training, practical guides and video tutorials to help you get the most out of cruisestack.",
+    "Step-by-step cruise training for travel agents: destinations, cabins, pricing, TCS & GST, and cancellation terms. Video tutorials inside CruiseStack.",
 };
 
 export default function AcademyPage() {
@@ -57,14 +57,9 @@ export default function AcademyPage() {
             <Image src={aerticketLogo} alt="AERTiCKET" />
           </div>
           <Image src={academyLogo} alt="cruisestack.ai Academy" priority className={styles.academyLogo} />
-          <h1>
-            Learn, master & grow<br />
-your cruise business
-            
-           
-          </h1>
+          <h1>Cruise training for growing your cruise business</h1>
           <p>
-           Step-by-step training, practical guides and video tutorials to help you get the most out of cruisestack.
+            cruisestack Academy is a module-based cruise training program for travel agents and agencies. Each module teaches one part of selling a cruise: where people sail, which cabin to pick, how pricing and tax work, and what happens when a booking is cancelled. Watch in order or jump to the one you need.
           </p>
           <Link href={moduleHref(firstModule)} className={styles.btnPrimary}>
             Start learning <ArrowRight size={18} />
@@ -113,7 +108,7 @@ your cruise business
         <div className={styles.container}>
           <div className={styles.sectionHead}>
             <span className={styles.eyebrow}>Training modules</span>
-            <h2>Explore our training modules</h2>
+            <h2>What you&apos;ll learn in the CruiseStack training modules</h2>
             <p>Choose a module below to watch step-by-step videos and learn how to use cruisestack effectively.</p>
           </div>
 
@@ -128,11 +123,11 @@ your cruise business
                     <span className={styles.moduleIcon}>
                       <ModuleIconSvg icon={m.icon} />
                     </span>
-                    <span className={styles.moduleText}>
+                    <div className={styles.moduleText}>
                       <span className={styles.moduleNumber}>Module {m.number}</span>
-                      <strong>{m.title}</strong>
+                      <h3>{m.cardTitle ?? m.title}</h3>
                       <span className={styles.moduleDesc}>{m.description}</span>
-                    </span>
+                    </div>
                     <span className={styles.roundArrow}>
                       <ArrowRight />
                     </span>

@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const found = getChapter(moduleSlug, chapterSlug);
   if (!found) return {};
   return {
-    title: `${found.chapter.title} - cruisestack Academy`,
-    description: found.chapter.description,
+    title: found.chapter.seoTitle ?? `${found.chapter.title} - cruisestack Academy`,
+    description: found.chapter.seoDescription ?? found.chapter.description,
   };
 }
 
@@ -85,7 +85,7 @@ export default async function ChapterPage({ params }: Props) {
           <main className={styles.watchMain}>
             <span className={styles.eyebrow}>Module {m.number}</span>
             <p className={styles.watchModule}>{m.title}</p>
-            <h1 className={styles.watchTitle}>{chapter.title}</h1>
+            <h1 className={styles.watchTitle}>{chapter.heading ?? chapter.title}</h1>
             {(chapter.duration || chapter.updated) && (
               <p className={`${styles.meta} ${styles.watchMeta}`}>
                 {chapter.duration && (

@@ -19,8 +19,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const found = getModule((await params).moduleSlug);
   if (!found) return {};
   return {
-    title: `Module ${found.module.number}: ${found.module.title} - cruisestack Academy`,
-    description: found.module.description,
+    title: found.module.seoTitle ?? `Module ${found.module.number}: ${found.module.title} - cruisestack Academy`,
+    description: found.module.seoDescription ?? found.module.description,
   };
 }
 
@@ -45,8 +45,8 @@ export default async function ModulePage({ params }: Props) {
             <span aria-current="page">{m.title}</span>
           </nav>
           <span className={styles.eyebrow}>Module {m.number}</span>
-          <h1>{m.title}</h1>
-          <p>{m.description}</p>
+          <h1>{m.heading ?? m.title}</h1>
+          <p>{m.intro ?? m.description}</p>
         </div>
       </section>
 
@@ -76,15 +76,15 @@ export default async function ModulePage({ params }: Props) {
                           {c.duration && <span className={styles.thumbTime}>{c.duration}</span>}
                         </span>
                         <span className={styles.chapterNum}>{i + 1}</span>
-                        <span className={styles.chapterText}>
-                          <strong>{c.title}</strong>
+                        <div className={styles.chapterText}>
+                          <h2>{c.cardTitle ?? c.title}</h2>
                           {c.duration && (
                             <span className={styles.meta}>
                               <Clock /> {c.duration}
                             </span>
                           )}
                           <span className={styles.chapterDesc}>{c.description}</span>
-                        </span>
+                        </div>
                         <span className={styles.roundArrow}>
                           <ArrowRight />
                         </span>

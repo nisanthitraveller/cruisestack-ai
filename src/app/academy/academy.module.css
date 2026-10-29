@@ -224,7 +224,7 @@
   background: var(--tint);
   color: var(--blue);
 }
-.moduleText strong {
+.moduleText h3 {
   display: block;
   margin-bottom: 6px;
   font-size: 22px;
@@ -322,7 +322,7 @@
   align-self: start;
   margin-top: 6px;
 }
-.chapterText strong {
+.chapterText h2 {
   display: block;
   margin-bottom: 8px;
   font-size: 19px;
@@ -609,7 +609,7 @@
     width: 56px;
     height: 56px;
   }
-  .moduleText strong {
+  .moduleText h3 {
     font-size: 19px;
   }
   .chapterCard {
@@ -620,7 +620,7 @@
   .thumb {
     grid-column: 1 / -1;
   }
-  .chapterText strong {
+  .chapterText h2 {
     font-size: 17px;
   }
   .roundArrow {
