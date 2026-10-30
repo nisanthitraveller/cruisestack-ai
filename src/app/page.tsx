@@ -68,25 +68,25 @@ const iconProps = { width: 30, height: 30, viewBox: "0 0 24 24", fill: "none", s
 
 const featureGroups = [
   {
-    title: "Search & Inventory",
+    title: "Search and inventory",
     desc: "Give your team and customers access to live cruise availability and pricing.",
     icon: <svg {...iconProps}><circle cx="10.5" cy="10.5" r="6.5" /><path d="m20 20-4.5-4.5" /></svg>,
     items: ["Real-time Inventory", "Instant Quotes", "Smart Search", "Live Pricing"],
   },
   {
-    title: "Booking & Payments",
+    title: "Booking and payments",
     desc: "Turn cruise searches into secure, seamless bookings from one platform.",
     icon: <svg {...iconProps}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 10h18M7 15h3M15.5 15h1.5" /></svg>,
     items: ["Secure Bookings", "Cabin Blocking", "Online Payments", "Booking Management"],
   },
   {
-    title: "Operations & CRM",
+    title: "Operations and CRM",
     desc: "Manage customers, leads, quotations and after-sales operations efficiently.",
     icon: <svg {...iconProps}><circle cx="12" cy="8" r="3" /><path d="M6.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" /><path d="M5.5 11.5a2.2 2.2 0 1 1 0-4.4M3 17c0-2 1-3.3 2.5-3.8M18.5 11.5a2.2 2.2 0 1 0 0-4.4M21 17c0-2-1-3.3-2.5-3.8" /></svg>,
     items: ["Leads CRM", "PDF Quotations", "Back Office", "Customer Management"],
   },
   {
-    title: "Automation & Analytics",
+    title: "Automation and analytics",
     desc: "Automate repetitive work and understand what\u2019s driving your business.",
     icon: <svg {...iconProps}><rect x="4" y="13" width="3.5" height="7" rx="1" /><rect x="10.25" y="9" width="3.5" height="11" rx="1" /><rect x="16.5" y="4" width="3.5" height="16" rx="1" /></svg>,
     items: ["Reports & Analytics", "Workflow Automation", "Performance Tracking", "Business Insights"],
@@ -107,7 +107,7 @@ const shipThumb = (
 
 const howSteps = [
   {
-    title: "Search & Explore",
+    title: "Search and explore",
     desc: "Access a wide range of cruise inventory from global cruise lines with real-time availability, fares and rich content.",
     art: (
       <div className="hiw-laptop">
@@ -126,7 +126,7 @@ const howSteps = [
     ),
   },
   {
-    title: "Plan & Customize",
+    title: "Plan and customize",
     desc: "Compare options, create itineraries, and customize packages to match your customer\u2019s needs.",
     art: (
       <div className="hiw-window">
@@ -141,7 +141,7 @@ const howSteps = [
     ),
   },
   {
-    title: "Quote & Book",
+    title: "Quote and book",
     desc: "Generate professional quotes, book with confidence and manage the entire process in one place.",
     art: (
       <div className="hiw-panel">
@@ -162,7 +162,7 @@ const howSteps = [
     ),
   },
   {
-    title: "Deliver & Grow",
+    title: "Deliver and grow",
     desc: "Provide an exceptional customer experience with built-in tools and support \u2014 and unlock new revenue opportunities.",
     art: (
       <div className="hiw-panel hiw-chart">
@@ -182,22 +182,22 @@ const wlIcon = { width: 30, height: 30, viewBox: "0 0 24 24", fill: "none", stro
 
 const whiteLabelFeatures = [
   {
-    title: "Your Branding",
+    title: "Your branding",
     desc: "Fully customizable with your logo, colors and domain.",
     icon: <svg {...wlIcon}><path d="M3 12.5V4a1 1 0 0 1 1-1h8.5L21 11.5 12.5 20z" /><circle cx="8" cy="8" r="1.5" /></svg>,
   },
   {
-    title: "Comprehensive Content",
+    title: "Comprehensive content",
     desc: "Access global cruise inventory, fares, images and rich content via API or white-label.",
     icon: <svg {...wlIcon}><path d="m12 3 9 5-9 5-9-5 9-5Z" /><path d="m3 12.5 9 5 9-5M3 16.5l9 5 9-5" /></svg>,
   },
   {
-    title: "Flexible Integration",
+    title: "Flexible integration",
     desc: "Use our robust APIs to integrate cruise search, pricing, booking and post-booking services.",
     icon: <svg {...wlIcon}><path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14" /></svg>,
   },
   {
-    title: "Scalable for Growth",
+    title: "Scalable for growth",
     desc: "Built to support travel agencies, OTAs, tour operators and enterprises of any size.",
     icon: <svg {...wlIcon}><path d="M5 20v-6M10 20V10M15 20v-8M20 20V5" strokeWidth="2.6" /></svg>,
   },
@@ -210,7 +210,7 @@ const bfBadge = { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", str
 
 const builtFor = [
   {
-    title: "Travel Agencies",
+    title: "Travel agencies",
     desc: "Streamline your cruise sales, access real-time inventory and manage your customers with ease.",
     img: agencyImg,
     pos: "50% 55%",
@@ -224,7 +224,7 @@ const builtFor = [
     icon: <svg {...bfIcon}><rect x="4" y="5" width="16" height="11" rx="1.5" /><path d="M2 19h20" /></svg>,
   },
   {
-    title: "Tour Operators",
+    title: "Tour operators",
     desc: "Create and manage cruise packages, group bookings and custom itineraries \u2014 all in one place.",
     img: operatorImg,
     pos: "55% 60%",
@@ -240,7 +240,7 @@ const builtFor = [
       { label: "Scalable", icon: <svg {...bfBadge}><path d="M5 20v-6M10 20V10M15 20v-8M20 20V5" /></svg> },
       { label: "Secure", icon: <svg {...bfBadge}><path d="M12 3 5 6v5c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Zm-3 8.5 2 2 4-4" /></svg> },
       { label: "Reliable", icon: <svg {...bfBadge}><path d="M7 18a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.4 1.5A4 4 0 0 1 17 18z" /></svg> },
-      { label: "Global Coverage", icon: <svg {...bfBadge}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3Z" /></svg> },
+      { label: "Global coverage", icon: <svg {...bfBadge}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3Z" /></svg> },
     ],
   },
 ];
@@ -250,32 +250,32 @@ const secPillIcon = { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none",
 
 const securityFeatures = [
   {
-    title: "Enterprise-Grade Security",
+    title: "Enterprise-grade security",
     desc: "Industry best practices, regular audits and proactive threat monitoring.",
     icon: <svg {...secIcon}><path d="M12 3 5 6v5c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6l-7-3Zm-3 8.5 2 2 4-4" /></svg>,
   },
   {
-    title: "Global Infrastructure",
+    title: "Global infrastructure",
     desc: "Hosted on reliable, scalable cloud infrastructure for high availability and performance.",
     icon: <svg {...secIcon}><path d="M7 18a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.4 1.5A4 4 0 0 1 17 18z" /></svg>,
   },
   {
-    title: "Data Privacy",
+    title: "Data privacy",
     desc: "Your data is encrypted in transit and at rest, with strict access controls.",
     icon: <svg {...secIcon}><rect x="5" y="10.5" width="14" height="10" rx="2" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5M12 14.5v2" /></svg>,
   },
   {
-    title: "Compliance Ready",
+    title: "Compliance ready",
     desc: "Built to support global privacy and data protection standards.",
     icon: <svg {...secIcon}><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h6" /></svg>,
   },
   {
-    title: "High Availability",
+    title: "High availability",
     desc: "Designed for 99.9% uptime to keep your business running smoothly.",
     icon: <svg {...secIcon}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>,
   },
   {
-    title: "Trusted by Industry",
+    title: "Trusted by industry",
     desc: "Powering travel businesses worldwide with a secure and reliable platform.",
     icon: <svg {...secIcon}><circle cx="12" cy="8" r="3" /><path d="M6.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" /><path d="M5.5 11.5a2.2 2.2 0 1 1 0-4.4M3 17c0-2 1-3.3 2.5-3.8M18.5 11.5a2.2 2.2 0 1 0 0-4.4M21 17c0-2-1-3.3-2.5-3.8" /></svg>,
   },
@@ -287,7 +287,7 @@ const complianceBadges = [
   { title: "SOC 2", sub: "Security controls", img: soc2Badge },
   { title: "AWS", sub: "Global infrastructure", img: awsBadge, pad: true },
   {
-    title: "Ongoing Monitoring",
+    title: "Ongoing monitoring",
     sub: "& Audits",
     badge: (
       <svg viewBox="0 0 96 96">
@@ -506,7 +506,7 @@ const ftrimgsect = {
       <section className="hiw">
         <div className="hiw-header">
           <span className="hiw-eyebrow">How it works</span>
-          <h2>How CruiseStack Works</h2>
+          <h2>How cruisestack works?</h2>
           <p>From search to sale, CruiseStack gives you the tools, content and support you need — all in one platform.</p>
         </div>
         <ol className="hiw-steps">
@@ -533,7 +533,7 @@ const ftrimgsect = {
         <div className="wl-inner">
           <div className="wl-copy">
             <span className="wl-eyebrow">White-label &amp; API</span>
-            <h2>Your Brand. Our Technology.</h2>
+            <h2>Your brand. our technology.</h2>
             <p className="wl-lead">
               Launch and grow your cruise business with CruiseStack&apos;s white-label platform or powerful APIs. Deliver a seamless booking experience under your own brand, with full flexibility and control.
             </p>
@@ -726,7 +726,7 @@ const ftrimgsect = {
       <section className="bf">
         <div className="bf-header">
           <span className="bf-eyebrow">Built for...</span>
-          <h2>Every Cruise Business, Big or Small</h2>
+          <h2>Every cruise business, big or small</h2>
           <p>No matter your business model, CruiseStack gives you the tools, content and support to sell more cruises and create unforgettable travel experiences.</p>
         </div>
         <div className="bf-grid">
@@ -749,7 +749,7 @@ const ftrimgsect = {
           ))}
         </div>
         <div className="bf-cta">
-          <h3>Ready to Take Your Cruise Business Further?</h3>
+          <h3>Ready to take your cruise business further?</h3>
           <p>Let&apos;s show you how CruiseStack can work for you.</p>
           <Link href="/bookdemo" className="hiw-cta-btn">
             Book a Demo
@@ -897,7 +897,7 @@ const ftrimgsect = {
         <div className="sec-top">
           <div className="sec-copy">
             <span className="sec-eyebrow">Security &amp; Infrastructure</span>
-            <h2>Built on a Secure, Scalable Foundation</h2>
+            <h2>Built on a secure, scalable foundation</h2>
             <p className="sec-lead">Your data, your customers and your business are in safe hands. CruiseStack is built with enterprise-grade security, reliability and global infrastructure.</p>
             <ul className="sec-grid">
               {securityFeatures.map((f) => (
@@ -938,7 +938,7 @@ const ftrimgsect = {
               </div>
               <div className="sec-pill sec-at-cloud">
                 <span className="sec-pill-icon"><svg {...secPillIcon}><path d="M7 18a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.4 1.5A4 4 0 0 1 17 18z" /></svg></span>
-                <div><strong>Global</strong><span>Cloud Infrastructure</span></div>
+                <div><strong>Global</strong><span>Cloud infrastructure</span></div>
               </div>
               <div className="sec-pill sec-at-encrypted">
                 <span className="sec-pill-icon"><svg {...secPillIcon}><rect x="5" y="10.5" width="14" height="10" rx="2" /><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5M12 14.5v2" /></svg></span>
@@ -955,7 +955,7 @@ const ftrimgsect = {
         <div className="sec-compliance">
           <div className="sec-compliance-copy">
             <span className="sec-eyebrow">Compliance &amp; Standards</span>
-            <h3>Trusted. Compliant.<br />Always Improving.</h3>
+            <h3>Trusted. Compliant. Always improving.</h3>
             <p>We follow industry best practices and global standards to ensure your business is always protected.</p>
           </div>
           <ul className="sec-badges">

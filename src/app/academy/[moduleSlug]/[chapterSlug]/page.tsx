@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer/footer";
+import PartnerCard from "../../PartnerCard";
 import Header from "@/components/Header/header";
 import ChapterVideo from "../../ChapterVideo";
 import styles from "../../academy.module.css";
@@ -146,6 +147,9 @@ export default async function ChapterPage({ params }: Props) {
             </div>
           )}
         </nav>
+        <div className={styles.partnerBelow}>
+          <PartnerCard />
+        </div>
       </div>
 
       <Footer />

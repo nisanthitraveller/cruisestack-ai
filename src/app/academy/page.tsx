@@ -6,34 +6,11 @@ import Header from "@/components/Header/header";
 import styles from "./academy.module.css";
 import { academyModules, moduleHref } from "./data";
 import { ArrowRight, ModuleIconSvg } from "./icons";
+import PartnerCard from "./PartnerCard";
 import heroImg from "../../assets/academy-banner.webp";
 import academyIllustration from "../../assets/academy-illustration.svg";
 import academyLogo from "../../assets/cruise-academy.svg";
 import aerticketLogo from "../../assets/aerticket.png";
-import partnerBg from "../../assets/card-bg.png";
-
-const iconStroke = {
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.8,
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
-};
-
-const partnerHighlights = [
-  {
-    label: ["Industry", "expert insights"],
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" {...iconStroke}><circle cx="12" cy="8" r="4" /><path d="M4.5 20c.8-3.8 3.8-6 7.5-6s6.7 2.2 7.5 6" /></svg>,
-  },
-  {
-    label: ["Practical", "training content"],
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" {...iconStroke}><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5Zm0 0v13" /></svg>,
-  },
-  {
-    label: ["Global travel", "expertise"],
-    icon: <svg width="22" height="22" viewBox="0 0 24 24" {...iconStroke}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3Z" /></svg>,
-  },
-];
 
 export const metadata: Metadata = {
   title: "Cruise Selling Training for Travel Agents | cruisestack.ai Academy | Powered by AERTiCKET",
@@ -49,14 +26,16 @@ export default function AcademyPage() {
       <Header />
 
       {/* ───── HERO ───── */}
-      <section className={`${styles.hero} ${styles.heroLanding}`}>
+      <section className={styles.hero}>
         <Image src={heroImg} alt="" fill priority sizes="100vw" className={styles.heroImg} />
         <div className={styles.heroInner}>
-          <div className={styles.poweredBy}>
-            <span>Powered by</span>
-            <Image src={aerticketLogo} alt="AERTiCKET" />
+          <div className={styles.heroLogos}>
+            <Image src={academyLogo} alt="cruisestack.ai Academy" priority className={styles.academyLogo} />
+            <div className={styles.poweredBy}>
+              <span>Powered by</span>
+              <Image src={aerticketLogo} alt="AERTiCKET" />
+            </div>
           </div>
-          <Image src={academyLogo} alt="cruisestack.ai Academy" priority className={styles.academyLogo} />
           <h1>Cruise training for growing your cruise business</h1>
           <p>
             cruisestack Academy is a module-based cruise training program for travel agents and agencies. Each module teaches one part of selling a cruise: where people sail, which cabin to pick, how pricing and tax work, and what happens when a booking is cancelled. Watch in order or jump to the one you need.
@@ -67,50 +46,16 @@ export default function AcademyPage() {
         </div>
       </section>
 
-      {/* ───── PARTNER ───── */}
-      <section className={styles.partner}>
-        <div className={styles.container}>
-          <div className={styles.partnerCard}>
-            <div className={styles.partnerMedia} aria-hidden="true">
-              <Image src={partnerBg} alt="" fill sizes="(max-width: 1100px) 100vw, 640px" className={styles.partnerBg} />
-            </div>
-            <div className={styles.partnerBrand}>
-              <span className={styles.partnerEyebrow}>In partnership with</span>
-              <Image src={aerticketLogo} alt="AERTiCKET" className={styles.partnerLogo} />
-            </div>
-            <div className={styles.partnerBody}>
-              <h2>Bringing global travel expertise to cruisestack Academy</h2>
-              <p>
-                In partnership with AERTiCKET, a leading global travel technology company, we bring industry expertise, real-world insights and best practices to help you grow your cruise business.
-              </p>
-              <ul className={styles.partnerHighlights}>
-                {partnerHighlights.map((h) => (
-                  <li key={h.label.join(" ")}>
-                    <span className={styles.partnerIcon}>{h.icon}</span>
-                    <span>
-                      {h.label[0]}
-                      <br />
-                      {h.label[1]}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <a href="https://www.aerticket.in" target="_blank" rel="noreferrer" className={styles.partnerLink}>
-                About our partner <ArrowRight size={18} />
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* ───── MODULES ───── */}
       <section id="modules" className={styles.section}>
         <div className={styles.container}>
+          {/* Hidden for now
           <div className={styles.sectionHead}>
             <span className={styles.eyebrow}>Training modules</span>
             <h2>What you&apos;ll learn in the CruiseStack training modules</h2>
             <p>Choose a module below to watch step-by-step videos and learn how to use cruisestack effectively.</p>
           </div>
+          */}
 
           <div className={styles.split}>
             <div className={styles.illustration} aria-hidden="true">
@@ -136,6 +81,13 @@ export default function AcademyPage() {
               ))}
             </ul>
           </div>
+        </div>
+      </section>
+
+      {/* ───── PARTNER ───── */}
+      <section className={styles.partner}>
+        <div className={styles.container}>
+          <PartnerCard />
         </div>
       </section>
 

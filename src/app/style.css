@@ -599,11 +599,28 @@ body{
   .cruise-page-body .fx { padding: 56px 15px 48px; }
   .cruise-page-body .fx-eyebrow { font-size: 12px; letter-spacing: 2px; }
   .cruise-page-body .fx-header h2 { font-size: 30px; letter-spacing: -.5px; }
-  .cruise-page-body .fx-card { padding: 24px 20px; }
-  .cruise-page-body .fx-card-head { gap: 16px; }
-  .cruise-page-body .fx-icon { width: 56px; height: 56px; }
+  /* feature cards become a plain list with a divider line */
+  .cruise-page-body .fx-card {
+    padding: 0 0 24px;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid #e3eaf4;
+    border-radius: 0;
+  }
+  .cruise-page-body .fx-card:hover { box-shadow: none; transform: none; }
+  .cruise-page-body .fx-card-head { gap: 16px; margin-bottom: 16px; padding-bottom: 16px; }
+  .cruise-page-body .fx-icon { width: 44px; height: 44px; }
   .cruise-page-body .fx-card h3 { font-size: 21px; }
-  .cruise-page-body .fx-list li { font-size: 15px; gap: 12px; }
+  .cruise-page-body .fx-list { gap: 8px 24px; }
+  .cruise-page-body .fx-list li { font-size: 15px; gap: 20px; }
+  /* tick without the circle */
+  .cruise-page-body .fx-check {
+    width: auto;
+    height: auto;
+    background: none;
+    border-radius: 0;
+  }
+  .cruise-page-body .fx-check svg { width: 40px; height: 23px; }
   .cruise-page-body .fx-footnote::before,
   .cruise-page-body .fx-footnote::after { display: none; }
 }
@@ -702,7 +719,7 @@ body{
   font-size: 26px;
   font-weight: 700;
   color: var(--navy);
-  margin-bottom: 18px;
+  margin-bottom: 6px;
 }
 .cruise-page-body .hiw-step p {
   font-size: 16px;
@@ -927,7 +944,7 @@ body{
   align-items: center;
   justify-content: center;
 }
-.cruise-page-body .wl-features h3 { font-size: 21px; font-weight: 700; color: var(--navy); margin: 4px 0 10px; }
+.cruise-page-body .wl-features h3 { font-size: 21px; font-weight: 700; color: var(--navy); margin: 4px 0 6px; }
 .cruise-page-body .wl-features p { font-size: 16px; line-height: 1.55; color: var(--gray-600); }
 .cruise-page-body .wl-btn {
   display: inline-flex;

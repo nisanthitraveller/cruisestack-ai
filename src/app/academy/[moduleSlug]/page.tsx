@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer/footer";
+import PartnerCard from "../PartnerCard";
 import Header from "@/components/Header/header";
 import styles from "../academy.module.css";
 import { academyModules, chapterHref, chapterThumbnail, getModule, moduleHref } from "../data";
@@ -58,10 +59,12 @@ export default async function ModulePage({ params }: Props) {
               <Image src={academyIllustration} alt="" />
             </div>
             <div>
+              {/* Hidden for now
               <div className={styles.chaptersHead}>
                 <h2>Chapters ({m.chapters.length})</h2>
                 <p>Watch the videos in order or jump to any chapter you need.</p>
               </div>
+              */}
 
               {m.chapters.length ? (
                 <ol className={styles.chapterList}>
@@ -75,9 +78,8 @@ export default async function ModulePage({ params }: Props) {
                           </span>
                           {c.duration && <span className={styles.thumbTime}>{c.duration}</span>}
                         </span>
-                        <span className={styles.chapterNum}>{i + 1}</span>
                         <div className={styles.chapterText}>
-                          <h2>{c.cardTitle ?? c.title}</h2>
+                          <h2>{i + 1}. {c.cardTitle ?? c.title}</h2>
                           {c.duration && (
                             <span className={styles.meta}>
                               <Clock /> {c.duration}
@@ -146,6 +148,9 @@ export default async function ModulePage({ params }: Props) {
               </div>
             )}
           </nav>
+          <div className={styles.partnerBelow}>
+            <PartnerCard />
+          </div>
         </div>
       </section>
 
