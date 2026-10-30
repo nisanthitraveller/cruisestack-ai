@@ -11,6 +11,7 @@ export type CompanyRow = {
   Blockingonly_flag: number | null;
   gratuity_section_enabled: number | null;
   commission_section_enabled: number | null;
+  price_breakdown_section_enabled: number | null;
   search_only_landing_enabled: number | null;
   deals_enabled: number | null;
   enable_commission_sync: number | null;
@@ -46,6 +47,7 @@ type CompanyForm = {
   Blockingonly_flag: string;
   gratuity_section_enabled: string;
   commission_section_enabled: string;
+  price_breakdown_section_enabled: string;
   search_only_landing_enabled: string;
   deals_enabled: string;
   enable_commission_sync: string;
@@ -94,6 +96,8 @@ function formFromCompany(company: CompanyRow): CompanyForm {
       Number(company.gratuity_section_enabled ?? 0) === 1 ? "1" : "0",
     commission_section_enabled:
       Number(company.commission_section_enabled ?? 1) === 1 ? "1" : "0",
+    price_breakdown_section_enabled:
+      Number(company.price_breakdown_section_enabled ?? 1) === 1 ? "1" : "0",
     search_only_landing_enabled:
       Number(company.search_only_landing_enabled ?? 0) === 1 ? "1" : "0",
     deals_enabled: Number(company.deals_enabled) === 1 ? "1" : "0",
@@ -872,6 +876,21 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
                     updateField("commission_section_enabled", event.target.value)
                   }
                   value={form.commission_section_enabled}
+                >
+                  <option value="1">Shown</option>
+                  <option value="0">Hidden</option>
+                </select>
+              </label>
+              <label>
+                <span>Trip summary price breakdown</span>
+                <select
+                  onChange={(event) =>
+                    updateField(
+                      "price_breakdown_section_enabled",
+                      event.target.value,
+                    )
+                  }
+                  value={form.price_breakdown_section_enabled}
                 >
                   <option value="1">Shown</option>
                   <option value="0">Hidden</option>

@@ -88,6 +88,7 @@ async function getCompanies(): Promise<CompanyRow[]> {
         c.Blockingonly_flag,
         c.gratuity_section_enabled,
         c.commission_section_enabled,
+        c.price_breakdown_section_enabled,
         c.search_only_landing_enabled,
         c.deals_enabled,
         c.enable_commission_sync,
