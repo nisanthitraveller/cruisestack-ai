@@ -51,10 +51,9 @@ export const academyModules: AcademyModule[] = [
     number: 1,
     title: "Destinations, ports & cruise lines",
     cardTitle: "Cruise destinations, ports & cruise lines",
-    heading: "Cruise destinations, ports & cruise lines: Module 1 of CruiseStack Academy",
-    intro:
-      "This module teaches you how to match a client to the right cruise destination, port and cruise line. You'll see which destinations get the most search and booking traffic, when each is best to sail, where ships depart from, and which lines are most active there.",
-    seoTitle: "Cruise Destinations, Ports & Cruise Lines Guide for Agents | Module 1",
+    heading: "Learn about cruise destinations, ports & cruise lines",
+    intro: "Learn how to match a client to the right cruise destination, port and cruise line. You'll see which destinations get the most search and booking traffic, when each is best to sail, where ships depart from, and which lines are most active there.",
+    seoTitle: "Cruise Destinations, Ports & Cruise Lines Guide for Agents",
     seoDescription:
       "Learn the top cruise destinations, key cities, best season months, departure ports and most active cruise lines, with video chapters inside CruiseStack.",
     description:
@@ -65,8 +64,9 @@ export const academyModules: AcademyModule[] = [
       {
         slug: "top-10-destinations-percentage-of-traffic",
         title: "Top 10 destinations, percentage of traffic",
-        cardTitle: "Understanding the top 10 cruise destinations by passenger traffic",
-        seoTitle: "Top 10 Cruise Destinations by Search & Booking Traffic | CruiseStack Academy",
+        cardTitle: "Understanding the top 10 cruise destinations by traffic",
+        heading: "Top 10 cruise destinations by share of traffic",
+        seoTitle: "Top 10 Cruise Destinations by Search & Booking Traffic",
         seoDescription:
           "See the top 10 cruise destinations ranked by share of search and booking traffic in CruiseStack. 3:40 video tutorial.",
         description:
@@ -78,7 +78,7 @@ export const academyModules: AcademyModule[] = [
       {
         slug: "top-10-destinations-key-cities",
         title: "Top 10 destinations and key cities covered",
-        cardTitle: "Learn the key cities and ports covered by the top 10 cruise destinations",
+        cardTitle: "Learn the key cities covered by the top 10 cruise destinations",
         heading: "Top 10 cruise destinations and the key cities covered",
         seoTitle: "Top Cruise Destinations and Key Cities & Ports Covered | CruiseStack Academy",
         seoDescription:
@@ -91,7 +91,7 @@ export const academyModules: AcademyModule[] = [
       {
         slug: "top-10-destinations-season-months",
         title: "Top 10 destinations and season months",
-        cardTitle: "Best time to cruise: seasonality across the top 10 cruise destinations",
+        cardTitle: "Best time to cruise to the top 10 cruise destinations",
         heading: "Best time to cruise: season months for the top 10 destinations",
         seoTitle: "Best Time to Cruise: Season Months for Top Destinations | CruiseStack Academy",
         seoDescription:
@@ -135,12 +135,10 @@ export const academyModules: AcademyModule[] = [
     number: 2,
     title: "Room categories, decks & cabins",
     cardTitle: "Learn about cruise room categories, decks & cabins",
-    heading: "Cruise cabin types, room categories & decks: Module 2 of CruiseStack Academy",
-    intro:
-      "Cabin choice is where most cruise quotes get won or lost. This module explains room categories, what a guarantee cabin really is, how special packages work, how deck position changes the stay, and how to read cabin inventory.",
-    seoTitle: "Cruise Cabin Types, Room Categories & Decks Explained | Module 2",
-    seoDescription:
-      "Understand cruise room categories, guarantee cabins, special packages, deck selection and cabin inventory so you can pick the right cabin for every client.",
+    heading: "Cruise cabin types, room categories & decks explained",
+    intro: "Learn about room categories, what a guarantee cabin really is, how special packages work, how deck position changes the stay, and how to read cabin inventory.",
+    seoTitle: "Cruise Cabin Types, Room Categories & Decks Explained",
+    seoDescription: "Understand cruise room categories, guarantee cabins, special packages, deck selection and cabin inventory.",
     description:
       "Understand room categories, guarantee cabins, special packages, deck selection and cabin inventory.",
     icon: "bed",
@@ -181,6 +179,10 @@ export const academyModules: AcademyModule[] = [
     number: 3,
     title: "Trip summaries",
     cardTitle: "What is a cruise trip summary and how to create one",
+    heading: "Understanding cruise trip summaries",
+    intro: "A trip summary gives clients a clear picture of their cruise before they make a booking decision. In this module, learn how to read, understand, and share trip summaries effectively so clients have the information they need, questions are reduced, and bookings move towards confirmation.",
+    seoTitle: "Cruise Trip Summary: How to Read, Share & Use It | Module 3",
+    seoDescription: "Learn to read and share cruise trip summaries with clients: sailing times, shore excursions, inclusions and exclusions, all in CruiseStack.",
     description:
       "Learn how to read, share and use trip summaries, including sailing times, shore excursions and inclusions/exclusions.",
     icon: "document",
@@ -192,6 +194,10 @@ export const academyModules: AcademyModule[] = [
     number: 4,
     title: "Pricing, taxation & payments",
     cardTitle: "Learn about cruise pricing, taxation & payments",
+    heading: "Cruise pricing, TCS & GST, and payments in INR & USD",
+    intro: "Tax and currency are where cruise quotes get confusing. This module breaks down the price, and covers payment options and paperwork.",
+    seoTitle: "Pricing, taxation & payments",
+    seoDescription: "Understand cruise price breakdowns, and the documents you need.",
     description:
       "Understand price breakdowns, payment methods in INR and USD, how TCS & GST work, and required documents.",
     icon: "card",
@@ -202,7 +208,10 @@ export const academyModules: AcademyModule[] = [
     slug: "payment-cancellation-terms",
     number: 5,
     title: "Payment & cancellation terms",
-    cardTitle: "Everything you need to know about cruise payment & cancellation terms",
+    cardTitle: "Cruise payment & cancellation terms",
+    heading: "Cruise payment terms, cancellation policy & group discounts",
+    seoTitle: "Cruise Payment Schedule, Cancellation Policy & Group Discounts | Module 5",
+    seoDescription: "Learn cruise deposits, payment deadlines, cancellation terms, currency conversion, bank charges and group discounts, so clients know the rules before they book.",
     description:
       "Learn about deposits, payment deadlines, cancellation terms, currency conversion, bank charges and group discounts.",
     icon: "calendar",
