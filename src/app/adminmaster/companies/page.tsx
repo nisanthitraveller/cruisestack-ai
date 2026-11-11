@@ -78,6 +78,7 @@ async function getCompanies(): Promise<CompanyRow[]> {
         c.secondary_color,
         c.support_email,
         c.currency,
+        c.trip_summary_display_currencies,
         c.plan_type,
         c.status,
         c.company_type,

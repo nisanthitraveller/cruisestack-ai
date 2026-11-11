@@ -43,6 +43,15 @@ function httpError(message, statusCode = 400) {
 }
 
 function normalizeCompanyUpdate(body) {
+  const tripSummaryDisplayCurrencies = Array.from(
+    new Set(
+      String(body.trip_summary_display_currencies || "")
+        .split(",")
+        .map((currency) => currency.trim().toUpperCase())
+        .filter(Boolean),
+    ),
+  );
+
   return {
     chatbot: Number(body.chatbot) === 1 ? 1 : 0,
     Blockingonly_flag: [0, 1, 2, 3, 4].includes(
@@ -65,6 +74,7 @@ function normalizeCompanyUpdate(body) {
     company_name: String(body.company_name || "").trim(),
     company_type: String(body.company_type || "").trim().toUpperCase(),
     currency: String(body.currency || "").trim().toUpperCase(),
+    trip_summary_display_currencies: tripSummaryDisplayCurrencies.join(","),
     domain: String(body.domain || "").trim(),
     plan_type: String(body.plan_type || "").trim(),
     primary_color: String(body.primary_color || "").trim(),
@@ -95,6 +105,17 @@ function validateCompanyUpdate(company) {
 
   if (!/^[A-Z]{3}$/.test(company.currency)) {
     throw httpError("Currency must be a three-letter code such as USD or INR");
+  }
+
+  const displayCurrencies = company.trip_summary_display_currencies.split(",");
+  if (
+    !company.trip_summary_display_currencies ||
+    displayCurrencies.some((currency) => !/^[A-Z]{3}$/.test(currency)) ||
+    company.trip_summary_display_currencies.length > 100
+  ) {
+    throw httpError(
+      "Select at least one valid three-letter trip summary display currency",
+    );
   }
 
   if (!allowedPlans.has(company.plan_type)) {
@@ -575,6 +596,7 @@ export async function POST(request) {
           domain = ?,
           support_email = ?,
           currency = ?,
+          trip_summary_display_currencies = ?,
           plan_type = ?,
           company_type = ?,
           special_discount_enabled = ?,
@@ -599,6 +621,7 @@ export async function POST(request) {
           update.domain || null,
           update.support_email || null,
           update.currency,
+          update.trip_summary_display_currencies,
           update.plan_type,
           update.company_type,
           update.special_discount_enabled,

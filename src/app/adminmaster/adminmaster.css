@@ -1754,6 +1754,19 @@
   width: 100%;
 }
 
+.companies-edit-form .companies-display-currencies-field {
+  grid-column: 1 / -1;
+}
+
+.companies-display-currencies-field select[multiple] {
+  min-height: 118px;
+}
+
+.companies-display-currencies-field small {
+  color: #64748b;
+  font-size: 12px;
+}
+
 .companies-color-field {
   display: grid;
   gap: 8px;

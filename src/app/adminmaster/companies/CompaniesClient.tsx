@@ -19,6 +19,7 @@ export type CompanyRow = {
   company_type: string | null;
   created_at: string | null;
   currency: string | null;
+  trip_summary_display_currencies: string | null;
   current_period_end: string | null;
   current_period_start: string | null;
   domain: string | null;
@@ -54,6 +55,7 @@ type CompanyForm = {
   company_name: string;
   company_type: string;
   currency: string;
+  trip_summary_display_currencies: string;
   domain: string;
   plan_type: string;
   primary_color: string;
@@ -106,6 +108,8 @@ function formFromCompany(company: CompanyRow): CompanyForm {
     company_name: company.company_name || "",
     company_type: company.company_type || "B2C",
     currency: company.currency || "USD",
+    trip_summary_display_currencies:
+      company.trip_summary_display_currencies || company.currency || "USD",
     domain: company.domain || "",
     plan_type: company.plan_type || "Beginner",
     primary_color: company.primary_color || "#003366",
@@ -138,6 +142,19 @@ const billingMetricLabels: Record<string, string> = {
 
 function billingMetricLabel(value: string | null) {
   return billingMetricLabels[value || "none"] || value || "None (flat fee)";
+}
+
+const standardDisplayCurrencies = ["INR", "USD", "EUR", "GBP", "AUD", "CAD"];
+
+function currencyCodes(value: string) {
+  return Array.from(
+    new Set(
+      String(value || "")
+        .split(",")
+        .map((code) => code.trim().toUpperCase())
+        .filter(Boolean),
+    ),
+  );
 }
 
 function selectedAmount(company: CompanyRow) {
@@ -258,6 +275,33 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
 
   function updateField(field: keyof CompanyForm, value: string) {
     setForm((current) => (current ? { ...current, [field]: value } : current));
+  }
+
+  function updateStandardDisplayCurrencies(selectedCodes: string[]) {
+    if (!form) return;
+
+    const customCodes = currencyCodes(form.trip_summary_display_currencies).filter(
+      (code) => !standardDisplayCurrencies.includes(code),
+    );
+    updateField(
+      "trip_summary_display_currencies",
+      [...selectedCodes, ...customCodes].join(","),
+    );
+  }
+
+  function updateCustomDisplayCurrencies(value: string) {
+    if (!form) return;
+
+    const selectedStandardCodes = currencyCodes(
+      form.trip_summary_display_currencies,
+    ).filter((code) => standardDisplayCurrencies.includes(code));
+    const customCodes = currencyCodes(value).filter(
+      (code) => !standardDisplayCurrencies.includes(code),
+    );
+    updateField(
+      "trip_summary_display_currencies",
+      [...selectedStandardCodes, ...customCodes].join(","),
+    );
   }
 
   async function saveCompany(event: FormEvent<HTMLFormElement>) {
@@ -748,6 +792,37 @@ export default function CompaniesClient({ companies }: { companies: CompanyRow[]
               <label>
                 <span>Currency</span>
                 <input maxLength={3} onChange={(event) => updateField("currency", event.target.value.toUpperCase())} required value={form.currency} />
+              </label>
+              <label className="companies-display-currencies-field">
+                <span>Trip summary display currencies</span>
+                <select
+                  multiple
+                  onChange={(event) =>
+                    updateStandardDisplayCurrencies(
+                      Array.from(event.currentTarget.selectedOptions).map(
+                        (option) => option.value,
+                      ),
+                    )
+                  }
+                  value={currencyCodes(form.trip_summary_display_currencies).filter(
+                    (code) => standardDisplayCurrencies.includes(code),
+                  )}
+                >
+                  {standardDisplayCurrencies.map((code) => (
+                    <option key={code} value={code}>{code}</option>
+                  ))}
+                </select>
+                <small>Hold Command/Ctrl to select more than one.</small>
+                <input
+                  maxLength={100}
+                  onChange={(event) =>
+                    updateCustomDisplayCurrencies(event.target.value)
+                  }
+                  placeholder="Other ISO codes, e.g. JPY,SGD"
+                  value={currencyCodes(form.trip_summary_display_currencies)
+                    .filter((code) => !standardDisplayCurrencies.includes(code))
+                    .join(",")}
+                />
               </label>
               <label>
                 <span>Plan</span>
