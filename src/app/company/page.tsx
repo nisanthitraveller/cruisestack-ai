@@ -15,7 +15,6 @@ import logofour from "../../assets/travelwings.png";
 import logofive from "../../assets/travtips.png";
 import logosix from "../../assets/kesari.png";
 import logoseven from "../../assets/sotc.png";
-import logoeight from "../../assets/triploft.png";
 import logonine from "../../assets/thomascook.png";
 // ─── Icon Components ────────────────────────────────────────────────────────
 
@@ -361,9 +360,6 @@ const missionImagePlaceholder = {
           </span>
            <span className="trust-logo">
             <Image src={logoseven} alt="SOTC" width={180} />
-          </span>
-           <span className="trust-logo">
-            <Image src={logoeight} alt="Triploft" width={60} />
           </span>
           
          

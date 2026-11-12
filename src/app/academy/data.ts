@@ -187,7 +187,26 @@ export const academyModules: AcademyModule[] = [
       "Learn how to read, share and use trip summaries, including sailing times, shore excursions and inclusions/exclusions.",
     icon: "document",
     cover: seaDeck,
-    chapters: [],
+    // Playlist: https://www.youtube.com/playlist?list=PLPkepYH5DNwU
+    chapters: [
+      {
+        slug: "read-cruise-trip-summary",
+        title: "How to read a cruise trip summary: key details every travel agent should check",
+        description:
+          "Learn how to read a cruise trip summary and the key details every travel agent should check before sharing it.",
+        duration: "4:51",
+        updated: "Nov 2026",
+        videoUrl: "https://www.youtube.com/watch?v=QTpCTPO6roo",
+      },
+      {
+        slug: "share-trip-summary-with-customer",
+        title: "How to share a trip summary with the customer",
+        description: "Learn how to share a trip summary with your customer from cruisestack.",
+        duration: "2:41",
+        updated: "Nov 2026",
+        videoUrl: "https://www.youtube.com/watch?v=R2ANNAEcesk",
+      },
+    ],
   },
   {
     slug: "pricing-taxation-payments",
