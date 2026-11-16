@@ -26,6 +26,22 @@ function cleanBaseUrl(value) {
   return baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
 }
 
+function certificationCredentials() {
+  return {
+    siteItemId: String(
+      process.env.ODYSSEUS_CERT_SITE_ITEM_ID || process.env.SITE_ITEM_ID || "",
+    ).trim(),
+    clientId: String(
+      process.env.ODYSSEUS_CERT_CLIENT_ID || process.env.CLIENT_ID || "",
+    ).trim(),
+    clientSecret: String(
+      process.env.ODYSSEUS_CERT_CLIENT_SECRET ||
+        process.env.CLIENT_SECRET ||
+        "",
+    ).trim(),
+  };
+}
+
 function maskSensitive(value, key = "") {
   if (Array.isArray(value)) {
     return value.map((item) => maskSensitive(item));
@@ -83,8 +99,16 @@ export async function GET() {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
+  const credentials = certificationCredentials();
   return NextResponse.json({
-    configured: Boolean(cleanBaseUrl(process.env.ODYSSEUS_CERT_API_BASE_URL || process.env.API_BASE_URL)),
+    configured: Boolean(
+      cleanBaseUrl(
+        process.env.ODYSSEUS_CERT_API_BASE_URL || process.env.API_BASE_URL,
+      ) &&
+        credentials.siteItemId &&
+        credentials.clientId &&
+        credentials.clientSecret,
+    ),
     environment: "SANDBOX",
     endpointIds: Object.keys(ENDPOINTS),
   });
@@ -133,6 +157,21 @@ export async function POST(request) {
       );
     }
 
+    const credentials = certificationCredentials();
+    if (
+      !credentials.siteItemId ||
+      !credentials.clientId ||
+      !credentials.clientSecret
+    ) {
+      return NextResponse.json(
+        {
+          message:
+            "Configure the Odysseus certification SiteItemId, client ID and client secret before running requests",
+        },
+        { status: 409 },
+      );
+    }
+
     const target = new URL(endpoint, baseUrl);
     const startedAt = Date.now();
     const providerResponse = await fetch(target, {
@@ -140,6 +179,10 @@ export async function POST(request) {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        SiteItemId: credentials.siteItemId,
+        Authorization: `Basic ${Buffer.from(
+          `${credentials.clientId}:${credentials.clientSecret}`,
+        ).toString("base64")}`,
       },
       body: serialized,
       cache: "no-store",
