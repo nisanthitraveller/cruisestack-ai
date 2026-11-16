@@ -80,9 +80,17 @@ const availabilityCustomers = bookingCustomers.map(({ rph, age, address }) => ({
   ...(rph === 1 ? { address: { country: address.country } } : {}),
 }));
 
-const pricingCustomers = bookingCustomers.map(
-  ({ contactInfo: _contactInfo, ...customer }) => customer,
-);
+const pricingCustomers = bookingCustomers.map((customer) => ({
+  rph: customer.rph,
+  firstName: customer.firstName,
+  lastName: customer.lastName,
+  dateOfBirth: customer.dateOfBirth,
+  age: customer.age,
+  ...(customer.rph === 1
+    ? { pastPaxNumber: customer.pastPaxNumber }
+    : {}),
+  address: customer.address,
+}));
 
 const cruise = { packageId: "{{packageId}}" };
 const category = {
@@ -329,7 +337,15 @@ function resolveTemplate(template: unknown, context: Context): unknown {
   if (exactMatch) {
     const key = exactMatch[1] as keyof Context;
     const value = context[key] ?? "";
-    if (["packageId", "reservationId", "cruiseReservationId"].includes(key)) {
+    if (
+      [
+        "cruiseLineId",
+        "packageId",
+        "reservationId",
+        "cruiseReservationId",
+        "paymentAmount",
+      ].includes(key)
+    ) {
       return value && /^\d+$/.test(value) ? Number(value) : value;
     }
     return value;
@@ -363,8 +379,18 @@ function updateContextFromResponse(current: Context, response: unknown): Context
   const firstCategory = record(categories[0]);
   const fares = Array.isArray(firstCategory.fares) ? firstCategory.fares : [];
   const fareCode = record(record(fares[0]).fareCode);
-  const cabins = Array.isArray(firstCategory.cabins) ? firstCategory.cabins : [];
+  const fareCodes = Array.isArray(reservation.fareCodes)
+    ? reservation.fareCodes
+    : [];
+  const firstFareCode = record(fareCodes[0]);
+  const cabins = Array.isArray(reservation.cabins)
+    ? reservation.cabins
+    : Array.isArray(firstCategory.cabins)
+      ? firstCategory.cabins
+      : [];
   const firstCabin = record(cabins[0]);
+  const responseCustomers = Array.isArray(data.customers) ? data.customers : [];
+  const firstResponseCustomer = record(responseCustomers[0]);
   const syncInfo = record(record(reservation.syncInfo).apiSyncInfo);
   const reservationFareCode = record(reservation.fareCode);
   const reservationReferences = record(reservation.reservationReferences);
@@ -375,10 +401,13 @@ function updateContextFromResponse(current: Context, response: unknown): Context
     trackingToken: textValue(tracking.token) || current.trackingToken,
     fareCode:
       textValue(reservationFareCode.code) ||
+      textValue(firstFareCode.code) ||
       textValue(fareCode.code) ||
       current.fareCode,
     categoryCode: textValue(firstCategory.code) || current.categoryCode,
     cabinNumber: textValue(firstCabin.number) || current.cabinNumber,
+    pastPaxNumber:
+      textValue(firstResponseCustomer.pastPaxNumber) || current.pastPaxNumber,
     reservationId: textValue(data.id) || current.reservationId,
     cruiseReservationId:
       textValue(reservation.id) || current.cruiseReservationId,
@@ -388,6 +417,8 @@ function updateContextFromResponse(current: Context, response: unknown): Context
     supplierToken: textValue(syncInfo.token) || current.supplierToken,
     supplierSessionId:
       textValue(syncInfo.sessionId) || current.supplierSessionId,
+    supplierLastSyncOn:
+      textValue(syncInfo.lastSyncOn) || current.supplierLastSyncOn,
     cardToken:
       textValue(data.token) || textValue(responseRecord.token) || current.cardToken,
   };

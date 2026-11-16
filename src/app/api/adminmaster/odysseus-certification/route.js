@@ -8,16 +8,17 @@ const REQUEST_TIMEOUT_MS = 60000;
 
 const ENDPOINTS = {
   "fare-code-availability": "reservation/cruise/listfarecodes",
-  "category-availability": "reservation/cruise/listcategories",
+  "category-availability": "reservation/cruise/ListCategories",
   "cabin-availability": "reservation/cruise/listcabins",
-  "special-services": "reservation/cruise/listSpecialservices",
   "cabin-hold": "reservation/cruise/holdcabin",
+  "past-passenger-lookup": "reservation/cruise/listpastpassengers",
   "list-prices": "reservation/cruise/listprices",
   "create-without-payment": "reservation/cruise/create",
-  "read-reservation": "reservation/cruise/read",
-  "read-from-supplier": "reservation/cruise/readfromsupplier",
+  "read-supplier-pay": "reservation/cruise/readfromsupplier",
   tokenization: "payment/TokenizeCard",
-  "apply-payment": "reservation/cruise/applypayment",
+  "pay-to-supplier": "reservation/cruise/paytosupplier",
+  "read-supplier-view": "reservation/cruise/readfromsupplier",
+  "cancel-reservation": "reservation/cruise/cancel",
 };
 
 function cleanBaseUrl(value) {
@@ -29,17 +30,32 @@ function cleanBaseUrl(value) {
 function certificationCredentials() {
   return {
     siteItemId: String(
-      process.env.ODYSSEUS_CERT_SITE_ITEM_ID || process.env.SITE_ITEM_ID || "",
+      process.env.ODYSSEUS_CERT_SITE_ITEM_ID ||
+        process.env.SITE_SANDBOX_ITEM_ID ||
+        process.env.SITE_ITEM_ID ||
+        "",
     ).trim(),
     clientId: String(
-      process.env.ODYSSEUS_CERT_CLIENT_ID || process.env.CLIENT_ID || "",
+      process.env.ODYSSEUS_CERT_CLIENT_ID ||
+        process.env.CLIENT_SANDBOX_ID ||
+        process.env.CLIENT_ID ||
+        "",
     ).trim(),
     clientSecret: String(
       process.env.ODYSSEUS_CERT_CLIENT_SECRET ||
+        process.env.CLIENT_SANDBOX_SECRET ||
         process.env.CLIENT_SECRET ||
         "",
     ).trim(),
   };
+}
+
+function certificationBaseUrl() {
+  return cleanBaseUrl(
+    process.env.ODYSSEUS_CERT_API_BASE_URL ||
+      process.env.API_SANDBOX_BASE_URL ||
+      process.env.API_BASE_URL,
+  );
 }
 
 function maskSensitive(value, key = "") {
@@ -102,9 +118,7 @@ export async function GET() {
   const credentials = certificationCredentials();
   return NextResponse.json({
     configured: Boolean(
-      cleanBaseUrl(
-        process.env.ODYSSEUS_CERT_API_BASE_URL || process.env.API_BASE_URL,
-      ) &&
+      certificationBaseUrl() &&
         credentials.siteItemId &&
         credentials.clientId &&
         credentials.clientSecret,
@@ -137,9 +151,7 @@ export async function POST(request) {
       return NextResponse.json({ message: "Request body exceeds the 1 MB limit" }, { status: 413 });
     }
 
-    const defaultBaseUrl = cleanBaseUrl(
-      process.env.ODYSSEUS_CERT_API_BASE_URL || process.env.API_BASE_URL,
-    );
+    const defaultBaseUrl = certificationBaseUrl();
     const tokenizationBaseUrl = cleanBaseUrl(
       process.env.ODYSSEUS_CERT_TOKENIZATION_BASE_URL ||
         process.env.API_BASE_URL_TOKENIZATION ||
