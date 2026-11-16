@@ -20,6 +20,34 @@ export interface PodcastEpisode {
 
 export const podcastEpisodes: PodcastEpisode[] = [
   {
+    slug: "30-years-in-the-cruise-industry-nishit-saxena",
+    title: "30 years in the cruise industry: lessons, experiences & building Cruise Professional",
+    description:
+      "Nishit Saxena, founder of Cruise Professional, on three decades in the cruise industry: how it has changed, building Cruise Professional and what lies ahead.",
+    about:
+      "What does three decades in the cruise industry teach you? We sit down with Nishit Saxena, founder of Cruise Professional, to talk about his 30-year journey: how the industry has evolved, building Cruise Professional and navigating the changing cruise landscape, and the people, challenges and opportunities that have shaped the business.",
+    videoUrl: "https://www.youtube.com/watch?v=9P1wI9KufAg",
+    date: "2026-11-11",
+    duration: "29:55",
+    topics: ["Industry Insights", "Agent Stories"],
+    destinations: [],
+    language: "English",
+  },
+  {
+    slug: "psa-business-is-changing-vasundhara-gupta",
+    title: "PSA business is changing: margins, challenges & the future of cruising in India",
+    description:
+      "Vasundhara Gupta, Director at ClickMyCruise, on shrinking PSA margins, how PSAs are adapting and what needs to change for cruising to grow in India.",
+    about:
+      "How has the cruise business changed, and what does it take to survive as margins get tighter? Vasundhara Gupta, Director at ClickMyCruise, talks about the changing dynamics of the cruise industry and the challenges facing PSAs: margins shrinking to as low as 1-2%, how businesses are adapting and competing, and what needs to change for cruising to grow in India.",
+    videoUrl: "https://www.youtube.com/watch?v=OhnwvIvOKzY",
+    date: "2026-11-02",
+    duration: "29:39",
+    topics: ["Industry Insights", "Business Growth"],
+    destinations: [],
+    language: "English",
+  },
+  {
     slug: "how-to-make-money-as-a-psa-jagsons",
     title: "How to make money as a PSA? Harmandeep Singh Anand of Jagsons",
     description:
