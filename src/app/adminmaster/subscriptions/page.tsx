@@ -173,6 +173,9 @@ export default async function AdminMasterSubscriptionsPage() {
               Email configuration
             </Link>
             <Link href="/adminmaster/direct-booking">Direct booking</Link>
+            <Link href="/adminmaster/odysseus-certification">
+              Odysseus certification
+            </Link>
             <form action="/api/adminmaster/logout" method="post">
               <button type="submit">Logout</button>
             </form>
