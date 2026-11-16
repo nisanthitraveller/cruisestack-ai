@@ -1,0 +1,309 @@
+.ody-page-content {
+  min-width: 0;
+}
+
+.ody-page-header {
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.ody-environment {
+  background: #eefbf4;
+  border: 1px solid #b9e7cc;
+  border-radius: 14px;
+  display: grid;
+  gap: 3px;
+  min-width: 210px;
+  padding: 14px 16px;
+}
+
+.ody-environment span,
+.ody-environment small {
+  color: #577065;
+  font-size: 12px;
+}
+
+.ody-environment strong {
+  color: #167445;
+  font-size: 16px;
+}
+
+.ody-console {
+  display: grid;
+  gap: 20px;
+}
+
+.ody-context-panel,
+.ody-run-panel,
+.ody-step-list {
+  background: #fff;
+  border: 1px solid #e4e8ef;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(25, 39, 66, 0.05);
+}
+
+.ody-context-panel {
+  padding: 20px;
+}
+
+.ody-section-heading,
+.ody-editor-actions,
+.ody-run-panel header,
+.ody-response-block > div {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ody-section-heading span,
+.ody-run-panel header p {
+  color: #65738b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.ody-section-heading h2,
+.ody-run-panel h2 {
+  color: #182238;
+  font-size: 20px;
+  margin: 4px 0 0;
+}
+
+.ody-section-heading button,
+.ody-editor-actions button {
+  background: #fff;
+  border: 1px solid #ccd4e2;
+  border-radius: 9px;
+  color: #273650;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 10px 14px;
+}
+
+.ody-section-heading button:disabled,
+.ody-editor-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ody-context-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  margin-top: 18px;
+}
+
+.ody-context-grid label,
+.ody-json-grid label {
+  display: grid;
+  gap: 7px;
+}
+
+.ody-context-grid label > span,
+.ody-json-grid label > span,
+.ody-response-block > div > span {
+  color: #4c5b73;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.ody-context-grid input {
+  border: 1px solid #d9dee8;
+  border-radius: 9px;
+  color: #202b3f;
+  min-width: 0;
+  padding: 10px 11px;
+}
+
+.ody-confirmation {
+  align-items: flex-start;
+  background: #fff8e8;
+  border: 1px solid #f1dba4;
+  border-radius: 10px;
+  color: #664e16;
+  display: flex;
+  font-size: 13px;
+  gap: 9px;
+  margin-top: 16px;
+  padding: 11px 13px;
+}
+
+.ody-confirmation input {
+  margin-top: 2px;
+}
+
+.ody-workbench {
+  align-items: start;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 290px minmax(0, 1fr);
+}
+
+.ody-step-list {
+  display: grid;
+  overflow: hidden;
+}
+
+.ody-step-list button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #edf0f5;
+  color: #29364c;
+  cursor: pointer;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  padding: 13px;
+  text-align: left;
+}
+
+.ody-step-list button:last-child {
+  border-bottom: 0;
+}
+
+.ody-step-list button.active {
+  background: #eef4ff;
+  box-shadow: inset 3px 0 #315fc5;
+}
+
+.ody-step-number {
+  align-items: center;
+  background: #e9edf4;
+  border-radius: 50%;
+  display: flex;
+  font-size: 12px;
+  font-weight: 800;
+  height: 27px;
+  justify-content: center;
+  width: 27px;
+}
+
+.ody-step-list small,
+.ody-step-list strong {
+  display: block;
+}
+
+.ody-step-list small {
+  color: #7a8698;
+  font-size: 10px;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+
+.ody-step-list strong {
+  font-size: 12px;
+}
+
+.ody-step-list em {
+  border-radius: 20px;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 800;
+  padding: 5px 7px;
+}
+
+.ody-step-list em.idle { background: #eef0f4; color: #697386; }
+.ody-step-list em.pass { background: #dff7e9; color: #137344; }
+.ody-step-list em.fail { background: #ffe4e4; color: #a62323; }
+
+.ody-run-panel {
+  min-width: 0;
+  padding: 22px;
+}
+
+.ody-run-panel header {
+  align-items: flex-start;
+}
+
+.ody-run-panel header > div > span {
+  color: #67748a;
+  display: block;
+  font-size: 13px;
+  margin-top: 7px;
+}
+
+.ody-run-panel header code {
+  background: #f2f5fa;
+  border-radius: 8px;
+  color: #375071;
+  font-size: 11px;
+  padding: 8px 10px;
+}
+
+.ody-alert {
+  background: #fff0f0;
+  border: 1px solid #f0bcbc;
+  border-radius: 9px;
+  color: #9b2424;
+  margin-top: 15px;
+  padding: 11px 13px;
+}
+
+.ody-editor-actions {
+  justify-content: flex-end;
+  margin: 18px 0 12px;
+}
+
+.ody-editor-actions button.primary {
+  background: #244fba;
+  border-color: #244fba;
+  color: #fff;
+}
+
+.ody-json-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ody-json-grid textarea,
+.ody-response-block pre {
+  background: #111827;
+  border: 1px solid #25324a;
+  border-radius: 10px;
+  box-sizing: border-box;
+  color: #d7e2f2;
+  font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, monospace;
+  height: 520px;
+  margin: 0;
+  overflow: auto;
+  padding: 14px;
+  resize: vertical;
+  white-space: pre-wrap;
+  width: 100%;
+}
+
+.ody-response-block {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.ody-response-block small {
+  color: #76849a;
+}
+
+@media (max-width: 1200px) {
+  .ody-context-grid { grid-template-columns: repeat(3, minmax(140px, 1fr)); }
+  .ody-workbench { grid-template-columns: 250px minmax(0, 1fr); }
+  .ody-json-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 800px) {
+  .ody-page-header,
+  .ody-section-heading,
+  .ody-run-panel header { align-items: stretch; flex-direction: column; }
+  .ody-context-grid { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+  .ody-workbench { grid-template-columns: 1fr; }
+  .ody-step-list { max-height: 390px; overflow-y: auto; }
+}
+
+@media (max-width: 520px) {
+  .ody-context-grid { grid-template-columns: 1fr; }
+}
