@@ -102,6 +102,10 @@ export default async function ChapterPage({ params }: Props) {
           </main>
         </div>
 
+        <div className={styles.partnerBelow}>
+          <PartnerCard />
+        </div>
+
         {/* ───── PREV / NEXT CHAPTER ───── */}
         <nav className={styles.pager} aria-label="Chapters">
           {prev ? (
@@ -147,9 +151,6 @@ export default async function ChapterPage({ params }: Props) {
             </div>
           )}
         </nav>
-        <div className={styles.partnerBelow}>
-          <PartnerCard />
-        </div>
       </div>
 
       <Footer />

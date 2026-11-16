@@ -947,3 +947,341 @@
     border-left: 0;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Certification program: card on module pages + enrolment page
+   ───────────────────────────────────────────────────────────── */
+.cert {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  align-items: center;
+  gap: 48px;
+  margin-top: 40px;
+  padding: 32px 48px 32px 32px;
+  background: #f4f8fe;
+  border: 1px solid #d9e6f7;
+  border-radius: 18px;
+}
+.certArt img {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  margin: 0 auto;
+}
+.certBody {
+  padding-left: 48px;
+  border-left: 1px solid #d6e1f0;
+}
+.certEyebrow {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+.certTitle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.6px;
+}
+.certTick {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1f9d55;
+}
+.certBody p {
+  max-width: 640px;
+  margin-bottom: 24px;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+/* enrolment page */
+.enrol {
+  padding: 40px 0 72px;
+  background: linear-gradient(180deg, #f3f7fd 0%, #ffffff 55%);
+}
+.enrolHead {
+  max-width: 780px;
+  margin: 0 auto 32px;
+  text-align: center;
+}
+.enrolLogo {
+  display: block;
+  width: auto;
+  height: 60px;
+  margin: 0 auto 20px;
+}
+.enrolHead .eyebrow {
+  letter-spacing: 5px;
+}
+.enrolHead h1 {
+  margin-bottom: 12px;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+.enrolHead p {
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.enrolCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 36px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(10, 31, 68, 0.06);
+}
+.enrolModule {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #eaf2fd 0%, #f5f9ff 100%);
+}
+.enrolModuleText {
+  position: relative;
+  z-index: 2;
+  padding: 32px 36px 0;
+}
+.enrolModuleText h2 {
+  margin: 4px 0 24px;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.6px;
+}
+.enrolModuleText ul {
+  list-style: none;
+}
+.enrolModuleText li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 18px;
+  color: var(--navy);
+}
+.enrolModuleText li + li {
+  margin-top: 14px;
+}
+.enrolFactIcon {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #e1ecfb;
+  color: var(--blue);
+}
+.enrolModuleImg {
+  position: relative;
+  height: 250px;
+  margin-top: auto;
+}
+/* fade the photo into the panel above it */
+.enrolModuleImg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, #f2f7fe 0%, rgba(242, 247, 254, 0) 45%);
+}
+.enrolModuleImg img {
+  object-fit: cover;
+  object-position: 75% 65%;
+}
+.enrolForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 16px 20px;
+  padding: 8px 12px 8px 0;
+}
+.enrolForm h2 {
+  grid-column: 1 / -1;
+  margin-bottom: 2px;
+  font-size: 26px;
+  font-weight: 800;
+}
+.enrolFull {
+  grid-column: 1 / -1;
+}
+.enrolField label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #4e5a55;
+}
+.enrolField label span {
+  color: #e5484d;
+}
+.enrolField input,
+.enrolField select {
+  display: block;
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--navy);
+  background: #fff;
+  border: 1px solid #d9e2ee;
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.enrolField input::placeholder {
+  color: #94a3b8;
+}
+.enrolField select {
+  appearance: none;
+  padding-right: 40px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1.5 7 7.5l6-6' stroke='%230a1f44' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center;
+  cursor: pointer;
+}
+.enrolField select:invalid {
+  color: #94a3b8;
+}
+.enrolField input:focus,
+.enrolField select:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(0, 108, 234, 0.15);
+}
+.enrolPhone {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 12px;
+}
+.enrolTerms {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+}
+.enrolTerms input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--blue);
+}
+.enrolTerms a {
+  color: var(--blue);
+}
+.enrolSubmit {
+  grid-column: 1 / -1;
+  justify-content: center;
+  width: 100%;
+  margin-top: 6px;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.enrolSubmit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+@media (max-width: 900px) {
+  .cert {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 28px 24px;
+  }
+  .certArt img {
+    max-width: 280px;
+  }
+  .certBody {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .enrolCard {
+    grid-template-columns: 1fr;
+  }
+  .enrolModule {
+    min-height: 0;
+  }
+  .enrolModuleImg {
+    height: 200px;
+  }
+  .enrolForm {
+    padding: 0;
+  }
+}
+
+@media (max-width: 780px) {
+  .cert {
+    margin-top: 28px;
+    padding: 24px 18px;
+  }
+  .certTitle {
+    font-size: 24px;
+  }
+  .certTick {
+    width: 30px;
+    height: 30px;
+  }
+  .certBody p {
+    font-size: 16px;
+  }
+  .enrol {
+    padding: 24px 0 48px;
+  }
+  .enrolLogo {
+    height: 46px;
+  }
+  .enrolHead h1 {
+    /* !important to beat the global h1 32px !important rule in globals.css */
+    font-size: 27px !important;
+  }
+  .enrolHead p {
+    font-size: 16px;
+  }
+  .enrolCard {
+    gap: 24px;
+    padding: 14px;
+  }
+  .enrolModuleText {
+    padding: 22px 20px 0;
+  }
+  .enrolModuleText h2 {
+    font-size: 26px;
+  }
+  .enrolModuleText li {
+    font-size: 16px;
+  }
+  .enrolForm {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .enrolPhone {
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 10px;
+  }
+}

@@ -43,7 +43,13 @@ export interface AcademyModule {
   icon: ModuleIcon;
   cover: StaticImageData;
   chapters: Chapter[];
+  examFormUrl?: string; // Google Form for this module's certification exam; falls back to CERTIFICATION_EXAM_FORM_URL
 }
+
+// ─── Certification program ──────────────────────────────────────────────────
+// Google Form opened after a successful enrolment (the "Enrol now" button).
+// Set it here for every module, or per module with `examFormUrl`.
+export const CERTIFICATION_EXAM_FORM_URL = "";
 
 export const academyModules: AcademyModule[] = [
   {
@@ -267,6 +273,8 @@ export function getChapter(moduleSlug: string, chapterSlug: string) {
 }
 
 export const moduleHref = (m: AcademyModule) => `/academy/${m.slug}`;
+export const certificationHref = (m: AcademyModule) => `/academy/${m.slug}/certification`;
+export const examFormUrl = (m: AcademyModule) => m.examFormUrl || CERTIFICATION_EXAM_FORM_URL;
 
 export { youtubeId };
 

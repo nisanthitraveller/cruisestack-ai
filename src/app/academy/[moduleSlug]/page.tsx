@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer/footer";
 import PartnerCard from "../PartnerCard";
+import CertificationCard, { CertificationCardView } from "../CertificationCard";
 import Header from "@/components/Header/header";
 import styles from "../academy.module.css";
-import { academyModules, chapterHref, chapterThumbnail, getModule, moduleHref } from "../data";
+import { academyModules, certificationHref, chapterHref, chapterThumbnail, examFormUrl, getModule, moduleHref } from "../data";
 import { ArrowLeft, ArrowRight, Chevron, Clock, Play } from "../icons";
 import academyIllustration from "../../../assets/academy-illustration.svg";
 
@@ -103,6 +105,19 @@ export default async function ModulePage({ params }: Props) {
             </div>
           </div>
 
+          {/* ───── CERTIFICATION ───── */}
+          {m.chapters.length > 0 && (
+            <Suspense
+              fallback={<CertificationCardView moduleTitle={m.title} enrolHref={certificationHref(m)} examUrl={examFormUrl(m)} success={false} />}
+            >
+              <CertificationCard moduleTitle={m.title} enrolHref={certificationHref(m)} examUrl={examFormUrl(m)} />
+            </Suspense>
+          )}
+
+          <div className={styles.partnerBelow}>
+            <PartnerCard />
+          </div>
+
           {/* ───── PREV / NEXT MODULE ───── */}
           <nav className={styles.pager} aria-label="Modules">
             {prev ? (
@@ -148,9 +163,6 @@ export default async function ModulePage({ params }: Props) {
               </div>
             )}
           </nav>
-          <div className={styles.partnerBelow}>
-            <PartnerCard />
-          </div>
         </div>
       </section>
 
