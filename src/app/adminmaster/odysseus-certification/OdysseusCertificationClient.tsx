@@ -4,17 +4,21 @@ import { useMemo, useState } from "react";
 
 type Context = {
   cruiseLine: string;
+  cruiseLineId: string;
   packageId: string;
   trackingToken: string;
   fareCode: string;
   categoryCode: string;
   cabinNumber: string;
+  pastPaxNumber: string;
   reservationId: string;
   cruiseReservationId: string;
   confirmationNumber: string;
   supplierToken: string;
   supplierSessionId: string;
+  supplierLastSyncOn: string;
   cardToken: string;
+  paymentAmount: string;
 };
 
 type Step = {
@@ -38,21 +42,22 @@ type RunResult = {
   completedAt: string;
 };
 
-const customers = [
+const bookingCustomers = [
   {
     rph: 1,
-    firstName: "John",
-    lastName: "Doe",
-    dateOfBirth: "02-Jan-1970",
-    age: 53,
+    firstName: "FRIEDRICH",
+    lastName: "KULHAVY",
+    dateOfBirth: "18-Aug-1949",
+    age: 77,
+    pastPaxNumber: "{{pastPaxNumber}}",
     address: {
       country: { id: "US" },
       state: { id: "IL" },
       city: { name: "Chicago" },
     },
-    ContactInfo: {
-      Email: "john@domain.com",
-      Phone1: { CountryCode: "1", Number: "416-555-4566" },
+    contactInfo: {
+      email: "john@domain.com",
+      phone1: { countryCode: "1", number: "416-555-4566" },
     },
   },
   {
@@ -62,18 +67,22 @@ const customers = [
     dateOfBirth: "01-Jan-1965",
     age: 58,
     address: { country: { id: "US" } },
-    ContactInfo: {
-      Email: "maria@domain.com",
-      Phone1: { CountryCode: "1", Number: "416-555-4566" },
+    contactInfo: {
+      email: "maria@domain.com",
+      phone1: { countryCode: "1", number: "416-555-4566" },
     },
   },
 ];
 
-const availabilityCustomers = customers.map(({ rph, age, address }) => ({
+const availabilityCustomers = bookingCustomers.map(({ rph, age, address }) => ({
   rph,
   age,
   ...(rph === 1 ? { address: { country: address.country } } : {}),
 }));
+
+const pricingCustomers = bookingCustomers.map(
+  ({ contactInfo: _contactInfo, ...customer }) => customer,
+);
 
 const cruise = { packageId: "{{packageId}}" };
 const category = {
@@ -99,7 +108,7 @@ const STEPS: Step[] = [
     id: "category-availability",
     title: "Category Availability",
     group: "Availability",
-    endpoint: "/v2/reservation/cruise/listcategories",
+    endpoint: "/v2/reservation/cruise/ListCategories",
     description: "Returns bookable categories and fares for the sailing.",
     template: {
       cruiseReservation: { cruise },
@@ -113,18 +122,6 @@ const STEPS: Step[] = [
     group: "Availability",
     endpoint: "/v2/reservation/cruise/listcabins",
     description: "Lists available cabins for the selected category and fare.",
-    template: {
-      cruiseReservation: { cruise, categories: [category] },
-      customers: availabilityCustomers,
-      trackingInfo,
-    },
-  },
-  {
-    id: "special-services",
-    title: "Special Services",
-    group: "Availability",
-    endpoint: "/v2/reservation/cruise/listSpecialservices",
-    description: "Checks optional services offered for the selected fare.",
     template: {
       cruiseReservation: { cruise, categories: [category] },
       customers: availabilityCustomers,
@@ -148,6 +145,27 @@ const STEPS: Step[] = [
     },
   },
   {
+    id: "past-passenger-lookup",
+    title: "Past Passenger Lookup",
+    group: "Availability",
+    endpoint: "/v2/reservation/cruise/listpastpassengers",
+    description: "Looks up a Silversea past-passenger number from guest details.",
+    template: {
+      cruiseReservation: {
+        cruise: { cruiseLine: { id: "{{cruiseLineId}}" } },
+      },
+      customers: [
+        {
+          rph: 1,
+          firstName: "FRIEDRICH",
+          lastName: "KULHAVY",
+          dateOfBirth: "19-Aug-1949",
+        },
+      ],
+      trackingInfo,
+    },
+  },
+  {
     id: "list-prices",
     title: "Price Reservation",
     group: "Reservation",
@@ -155,7 +173,7 @@ const STEPS: Step[] = [
     description: "Returns final pricing, rules and supplier payment schedules.",
     template: {
       cruiseReservation: { cruise, categories: [category] },
-      customers,
+      customers: pricingCustomers,
       trackingInfo,
     },
   },
@@ -171,35 +189,24 @@ const STEPS: Step[] = [
         cruise,
         categories: [{ ...category, cabins: [{ number: "{{cabinNumber}}" }] }],
       },
-      customers,
+      customers: bookingCustomers,
       trackingInfo,
     },
   },
   {
-    id: "read-reservation",
-    title: "Read Reservation",
-    group: "Reservation",
-    endpoint: "/v2/reservation/cruise/read",
-    description: "Reads the reservation stored in Odysseus.",
-    template: {
-      id: "{{reservationId}}",
-      cruiseReservation: { id: "{{cruiseReservationId}}" },
-      trackingInfo,
-    },
-  },
-  {
-    id: "read-from-supplier",
-    title: "Read Reservation From Supplier",
+    id: "read-supplier-pay",
+    title: "Read Reservation From Supplier — Pay Mode",
     group: "Reservation",
     endpoint: "/v2/reservation/cruise/readfromsupplier",
-    description: "Reads and optionally synchronizes the live supplier reservation.",
+    description: "Reads the live supplier reservation in Pay mode by confirmation number.",
     template: {
-      id: "{{reservationId}}",
       cruiseReservation: {
-        id: "{{cruiseReservationId}}",
-        readPreferences: { mode: "View", autoSyncOption: "NOLOCK" },
+        reservationReferences: {
+          confirmationNumber: "{{confirmationNumber}}",
+        },
+        cruise: { cruiseline: { id: "{{cruiseLineId}}" } },
+        ReadPreferences: { Mode: "Pay" },
       },
-      trackingInfo,
     },
   },
   {
@@ -210,21 +217,28 @@ const STEPS: Step[] = [
     description: "Tokenizes sandbox card data. Confirm the vendor-approved request before use.",
     transactional: true,
     template: {
-      card: {
-        number: "",
-        expiryMonth: "",
-        expiryYear: "",
-        securityCode: "",
-        cardHolderName: "John Doe",
+      number: "",
+      cvv: "",
+      type: "VI",
+      expiration: "12/26",
+      cardHolderName: "John Doe",
+      billingDetails: {
+        address: {
+          addressline1: "NE 4th Avenue",
+          country: { id: "US" },
+          state: { id: "FL" },
+          city: { name: "MIAMI" },
+          postalCode: "33101",
+        },
       },
     },
   },
   {
-    id: "apply-payment",
-    title: "Apply Payment",
+    id: "pay-to-supplier",
+    title: "Apply Payment — Pay To Supplier",
     group: "Payment",
-    endpoint: "/v2/reservation/cruise/applypayment",
-    description: "Applies a previously generated card token to the reservation.",
+    endpoint: "/v2/reservation/cruise/paytosupplier",
+    description: "Pays the supplier using the tokenized sandbox card.",
     transactional: true,
     template: {
       id: "{{reservationId}}",
@@ -234,33 +248,65 @@ const STEPS: Step[] = [
           apiSyncInfo: {
             token: "{{supplierToken}}",
             sessionId: "{{supplierSessionId}}",
+            lastSyncOn: "{{supplierLastSyncOn}}",
           },
         },
       },
       paymentToProcess: {
         cardToken: "{{cardToken}}",
-        amount: 0,
+        amount: "{{paymentAmount}}",
         currency: "USD",
-        paymentForm: "Card",
-        payee: "Customer",
       },
+    },
+  },
+  {
+    id: "read-supplier-view",
+    title: "Read Reservation From Supplier — View Mode",
+    group: "Reservation",
+    endpoint: "/v2/reservation/cruise/readfromsupplier",
+    description: "Reads the live supplier reservation in View mode by confirmation number.",
+    template: {
+      cruiseReservation: {
+        reservationReferences: {
+          confirmationNumber: "{{confirmationNumber}}",
+        },
+        cruise: { cruiseline: { id: "{{cruiseLineId}}" } },
+        ReadPreferences: { Mode: "View" },
+      },
+    },
+  },
+  {
+    id: "cancel-reservation",
+    title: "Cancel Reservation",
+    group: "Reservation",
+    endpoint: "/v2/reservation/cruise/cancel",
+    description: "Cancels the created sandbox reservation.",
+    transactional: true,
+    template: {
+      id: "{{reservationId}}",
+      cruiseReservation: { id: "{{cruiseReservationId}}" },
+      trackingInfo,
     },
   },
 ];
 
 const INITIAL_CONTEXT: Context = {
   cruiseLine: "Silversea",
+  cruiseLineId: "8115",
   packageId: "1477685",
-  trackingToken: "",
+  trackingToken: "GMC-1773196-a4562s6s-51k3-4594-66whl",
   fareCode: "S3_29",
-  categoryCode: "SL",
-  cabinNumber: "1002",
+  categoryCode: "SV",
+  cabinNumber: "707",
+  pastPaxNumber: "8528073",
   reservationId: "",
   cruiseReservationId: "",
   confirmationNumber: "",
   supplierToken: "",
   supplierSessionId: "",
+  supplierLastSyncOn: "",
   cardToken: "",
+  paymentAmount: "11800",
 };
 
 function resolveTemplate(template: unknown, context: Context): unknown {
