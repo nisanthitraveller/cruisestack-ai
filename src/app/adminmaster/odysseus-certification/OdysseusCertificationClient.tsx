@@ -6,6 +6,8 @@ type Context = {
   cruiseLine: string;
   cruiseLineId: string;
   packageId: string;
+  itineraryId: string;
+  departureDate: string;
   trackingToken: string;
   fareCode: string;
   categoryCode: string;
@@ -24,7 +26,7 @@ type Context = {
 type Step = {
   id: string;
   title: string;
-  group: "Availability" | "Reservation" | "Payment";
+  group: "Shopping" | "Availability" | "Reservation" | "Payment";
   endpoint: string;
   description: string;
   transactional?: boolean;
@@ -74,11 +76,23 @@ const bookingCustomers = [
   },
 ];
 
-const availabilityCustomers = bookingCustomers.map(({ rph, age, address }) => ({
-  rph,
-  age,
-  ...(rph === 1 ? { address: { country: address.country } } : {}),
-}));
+const availabilityCustomers = [
+  {
+    rph: 1,
+    age: 53,
+    address: { country: { id: "US" } },
+  },
+  { rph: 2, age: 58 },
+];
+
+const fareCodeCustomers = [
+  {
+    rph: 1,
+    age: 52,
+    address: { country: { id: "US" } },
+  },
+  { rph: 2, age: 57 },
+];
 
 const pricingCustomers = bookingCustomers.map((customer) => ({
   rph: customer.rph,
@@ -101,6 +115,56 @@ const trackingInfo = { token: "{{trackingToken}}" };
 
 const STEPS: Step[] = [
   {
+    id: "cruise-search",
+    title: "Cruise Search",
+    group: "Shopping",
+    endpoint: "/v2/cruise",
+    description: "Searches cruise packages using the supplied filters.",
+    template: {
+      filters: [
+        {
+          key: "departureDateTime",
+          ranges: [{ from: "{{departureDate}}" }],
+        },
+        { key: "duration", ranges: [{ from: "", to: "" }] },
+        { key: "destinationId", values: [] },
+        { key: "destinationType", value: "All" },
+        { key: "cruiselineId", values: [] },
+        { key: "shipId", values: [] },
+        { key: "departurePortCode", values: [] },
+      ],
+    },
+  },
+  {
+    id: "cruise-search-counters",
+    title: "Cruise Search (Counters Only)",
+    group: "Shopping",
+    endpoint: "/v2/cruise/facets",
+    description: "Returns cruise-search facet counters for the supplied filters.",
+    template: {
+      filters: [
+        {
+          key: "departureDateTime",
+          ranges: [{ from: "{{departureDate}}" }],
+        },
+        { key: "duration", ranges: [{ from: "", to: "" }] },
+        { key: "destinationId", values: [] },
+        { key: "destinationType", value: "All" },
+        { key: "cruiselineId", values: [] },
+        { key: "shipId", values: [] },
+        { key: "departurePortCode", values: [] },
+      ],
+    },
+  },
+  {
+    id: "cruise-itinerary",
+    title: "Cruise Itinerary",
+    group: "Shopping",
+    endpoint: "/v2/cruise/Itinerary/{itineraryId}",
+    description: "Returns itinerary details for the selected search result.",
+    template: { itineraryId: "{{itineraryId}}" },
+  },
+  {
     id: "fare-code-availability",
     title: "Fare Code Availability",
     group: "Availability",
@@ -108,7 +172,7 @@ const STEPS: Step[] = [
     description: "Returns supplier fare codes for the package and passengers.",
     template: {
       cruiseReservation: { cruise },
-      customers: availabilityCustomers,
+      customers: fareCodeCustomers,
       trackingInfo,
     },
   },
@@ -156,8 +220,8 @@ const STEPS: Step[] = [
     id: "past-passenger-lookup",
     title: "Past Passenger Lookup",
     group: "Availability",
-    endpoint: "/v2/reservation/cruise/listpastpassengers",
-    description: "Looks up a Silversea past-passenger number from guest details.",
+    endpoint: "/v2/reservation/cruise/GetPastPaxDetails",
+    description: "Looks up a supplier past-passenger number from guest details.",
     template: {
       cruiseReservation: {
         cruise: { cruiseLine: { id: "{{cruiseLineId}}" } },
@@ -165,9 +229,75 @@ const STEPS: Step[] = [
       customers: [
         {
           rph: 1,
-          firstName: "FRIEDRICH",
-          lastName: "KULHAVY",
-          dateOfBirth: "19-Aug-1949",
+          firstName: "Alberto",
+          lastName: "Peluso",
+          dateOfBirth: "22-May-1935",
+        },
+      ],
+      trackingInfo,
+    },
+  },
+  {
+    id: "get-cabin-details",
+    title: "Get Cabin Details",
+    group: "Availability",
+    endpoint: "/v2/reservation/cruise/getcabindetails",
+    description: "Returns details for the selected cabin, category and fare.",
+    template: {
+      cruiseReservation: {
+        cruise,
+        categories: [{ ...category, cabins: [{ number: "{{cabinNumber}}" }] }],
+      },
+      customers: availabilityCustomers,
+      trackingInfo,
+    },
+  },
+  {
+    id: "special-services",
+    title: "Special Services",
+    group: "Availability",
+    endpoint: "/v2/reservation/cruise/listSpecialservices",
+    description: "Lists special services for the selected package and fare.",
+    template: {
+      cruiseReservation: { cruise, categories: [category] },
+      customers: availabilityCustomers,
+      trackingInfo,
+    },
+  },
+  {
+    id: "list-dinings",
+    title: "List Dinings",
+    group: "Availability",
+    endpoint: "/v2/reservation/cruise/listdinings",
+    description: "Lists dining choices for the selected package and fare.",
+    template: {
+      cruiseReservation: { cruise, categories: [category] },
+      customers: availabilityCustomers,
+      trackingInfo,
+    },
+  },
+  {
+    id: "addons-availability",
+    title: "AddOns Availability",
+    group: "Availability",
+    endpoint: "/v2/reservation/cruise/ListAddOns",
+    description: "Lists available add-ons for the selected package and guests.",
+    template: {
+      cruiseReservation: { cruise, categories: [category] },
+      customers: [
+        {
+          rph: 1,
+          firstName: "John",
+          lastName: "Doe",
+          age: 53,
+          address: { country: { id: "US" }, state: { id: "FL" } },
+        },
+        {
+          rph: 2,
+          firstName: "Maria",
+          lastName: "Doe",
+          age: 58,
+          address: { country: { id: "US" }, state: { id: "FL" } },
         },
       ],
       trackingInfo,
@@ -215,6 +345,18 @@ const STEPS: Step[] = [
         cruise: { cruiseline: { id: "{{cruiseLineId}}" } },
         ReadPreferences: { Mode: "Pay" },
       },
+    },
+  },
+  {
+    id: "read-reservation",
+    title: "Read Reservation",
+    group: "Reservation",
+    endpoint: "/v2/reservation/cruise/read",
+    description: "Reads the Odysseus reservation using its reservation IDs.",
+    template: {
+      id: "{{reservationId}}",
+      cruiseReservation: { id: "{{cruiseReservationId}}" },
+      trackingInfo,
     },
   },
   {
@@ -302,6 +444,8 @@ const INITIAL_CONTEXT: Context = {
   cruiseLine: "Silversea",
   cruiseLineId: "8115",
   packageId: "1477685",
+  itineraryId: "437123",
+  departureDate: "16-May-2027",
   trackingToken: "GMC-1773196-a4562s6s-51k3-4594-66whl",
   fareCode: "S3_29",
   categoryCode: "SV",
@@ -341,6 +485,7 @@ function resolveTemplate(template: unknown, context: Context): unknown {
       [
         "cruiseLineId",
         "packageId",
+        "itineraryId",
         "reservationId",
         "cruiseReservationId",
         "paymentAmount",
@@ -372,6 +517,9 @@ function textValue(value: unknown): string {
 function updateContextFromResponse(current: Context, response: unknown): Context {
   const responseRecord = record(response);
   const data = record(responseRecord.data);
+  const searchResults = Array.isArray(data.list) ? data.list : [];
+  const firstSearchResult = record(searchResults[0]);
+  const searchItinerary = record(firstSearchResult.itinerary);
   const reservation = record(data.cruiseReservation);
   const categories = Array.isArray(reservation.categories)
     ? reservation.categories
@@ -398,6 +546,9 @@ function updateContextFromResponse(current: Context, response: unknown): Context
 
   return {
     ...current,
+    packageId: textValue(firstSearchResult.id) || current.packageId,
+    itineraryId:
+      textValue(searchItinerary.id) || current.itineraryId,
     trackingToken: textValue(tracking.token) || current.trackingToken,
     fareCode:
       textValue(reservationFareCode.code) ||

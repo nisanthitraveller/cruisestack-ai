@@ -7,14 +7,22 @@ export const dynamic = "force-dynamic";
 const REQUEST_TIMEOUT_MS = 60000;
 
 const ENDPOINTS = {
+  "cruise-search": { path: "cruise", method: "POST" },
+  "cruise-search-counters": { path: "cruise/facets", method: "POST" },
+  "cruise-itinerary": { path: "cruise/Itinerary", method: "GET" },
   "fare-code-availability": "reservation/cruise/listfarecodes",
   "category-availability": "reservation/cruise/ListCategories",
   "cabin-availability": "reservation/cruise/listcabins",
   "cabin-hold": "reservation/cruise/holdcabin",
-  "past-passenger-lookup": "reservation/cruise/listpastpassengers",
+  "past-passenger-lookup": "reservation/cruise/GetPastPaxDetails",
+  "get-cabin-details": "reservation/cruise/getcabindetails",
+  "special-services": "reservation/cruise/listSpecialservices",
+  "list-dinings": "reservation/cruise/listdinings",
+  "addons-availability": "reservation/cruise/ListAddOns",
   "list-prices": "reservation/cruise/listprices",
   "create-without-payment": "reservation/cruise/create",
   "read-supplier-pay": "reservation/cruise/readfromsupplier",
+  "read-reservation": "reservation/cruise/read",
   tokenization: "payment/TokenizeCard",
   "pay-to-supplier": "reservation/cruise/paytosupplier",
   "read-supplier-view": "reservation/cruise/readfromsupplier",
@@ -137,8 +145,8 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const stepId = String(body?.stepId || "");
-    const endpoint = ENDPOINTS[stepId];
-    if (!endpoint) {
+    const endpointConfig = ENDPOINTS[stepId];
+    if (!endpointConfig) {
       return NextResponse.json({ message: "Unsupported certification step" }, { status: 400 });
     }
 
@@ -184,10 +192,24 @@ export async function POST(request) {
       );
     }
 
-    const target = new URL(endpoint, baseUrl);
+    const endpoint =
+      typeof endpointConfig === "string" ? endpointConfig : endpointConfig.path;
+    const method =
+      typeof endpointConfig === "string" ? "POST" : endpointConfig.method;
+    let target = new URL(endpoint, baseUrl);
+    if (stepId === "cruise-itinerary") {
+      const itineraryId = String(body.requestBody.itineraryId || "").trim();
+      if (!/^\d+$/.test(itineraryId)) {
+        return NextResponse.json(
+          { message: "A numeric itineraryId is required" },
+          { status: 400 },
+        );
+      }
+      target = new URL(`${endpoint}/${encodeURIComponent(itineraryId)}`, baseUrl);
+    }
     const startedAt = Date.now();
     const providerResponse = await fetch(target, {
-      method: "POST",
+      method,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -196,7 +218,7 @@ export async function POST(request) {
           `${credentials.clientId}:${credentials.clientSecret}`,
         ).toString("base64")}`,
       },
-      body: serialized,
+      ...(method === "POST" ? { body: serialized } : {}),
       cache: "no-store",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
@@ -206,7 +228,7 @@ export async function POST(request) {
       ok: providerResponse.ok && providerBody?.isSucceed !== false,
       providerStatus: providerResponse.status,
       durationMs: Date.now() - startedAt,
-      endpoint: `/${endpoint}`,
+      endpoint: target.pathname,
       request: maskSensitive(body.requestBody),
       response: maskSensitive(providerBody),
       requestId: providerBody?.data?.trackingInfo?.requestId || null,
