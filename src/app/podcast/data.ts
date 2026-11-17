@@ -91,3 +91,30 @@ export const formatEpisodeDate = (iso: string) =>
     year: "numeric",
     timeZone: "UTC",
   });
+
+// ─── Short clips ────────────────────────────────────────────────────────────
+// The "Short clips" carousel on the Podcast page, in this order (newest first).
+// Add a Short with its YouTube link and its title as on YouTube (hashtags left out). `thumbnail` is the cover image YouTube shows for it
+// on the channel's Shorts tab (the file name varies: oar1/oar2/oar3/sardefault), so it
+// matches YouTube exactly.
+// All Shorts: https://www.youtube.com/@cruiseroundtable/shorts
+
+export const SHORTS_CHANNEL_URL = "https://www.youtube.com/@cruiseroundtable/shorts";
+
+export interface PodcastShort {
+  title: string;
+  videoUrl: string; // YouTube Shorts link
+  duration: string; // "0:58"
+  thumbnail: string; // https://i.ytimg.com/vi/<id>/<file>.jpg
+}
+
+export const podcastShorts: PodcastShort[] = [
+  { title: "Expedition Cruises: The ₹10 Lakh+ Cruise Segment | Isha Goyal", videoUrl: "https://www.youtube.com/shorts/kKe7psajABs", duration: "1:00", thumbnail: "https://i.ytimg.com/vi/kKe7psajABs/oar2.jpg" },
+  { title: "Eastern India Could Be India's Next Big Cruise Market?", videoUrl: "https://www.youtube.com/shorts/kzuw70hdeRU", duration: "0:30", thumbnail: "https://i.ytimg.com/vi/kzuw70hdeRU/oar2.jpg" },
+  { title: "What is the percentage margin a GSA PSA can expect?", videoUrl: "https://www.youtube.com/shorts/vzySqFnz7V0", duration: "0:43", thumbnail: "https://i.ytimg.com/vi/vzySqFnz7V0/oar3.jpg" },
+  { title: "What has changed in the way people look at cruises?", videoUrl: "https://www.youtube.com/shorts/oSPS-5lGcSQ", duration: "0:56", thumbnail: "https://i.ytimg.com/vi/oSPS-5lGcSQ/oar3.jpg" },
+  { title: "How to Become a PSA & Earn from Cruise Sales? 🚢 | cruisestack.ai", videoUrl: "https://www.youtube.com/shorts/P019sSKVo0I", duration: "1:32", thumbnail: "https://i.ytimg.com/vi/P019sSKVo0I/sardefault.jpg" },
+  { title: "Why Aren’t More Indians Going on Cruises? | Harmandeep Singh Anand", videoUrl: "https://www.youtube.com/shorts/z6B0IKqjpyg", duration: "0:45", thumbnail: "https://i.ytimg.com/vi/z6B0IKqjpyg/sardefault.jpg" },
+  { title: "From $0 to $6 million per month in two years. 🚀", videoUrl: "https://www.youtube.com/shorts/LGiRaSLrMqU", duration: "0:45", thumbnail: "https://i.ytimg.com/vi/LGiRaSLrMqU/oar1.jpg" },
+  { title: "Revenue vs Profit: Why Scale Comes First in Business", videoUrl: "https://www.youtube.com/shorts/nosH9opxe40", duration: "0:58", thumbnail: "https://i.ytimg.com/vi/nosH9opxe40/sardefault.jpg" },
+];

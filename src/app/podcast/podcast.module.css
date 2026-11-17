@@ -410,6 +410,197 @@
   }
 }
 
+/* ── section heads ("Short clips", "Published episodes") ── */
+.listHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.listHead h2 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+/* ── short clips carousel ── */
+.shorts {
+  margin-bottom: 36px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid var(--border);
+}
+.shortsWrap {
+  position: relative;
+}
+.shortsTrack {
+  list-style: none;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 5 * 15px) / 6);
+  gap: 15px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 4px 2px;
+}
+.shortsTrack::-webkit-scrollbar {
+  display: none;
+}
+.shortsTrack > li {
+  scroll-snap-align: start;
+}
+.shortCard {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.shortThumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 9 / 16;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--tint);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.shortCard:hover .shortThumb {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(10, 31, 68, 0.14);
+}
+.shortCard:hover .play {
+  transform: scale(1.08);
+}
+.shortCard strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.shortCard:hover strong {
+  color: var(--blue);
+}
+.shortCard:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+.shortsArrow {
+  position: absolute;
+  top: calc(50% - 30px);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--navy);
+  box-shadow: 0 6px 18px rgba(10, 31, 68, 0.12);
+  cursor: pointer;
+  transition: opacity 0.2s, color 0.2s;
+}
+.shortsArrow:hover:not(:disabled) {
+  color: var(--blue);
+}
+.shortsArrow:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+.shortsPrev {
+  left: -18px;
+}
+.shortsNext {
+  right: -18px;
+}
+
+/* pop-up player */
+.shortModal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5, 15, 35, 0.82);
+}
+.shortPlayer {
+  position: relative;
+  height: min(86vh, 760px);
+  aspect-ratio: 9 / 16;
+  max-width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+}
+.shortPlayer iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.shortClose {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+}
+
+@media (max-width: 1100px) {
+  .shortsTrack {
+    grid-auto-columns: calc((100% - 3 * 15px) / 4);
+  }
+}
+@media (max-width: 780px) {
+  .listHead h2 {
+    font-size: 26px;
+  }
+  .shorts {
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+  }
+  .shortsTrack {
+    grid-auto-columns: 44%;
+    gap: 14px;
+  }
+  .shortsArrow {
+    display: none;
+  }
+  .shortCard strong {
+    font-size: 15px;
+  }
+  .shortModal {
+    padding: 12px;
+  }
+  .shortPlayer {
+    height: auto;
+    width: 100%;
+    max-height: 90vh;
+  }
+}
+
 /* ─────────────────────────────────────────────────────────────
    Episode page
    ───────────────────────────────────────────────────────────── */

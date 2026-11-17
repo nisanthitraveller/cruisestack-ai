@@ -5,7 +5,8 @@ import Footer from "@/components/Footer/footer";
 import Header from "@/components/Header/header";
 import styles from "./podcast.module.css";
 import PodcastList from "./PodcastList";
-import { episodeHref, sortedEpisodes } from "./data";
+import ShortsCarousel from "./ShortsCarousel";
+import { episodeHref, podcastShorts, sortedEpisodes } from "./data";
 import heroImg from "../../assets/hero-r.png";
 
 export const metadata: Metadata = {
@@ -43,9 +44,14 @@ export default function PodcastPage() {
         </div>
       </section>
 
-      {/* ───── EPISODES ───── */}
+      {/* ───── SHORT CLIPS + EPISODES ───── */}
       <section className={styles.section}>
         <div className={styles.container}>
+          <ShortsCarousel shorts={podcastShorts} />
+
+          <div className={styles.listHead}>
+            <h2>Published episodes</h2>
+          </div>
           <PodcastList episodes={sortedEpisodes} />
         </div>
       </section>
