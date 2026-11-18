@@ -6,13 +6,21 @@ import PartnerCard from "../../PartnerCard";
 import Header from "@/components/Header/header";
 import ChapterVideo from "../../ChapterVideo";
 import styles from "../../academy.module.css";
-import { academyModules, chapterHref, chapterThumbnail, getChapter, moduleHref } from "../../data";
+import {
+  academyModules,
+  chapterHref,
+  chapterThumbnail,
+  getChapter,
+  moduleHref,
+} from "../../data";
 import { ArrowLeft, ArrowRight, Chevron, Clock } from "../../icons";
 
 type Props = { params: Promise<{ moduleSlug: string; chapterSlug: string }> };
 
 export function generateStaticParams() {
-  return academyModules.flatMap((m) => m.chapters.map((c) => ({ moduleSlug: m.slug, chapterSlug: c.slug })));
+  return academyModules.flatMap((m) =>
+    m.chapters.map((c) => ({ moduleSlug: m.slug, chapterSlug: c.slug })),
+  );
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -20,7 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const found = getChapter(moduleSlug, chapterSlug);
   if (!found) return {};
   return {
-    title: found.chapter.seoTitle ?? `${found.chapter.title} - cruisestack Academy`,
+    title:
+      found.chapter.seoTitle ?? `${found.chapter.title} - cruisestack Academy`,
     description: found.chapter.seoDescription ?? found.chapter.description,
   };
 }
@@ -86,7 +95,9 @@ export default async function ChapterPage({ params }: Props) {
           <main className={styles.watchMain}>
             <span className={styles.eyebrow}>Module {m.number}</span>
             <p className={styles.watchModule}>{m.title}</p>
-            <h1 className={styles.watchTitle}>{chapter.heading ?? chapter.title}</h1>
+            <h1 className={styles.watchTitle}>
+              {chapter.heading ?? chapter.title}
+            </h1>
             {(chapter.duration || chapter.updated) && (
               <p className={`${styles.meta} ${styles.watchMeta}`}>
                 {chapter.duration && (
@@ -94,11 +105,17 @@ export default async function ChapterPage({ params }: Props) {
                     <Clock size={18} /> {chapter.duration}
                   </>
                 )}
-                {chapter.duration && chapter.updated && <span aria-hidden="true">&bull;</span>}
+                {chapter.duration && chapter.updated && (
+                  <span aria-hidden="true">&bull;</span>
+                )}
                 {chapter.updated && <>Updated {chapter.updated}</>}
               </p>
             )}
-            <ChapterVideo title={chapter.title} videoUrl={chapter.videoUrl} poster={chapterThumbnail(m, chapter)} />
+            <ChapterVideo
+              title={chapter.title}
+              videoUrl={chapter.videoUrl}
+              poster={chapterThumbnail(m, chapter)}
+            />
           </main>
         </div>
 
@@ -130,7 +147,10 @@ export default async function ChapterPage({ params }: Props) {
             </div>
           )}
           {next ? (
-            <Link href={chapterHref(m, next)} className={`${styles.pagerLink} ${styles.pagerNext}`}>
+            <Link
+              href={chapterHref(m, next)}
+              className={`${styles.pagerLink} ${styles.pagerNext}`}
+            >
               <span>
                 <strong>Next chapter</strong>
                 <span>{next.title}</span>
@@ -140,7 +160,9 @@ export default async function ChapterPage({ params }: Props) {
               </span>
             </Link>
           ) : (
-            <div className={`${styles.pagerLink} ${styles.pagerNext} ${styles.pagerDisabled}`}>
+            <div
+              className={`${styles.pagerLink} ${styles.pagerNext} ${styles.pagerDisabled}`}
+            >
               <span>
                 <strong>Next chapter</strong>
                 <span>(Not available)</span>

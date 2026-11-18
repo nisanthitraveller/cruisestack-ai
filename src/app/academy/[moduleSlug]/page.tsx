@@ -9,7 +9,15 @@ import WatchGate from "../WatchGate";
 import CertificationCard, { CertificationCardView } from "../CertificationCard";
 import Header from "@/components/Header/header";
 import styles from "../academy.module.css";
-import { academyModules, certificationHref, chapterHref, chapterThumbnail, examFormUrl, getModule, moduleHref } from "../data";
+import {
+  academyModules,
+  certificationHref,
+  chapterHref,
+  chapterThumbnail,
+  examFormUrl,
+  getModule,
+  moduleHref,
+} from "../data";
 import { ArrowLeft, ArrowRight, Chevron, Clock, Play } from "../icons";
 import academyIllustration from "../../../assets/academy-illustration.svg";
 
@@ -23,7 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const found = getModule((await params).moduleSlug);
   if (!found) return {};
   return {
-    title: found.module.seoTitle ?? `Module ${found.module.number}: ${found.module.title} - cruisestack Academy`,
+    title:
+      found.module.seoTitle ??
+      `Module ${found.module.number}: ${found.module.title} - cruisestack Academy`,
     description: found.module.seoDescription ?? found.module.description,
   };
 }
@@ -39,7 +49,14 @@ export default async function ModulePage({ params }: Props) {
 
       {/* ───── HERO ───── */}
       <section className={`${styles.hero} ${styles.heroCompact}`}>
-        <Image src={m.cover} alt="" fill priority sizes="100vw" className={styles.heroImg} />
+        <Image
+          src={m.cover}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className={styles.heroImg}
+        />
         <div className={styles.heroInner}>
           <nav className={styles.breadcrumb} aria-label="Breadcrumb">
             <Link href="/academy">Academy</Link>
@@ -71,38 +88,59 @@ export default async function ModulePage({ params }: Props) {
 
               {m.chapters.length ? (
                 <WatchGate>
-                <ol className={styles.chapterList}>
-                  {m.chapters.map((c, i) => (
-                    <li key={c.slug}>
-                      <Link href={chapterHref(m, c)} className={styles.chapterCard} data-watch-gate>
-                        <span className={styles.thumb}>
-                          <Image src={chapterThumbnail(m, c)} alt="" fill sizes="(max-width: 780px) 100vw, 220px" className={styles.thumbImg} />
-                          <span className={styles.thumbPlay}>
-                            <Play />
-                          </span>
-                          {c.duration && <span className={styles.thumbTime}>{c.duration}</span>}
-                        </span>
-                        <div className={styles.chapterText}>
-                          <h2>{i + 1}. {c.cardTitle ?? c.title}</h2>
-                          {c.duration && (
-                            <span className={styles.meta}>
-                              <Clock /> {c.duration}
+                  <ol className={styles.chapterList}>
+                    {m.chapters.map((c, i) => (
+                      <li key={c.slug}>
+                        <Link
+                          href={chapterHref(m, c)}
+                          className={styles.chapterCard}
+                          data-watch-gate
+                        >
+                          <span className={styles.thumb}>
+                            <Image
+                              src={chapterThumbnail(m, c)}
+                              alt=""
+                              fill
+                              sizes="(max-width: 780px) 100vw, 220px"
+                              className={styles.thumbImg}
+                            />
+                            <span className={styles.thumbPlay}>
+                              <Play />
                             </span>
-                          )}
-                          <span className={styles.chapterDesc}>{c.description}</span>
-                        </div>
-                        <span className={styles.roundArrow}>
-                          <ArrowRight />
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ol>
+                            {c.duration && (
+                              <span className={styles.thumbTime}>
+                                {c.duration}
+                              </span>
+                            )}
+                          </span>
+                          <div className={styles.chapterText}>
+                            <h2>
+                              {i + 1}. {c.cardTitle ?? c.title}
+                            </h2>
+                            {c.duration && (
+                              <span className={styles.meta}>
+                                <Clock /> {c.duration}
+                              </span>
+                            )}
+                            <span className={styles.chapterDesc}>
+                              {c.description}
+                            </span>
+                          </div>
+                          <span className={styles.roundArrow}>
+                            <ArrowRight />
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ol>
                 </WatchGate>
               ) : (
                 <div className={styles.empty}>
                   <strong>Chapters coming soon</strong>
-                  <p>We&apos;re recording the videos for this module. Check back shortly.</p>
+                  <p>
+                    We&apos;re recording the videos for this module. Check back
+                    shortly.
+                  </p>
                 </div>
               )}
             </div>
@@ -111,9 +149,20 @@ export default async function ModulePage({ params }: Props) {
           {/* ───── CERTIFICATION ───── */}
           {m.chapters.length > 0 && (
             <Suspense
-              fallback={<CertificationCardView moduleTitle={m.title} enrolHref={certificationHref(m)} examUrl={examFormUrl(m)} success={false} />}
+              fallback={
+                <CertificationCardView
+                  moduleTitle={m.title}
+                  enrolHref={certificationHref(m)}
+                  examUrl={examFormUrl(m)}
+                  success={false}
+                />
+              }
             >
-              <CertificationCard moduleTitle={m.title} enrolHref={certificationHref(m)} examUrl={examFormUrl(m)} />
+              <CertificationCard
+                moduleTitle={m.title}
+                enrolHref={certificationHref(m)}
+                examUrl={examFormUrl(m)}
+              />
             </Suspense>
           )}
 
@@ -145,7 +194,10 @@ export default async function ModulePage({ params }: Props) {
               </div>
             )}
             {next ? (
-              <Link href={moduleHref(next)} className={`${styles.pagerLink} ${styles.pagerNext}`}>
+              <Link
+                href={moduleHref(next)}
+                className={`${styles.pagerLink} ${styles.pagerNext}`}
+              >
                 <span>
                   <strong>Next module</strong>
                   <span>{next.title}</span>
@@ -155,7 +207,9 @@ export default async function ModulePage({ params }: Props) {
                 </span>
               </Link>
             ) : (
-              <div className={`${styles.pagerLink} ${styles.pagerNext} ${styles.pagerDisabled}`}>
+              <div
+                className={`${styles.pagerLink} ${styles.pagerNext} ${styles.pagerDisabled}`}
+              >
                 <span>
                   <strong>Next module</strong>
                   <span>(Not available)</span>

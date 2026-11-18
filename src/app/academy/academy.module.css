@@ -1378,6 +1378,15 @@
   font-weight: 700;
   cursor: pointer;
 }
+.gateSubmit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+.gateError {
+  margin: -6px 0 0;
+  font-size: 14px;
+  color: #b91c1c;
+}
 .gateNote {
   display: flex;
   align-items: center;
