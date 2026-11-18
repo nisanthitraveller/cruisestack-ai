@@ -6,7 +6,7 @@
 footer.footer {
   position: relative;
   overflow: hidden;
-  padding: 96px 48px 40px;
+  padding: 96px 15px 40px;
   background: linear-gradient(180deg, #06193f 0%, #071c46 100%);
   color: rgba(255, 255, 255, 0.78);
   font-family: "Inter", sans-serif;
@@ -24,7 +24,7 @@ footer.footer {
 
 .footer .inner {
   position: relative;
-  max-width: 1320px;
+  max-width: 1290px; /* 1320px container minus 15px padding each side */
   margin: 0 auto;
 }
 
@@ -179,7 +179,7 @@ address .contactSub {
 /* ── Responsive ── */
 @media (max-width: 1440px) {
   footer.footer {
-    padding: 80px 40px 36px;
+    padding: 80px 15px 36px;
   }
   .footer .top {
     gap: 36px;

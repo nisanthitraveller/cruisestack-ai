@@ -1095,7 +1095,7 @@ const ftrimgsect = {
 
       {/* ───── CTA ───── */}
       <section className="cta" style={ftrimgsect}>
-        <div className="cta-content" style={{maxWidth:'1320px',marginRight:'auto',width:'100%'}}>
+        <div className="cta-content" style={{maxWidth:'1290px',marginRight:'auto',width:'100%'}}>
           <h2>Ready to grow your cruise business?</h2>
           <p>Join hundreds of travel businesses that trust cruisestack to power their cruise commerce.</p>
           <div className="cta-btns">

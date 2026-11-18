@@ -11,14 +11,15 @@
 .container {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 15px;
+  box-sizing: border-box;
 }
 
 /* ══════════════════════════════════════════════════════════════
    HERO
 ══════════════════════════════════════════════════════════════ */
 .hero {
-  padding: 80px 0 72px;
+  padding: 56px 0 44px;
 }
 
 .hero .container {
@@ -39,6 +40,22 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   color: #2563eb;
+  text-transform: uppercase;
+}
+
+/* hero small title: light pill, same as the homepage hero badge */
+.hero .eyebrow {
+  display: inline-block;
+  align-self: flex-start;
+  width: fit-content;
+  margin-bottom: 0;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: #dbeafe;
+  color: #006cea;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
@@ -707,7 +724,7 @@
 @media (max-width: 640px) {
   .container { padding: 0 16px; }
 
-  .hero { padding: 48px 0 40px; }
+  .hero { padding: 20px 0 40px; }
 
   .heroActions { flex-direction: column; align-items: flex-start; }
 

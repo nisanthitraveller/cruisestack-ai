@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer/footer";
 import PartnerCard from "../PartnerCard";
+import WatchGate from "../WatchGate";
 import CertificationCard, { CertificationCardView } from "../CertificationCard";
 import Header from "@/components/Header/header";
 import styles from "../academy.module.css";
@@ -69,10 +70,11 @@ export default async function ModulePage({ params }: Props) {
               */}
 
               {m.chapters.length ? (
+                <WatchGate>
                 <ol className={styles.chapterList}>
                   {m.chapters.map((c, i) => (
                     <li key={c.slug}>
-                      <Link href={chapterHref(m, c)} className={styles.chapterCard}>
+                      <Link href={chapterHref(m, c)} className={styles.chapterCard} data-watch-gate>
                         <span className={styles.thumb}>
                           <Image src={chapterThumbnail(m, c)} alt="" fill sizes="(max-width: 780px) 100vw, 220px" className={styles.thumbImg} />
                           <span className={styles.thumbPlay}>
@@ -96,6 +98,7 @@ export default async function ModulePage({ params }: Props) {
                     </li>
                   ))}
                 </ol>
+                </WatchGate>
               ) : (
                 <div className={styles.empty}>
                   <strong>Chapters coming soon</strong>

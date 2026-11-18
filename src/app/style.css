@@ -176,8 +176,7 @@ body{
 /* ───── HERO ───── */
 .cruise-page-body .hero {
   background: linear-gradient(135deg, #e8f0fe 0%, #f0f7ff 40%, #e2edf8 100%);
-  min-height: 580px;
-  padding: 64px 48px 48px;
+  padding: 56px 15px 44px;
   display: grid;
   
   gap: 40px;
@@ -189,7 +188,7 @@ body{
   .cruise-page-body .hero {
     grid-template-columns: 1fr;
   
-    padding: 48px 15px;
+    padding: 20px 15px 40px;
     display: block;
     width: 100%;
   }
@@ -203,7 +202,7 @@ body{
   opacity: .18;
 }
 .container{
-    max-width: 1320px;
+    max-width: 1290px;
     margin: 0 auto;
     display: grid;
   grid-template-columns: 1fr 1.4fr;
@@ -358,41 +357,11 @@ body{
 .cruise-page-body .deal-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
 
 /* ───── TRUST BAR ───── */
-.cruise-page-body .trust-bar {
-  padding: 32px 48px;
-  border-bottom: 1px solid var(--gray-200);
-}
-.cruise-page-body .trust-bar p {
-  text-align: center;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--gray-400);
-  margin-bottom: 24px;
-}
-.cruise-page-body .trust-logos {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 48px;
-  flex-wrap: wrap;
-  row-gap: 30px;
-  max-width: 1300px;
-}
-.cruise-page-body .trust-logo {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--gray-400);
-  letter-spacing: -.5px;
-}
-.cruise-page-body .trust-logo.script { font-style: italic; font-size: 20px; }
-.cruise-page-body .trust-logo.blue { color: #1a56db; }
-.cruise-page-body .trust-logo.green { color: #16a34a; }
+/* shared with Solutions and Company, see globals.css */
 
 /* ───── FEATURES ───── */
 .cruise-page-body .features {
-  padding: 80px 48px;
+  padding: 80px 15px;
   background: var(--white);
 }
 @media(max-width: 780px){
@@ -423,7 +392,7 @@ body{
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 28px;
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 0 auto;
 }
 @media(max-width: 1024px){
@@ -466,7 +435,7 @@ body{
 
 /* ───── FEATURES (grouped) ───── */
 .cruise-page-body .fx {
-  padding: 88px 48px 72px;
+  padding: 88px 15px 72px;
   background: #f8fafd;
 }
 .cruise-page-body .fx-header {
@@ -503,7 +472,7 @@ body{
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 0 auto;
 }
 .cruise-page-body .fx-card {
@@ -577,7 +546,7 @@ body{
   align-items: center;
   justify-content: center;
   gap: 28px;
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 48px auto 0;
   font-size: 13px;
   letter-spacing: 2px;
@@ -631,7 +600,7 @@ body{
 /* ───── HOW IT WORKS ───── */
 .cruise-page-body .hiw {
   position: relative;
-  padding: 80px 48px 72px;
+  padding: 80px 15px 72px;
   background:
     radial-gradient(120% 60% at 50% 115%, #e8f0fc 0%, rgba(232, 240, 252, 0) 60%),
     linear-gradient(180deg, #fbfcfe 0%, #f6f9fd 100%);
@@ -671,7 +640,7 @@ body{
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 56px;
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 0 auto;
 }
 .cruise-page-body .hiw-step {
@@ -887,7 +856,7 @@ body{
 
 /* ───── WHITE-LABEL & API ───── */
 .cruise-page-body .wl {
-  padding: 88px 48px 72px;
+  padding: 88px 15px 72px;
   background:
     radial-gradient(120% 50% at 30% 120%, #e6eefb 0%, rgba(230, 238, 251, 0) 60%),
     #f8fafd;
@@ -898,7 +867,7 @@ body{
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   gap: 64px;
   align-items: center;
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 0 auto;
 }
 .cruise-page-body .wl-eyebrow {
@@ -1172,7 +1141,7 @@ body{
 
 /* ───── BUILT FOR ───── */
 .cruise-page-body .bf {
-  padding: 80px 48px 72px;
+  padding: 80px 15px 72px;
   background:
     radial-gradient(120% 45% at 50% 118%, #e5eefb 0%, rgba(229, 238, 251, 0) 62%),
     #f9fbfe;
@@ -1201,7 +1170,7 @@ body{
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 28px;
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 0 auto;
 }
 .cruise-page-body .bf-card {
@@ -1281,7 +1250,7 @@ body{
 
 /* ───── SECURITY & INFRASTRUCTURE ───── */
 .cruise-page-body .sec {
-  padding: 80px 48px 72px;
+  padding: 80px 15px 72px;
   background: linear-gradient(180deg, #f9fbfe 0%, #f3f7fd 100%);
   overflow: hidden;
 }
@@ -1290,7 +1259,7 @@ body{
   grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
   gap: 32px;
   align-items: center;
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 0 auto;
 }
 .cruise-page-body .sec-eyebrow {
@@ -1411,7 +1380,7 @@ body{
   grid-template-columns: minmax(0, 1fr) minmax(0, 2.1fr);
   align-items: center;
   gap: 36px;
-  max-width: 1360px;
+  max-width: 1290px;
   margin: 48px auto 0;
   padding: 30px 32px;
   background: rgba(255, 255, 255, .85);
@@ -1466,7 +1435,7 @@ body{
 /* ───── PLATFORM ───── */
 .cruise-page-body .platform {
   background: var(--navy);
-  padding: 80px 48px;
+  padding: 80px 15px;
   
 }
 @media (max-width: 780px){
@@ -1589,7 +1558,7 @@ body{
 
 /* ───── CRUISE LINES ───── */
 .cruise-page-body .cruise-lines {
-  padding: 80px 48px;
+  padding: 80px 15px;
   background: var(--gray-50);
 }
 @media (max-width: 780px){
@@ -1600,7 +1569,7 @@ body{
 .cruise-page-body .cruise-grid {
   display: grid;
   
-  max-width: 1300px;
+  max-width: 1290px;
   margin: 0 auto;
 }
 .cruise-grid .row{
@@ -1658,14 +1627,14 @@ body{
 
 /* ───── MEDIA ───── */
 .cruise-page-body .media {
-  padding: 80px 48px;
+  padding: 80px 15px;
   background: var(--white);
 }
 .cruise-page-body .media-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 28px;
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 0 auto;
 }
 /* each card spans 2 of 6 tracks; shift an incomplete last row to the middle */
@@ -1741,7 +1710,7 @@ body{
 
 /* ───── BACKED BY ───── */
 .cruise-page-body .backers {
-  padding: 0 48px 80px;
+  padding: 0 15px 80px;
   background: var(--white);
 }
 .cruise-page-body .backers .section-header { margin-bottom: 40px; }
@@ -1752,7 +1721,7 @@ body{
   align-items: center;
   justify-content: center;
   gap: 32px 80px;
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 0 auto;
 }
 .cruise-page-body .backers-logos img {
@@ -1771,7 +1740,7 @@ body{
 /* ───── CTA ───── */
 .cruise-page-body .cta {
   background: linear-gradient(135deg, var(--navy) 0%, #1a3a7e 100%);
-  padding: 80px 48px;
+  padding: 80px 15px;
   display: grid;
   grid-template-columns: 1fr;
   gap: 40px;
@@ -1790,7 +1759,7 @@ body{
   inset: 0;
   opacity: .15;
 }
-.cruise-page-body .cta-content { position: relative; z-index: 1;max-width: 1320px;margin: 0 auto; }
+.cruise-page-body .cta-content { position: relative; z-index: 1;max-width: 1290px;margin: 0 auto; }
 .cruise-page-body .cta h2 {
   font-family: "Inter", sans-serif;
   font-size: 38px;
@@ -1914,7 +1883,7 @@ body{
 .cruise-page-body .hero-right { animation: fadeUp .7s .2s ease both; }
 
 .container-hero{
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1929,7 +1898,7 @@ body{
   }
 }
 .container-nav{
-  max-width: 1320px;
+  max-width: 1290px;
   margin: 0 auto;
   display: flex;
   align-items: center;

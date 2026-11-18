@@ -25,7 +25,7 @@
 .container {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 15px;
 }
 
 /* ── shared ── */
@@ -37,6 +37,22 @@
   letter-spacing: 2.5px;
   text-transform: uppercase;
   color: var(--blue);
+}
+
+/* hero small title: light pill, same as the homepage hero badge */
+.hero .eyebrow {
+  display: inline-block;
+  align-self: flex-start;
+  width: fit-content;
+  margin-bottom: 20px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: #dbeafe;
+  color: #006cea;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 .title {
   font-size: 38px;
@@ -112,7 +128,6 @@
 /* ── hero ── */
 .hero {
   position: relative;
-  min-height: 560px;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -134,7 +149,7 @@
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding: 88px 32px 150px;
+  padding: 56px 15px 128px; /* 44px + the 84px stats overlap */
 }
 .hero h1 {
   font-size: clamp(32px, 4vw, 52px);
@@ -492,7 +507,7 @@
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.9) 55%, rgba(255, 255, 255, 0.3) 100%);
   }
   .heroInner {
-    padding: 56px 15px 120px;
+    padding: 20px 15px 124px; /* 40px + the 84px stats overlap */
   }
   .hero h1 {
     letter-spacing: -1px;

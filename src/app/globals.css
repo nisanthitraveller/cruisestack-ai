@@ -12,14 +12,11 @@ a{
     font-size: 32px !important;
   }
 }
-.trust-logos{
-  flex-wrap: wrap;
-  justify-content:center;
-}
-
+/* ───── TRUST BAR (partner logos) ─────
+   Shared by the homepage, Solutions and Company; this is the homepage's original style. */
 .trust-bar {
-  padding: 32px 48px;
-  border-bottom: 1px solid var(--gray-200);
+  padding: 32px 15px;
+  border-bottom: 1px solid var(--gray-200, #e5e7eb);
 }
 .trust-bar p {
   text-align: center;
@@ -27,20 +24,25 @@ a{
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--gray-400);
-  margin-bottom: 24px;
+  color: var(--gray-400, #9ca3af);
+  margin: 0 0 24px;
 }
-.trust-logos {
+.trust-bar .trust-logos {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 48px;
   flex-wrap: wrap;
   row-gap: 30px;
+  max-width: 1290px;
+  margin: 0 auto;
 }
-.trust-logo {
+.trust-bar .trust-logo {
   font-size: 16px;
   font-weight: 700;
-  color: var(--gray-400);
+  color: var(--gray-400, #9ca3af);
   letter-spacing: -.5px;
 }
+.trust-bar .trust-logo.script { font-style: italic; font-size: 20px; }
+.trust-bar .trust-logo.blue { color: #1a56db; }
+.trust-bar .trust-logo.green { color: #16a34a; }

@@ -28,7 +28,7 @@
 .container {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 15px;
 }
 
 .eyebrow {
@@ -39,6 +39,22 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--blue);
+}
+
+/* hero small title: light pill, same as the homepage hero badge */
+.hero .eyebrow {
+  display: inline-block;
+  align-self: flex-start;
+  width: fit-content;
+  margin-bottom: 20px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: #dbeafe;
+  color: #006cea;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 .btnPrimary {
   display: inline-flex;
@@ -61,7 +77,6 @@
 /* ── hero ── */
 .hero {
   position: relative;
-  min-height: 440px;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -83,7 +98,7 @@
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding: 56px 32px 64px;
+  padding: 56px 15px 44px;
 }
 .hero h1 {
   max-width: 620px;
@@ -378,7 +393,7 @@
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.88) 60%, rgba(255, 255, 255, 0.4) 100%);
   }
   .heroInner {
-    padding: 40px 15px 48px;
+    padding: 20px 15px 40px;
   }
   .section {
     padding: 28px 0 56px;

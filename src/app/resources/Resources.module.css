@@ -12,7 +12,8 @@
 .container {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 15px;
+  box-sizing: border-box;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -540,8 +541,7 @@
 
 .hero {
   background: linear-gradient(135deg, #e8f0fe 0%, #f0f7ff 40%, #e2edf8 100%);
-  min-height: 380px;
-  padding: 64px 48px 48px;
+  padding: 56px 0 44px;
   position: relative;
   overflow: hidden;
 }
@@ -602,7 +602,6 @@
 .heroBtns {
   display: flex;
   gap: 14px;
-  margin-bottom: 40px;
   flex-wrap: wrap;
 }
 
@@ -680,7 +679,7 @@
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .hero {
-    padding: 48px 32px;
+    padding: 56px 0 44px;
     min-height: auto;
   }
 
@@ -697,7 +696,7 @@
 
 @media (max-width: 640px) {
   .hero {
-    padding: 40px 20px;
+    padding: 20px 0 40px;
   }
 
 
