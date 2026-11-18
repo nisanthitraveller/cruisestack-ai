@@ -1,6 +1,26 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import pool from "@/lib/db_mysql";
+import { getAppOrigin } from "@/lib/appUrl";
+
+const ACADEMY_EMAIL_DIR = path.join(
+  process.cwd(),
+  "src",
+  "emails",
+  "academy",
+);
+
+const ACADEMY_EMAIL_IMAGES = [
+  { filename: "cruise-academy-logo.png", cid: "academy-logo@cruisestack" },
+  { filename: "aerticket-logo.png", cid: "aerticket-logo@cruisestack" },
+  { filename: "cruisestack-footer-logo.png", cid: "footer-logo@cruisestack" },
+  {
+    filename: "academy-signature-logo.png",
+    cid: "academy-signature-logo@cruisestack",
+  },
+];
 
 function escapeHtml(value) {
   return String(value || "")
@@ -13,6 +33,38 @@ function escapeHtml(value) {
 
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+async function academyRecipientEmail({ isCertification, learningUrl }) {
+  const templateName = isCertification
+    ? "cruisestack-academy-confirmation-email.html"
+    : "cruisestack-academy-signup-email.html";
+  const template = await readFile(
+    path.join(ACADEMY_EMAIL_DIR, templateName),
+    "utf8",
+  );
+  const replacements = {
+    "{{academy_logo_url}}": "cid:academy-logo@cruisestack",
+    "{{aerticket_logo_url}}": "cid:aerticket-logo@cruisestack",
+    "{{footer_logo_url}}": "cid:footer-logo@cruisestack",
+    "{{academy_signature_logo_url}}":
+      "cid:academy-signature-logo@cruisestack",
+    "{{learning_url}}": learningUrl,
+    "{{evaluation_url}}": learningUrl,
+  };
+
+  return Object.entries(replacements).reduce(
+    (html, [placeholder, value]) => html.replaceAll(placeholder, value),
+    template,
+  );
+}
+
+function academyEmailAttachments() {
+  return ACADEMY_EMAIL_IMAGES.map(({ filename, cid }) => ({
+    filename,
+    path: path.join(ACADEMY_EMAIL_DIR, filename),
+    cid,
+  }));
 }
 
 async function ensureAcademyViewerTable(connection) {
@@ -141,6 +193,28 @@ export async function POST(request) {
           <tr><td style="font-weight: 700;">Module</td><td>${escapeHtml(moduleSlug)}</td></tr>
         `
       : "";
+
+    const appOrigin = getAppOrigin(request);
+    const learningUrl = isCertification
+      ? `${appOrigin}/academy/${encodeURIComponent(moduleSlug)}?certification=success#certification`
+      : `${appOrigin}/academy`;
+    const recipientHtml = await academyRecipientEmail({
+      isCertification,
+      learningUrl,
+    });
+
+    await transporter.sendMail({
+      from: process.env.AWS_SES_FROM,
+      to: email,
+      subject: isCertification
+        ? "Your cruisestack.ai Academy enrolment is confirmed"
+        : "Welcome to cruisestack.ai Academy",
+      text: isCertification
+        ? `Your cruisestack.ai Academy certification enrolment is confirmed. Start your evaluation: ${learningUrl}`
+        : `Your cruisestack.ai Academy sign-up was successful. Start learning: ${learningUrl}`,
+      html: recipientHtml,
+      attachments: academyEmailAttachments(),
+    });
 
     await transporter.sendMail({
       from: process.env.AWS_SES_FROM,
