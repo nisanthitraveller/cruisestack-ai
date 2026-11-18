@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
+import nodemailer from "nodemailer";
 import pool from "@/lib/db_mysql";
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -105,6 +115,51 @@ export async function POST(request) {
         isCertification ? new Date() : null,
       ],
     );
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.AWS_SES_HOST,
+      port: Number(process.env.AWS_SES_PORT),
+      secure: false,
+      auth: {
+        user: process.env.AWS_SES_USER,
+        pass: process.env.AWS_SES_PASSWORD,
+      },
+    });
+    const submittedAt = new Date().toLocaleString("en-IN", {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: "Asia/Kolkata",
+    });
+    const formType = isCertification
+      ? "Certification Enrolment"
+      : "Video Access Request";
+    const additionalDetails = isCertification
+      ? `
+          <tr><td style="font-weight: 700;">Company</td><td>${escapeHtml(company)}</td></tr>
+          <tr><td style="font-weight: 700;">Country</td><td>${escapeHtml(country)}</td></tr>
+          <tr><td style="font-weight: 700;">Role</td><td>${escapeHtml(role)}</td></tr>
+          <tr><td style="font-weight: 700;">Module</td><td>${escapeHtml(moduleSlug)}</td></tr>
+        `
+      : "";
+
+    await transporter.sendMail({
+      from: process.env.AWS_SES_FROM,
+      to: "nisanth.kumar@getmycruise.com",
+      replyTo: email,
+      subject: `New CruiseStack Academy ${formType}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.5;">
+          <h2 style="margin: 0 0 16px;">New CruiseStack Academy ${escapeHtml(formType)}</h2>
+          <table cellpadding="8" cellspacing="0" style="border-collapse: collapse;">
+            <tr><td style="font-weight: 700;">Name</td><td>${escapeHtml(name)}</td></tr>
+            <tr><td style="font-weight: 700;">Email</td><td>${escapeHtml(email)}</td></tr>
+            <tr><td style="font-weight: 700;">Mobile</td><td>${escapeHtml(mobile)}</td></tr>
+            ${additionalDetails}
+            <tr><td style="font-weight: 700;">Submitted at</td><td>${escapeHtml(submittedAt)}</td></tr>
+          </table>
+        </div>
+      `,
+    });
 
     return NextResponse.json({
       status: "success",
