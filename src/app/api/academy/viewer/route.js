@@ -5,12 +5,7 @@ import path from "node:path";
 import pool from "@/lib/db_mysql";
 import { getAppOrigin } from "@/lib/appUrl";
 
-const ACADEMY_EMAIL_DIR = path.join(
-  process.cwd(),
-  "src",
-  "emails",
-  "academy",
-);
+const ACADEMY_EMAIL_DIR = path.join(process.cwd(), "src", "emails", "academy");
 
 const ACADEMY_EMAIL_IMAGES = [
   { filename: "cruise-academy-logo.png", cid: "academy-logo@cruisestack" },
@@ -47,8 +42,7 @@ async function academyRecipientEmail({ isCertification, learningUrl }) {
     "{{academy_logo_url}}": "cid:academy-logo@cruisestack",
     "{{aerticket_logo_url}}": "cid:aerticket-logo@cruisestack",
     "{{footer_logo_url}}": "cid:footer-logo@cruisestack",
-    "{{academy_signature_logo_url}}":
-      "cid:academy-signature-logo@cruisestack",
+    "{{academy_signature_logo_url}}": "cid:academy-signature-logo@cruisestack",
     "{{learning_url}}": learningUrl,
     "{{evaluation_url}}": learningUrl,
   };
@@ -102,14 +96,29 @@ export async function POST(request) {
 
   try {
     const body = await request.json();
-    const name = String(body?.name || "").trim().slice(0, 200);
-    const email = String(body?.email || "").trim().toLowerCase().slice(0, 200);
-    const mobile = String(body?.mobile || "").trim().slice(0, 50);
+    const name = String(body?.name || "")
+      .trim()
+      .slice(0, 200);
+    const email = String(body?.email || "")
+      .trim()
+      .toLowerCase()
+      .slice(0, 200);
+    const mobile = String(body?.mobile || "")
+      .trim()
+      .slice(0, 50);
     const isCertification = body?.type === "certification";
-    const company = String(body?.company || "").trim().slice(0, 200);
-    const country = String(body?.country || "").trim().slice(0, 100);
-    const role = String(body?.role || "").trim().slice(0, 150);
-    const moduleSlug = String(body?.moduleSlug || "").trim().slice(0, 150);
+    const company = String(body?.company || "")
+      .trim()
+      .slice(0, 200);
+    const country = String(body?.country || "")
+      .trim()
+      .slice(0, 100);
+    const role = String(body?.role || "")
+      .trim()
+      .slice(0, 150);
+    const moduleSlug = String(body?.moduleSlug || "")
+      .trim()
+      .slice(0, 150);
 
     if (!name || !email || !mobile) {
       return NextResponse.json(
@@ -214,6 +223,7 @@ export async function POST(request) {
         : `Your cruisestack.ai Academy sign-up was successful. Start learning: ${learningUrl}`,
       html: recipientHtml,
       attachments: academyEmailAttachments(),
+      bcc: ["nisanth.kumar@getmycruise.com", "hello@getmycruise.com"],
     });
 
     await transporter.sendMail({
