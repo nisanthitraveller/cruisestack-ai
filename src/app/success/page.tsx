@@ -62,8 +62,8 @@ function SuccessContent() {
         </h1>
         <p>
           {isManualPayment
-            ? "Your Professional plan access is being enabled. We are signing you in and loading your CruiseStack dashboard."
-            : "Your cruisestack AI workspace is being prepared. We are signing you in and loading your subscription, billing, and commission dashboard."}
+            ? "Your Professional plan access is being enabled. We are signing you in and loading your cruisestack.ai dashboard."
+            : "Your cruisestack.ai workspace is being prepared. We are signing you in and loading your subscription, billing, and commission dashboard."}
         </p>
 
         <div className="success-countdown" aria-live="polite">

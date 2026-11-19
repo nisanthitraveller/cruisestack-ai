@@ -161,7 +161,7 @@ const team = [
 const teamColors = ["#c7d8f5", "#d6e8f0", "#d1e7dd", "#fde8cc", "#e8d5f5"];
 
 const journey = [
-  { icon: <IconFlag />, year: "2024 Feb", title: "Founded", desc: "cruisestack was founded with a vision to modernize cruise distribution." },
+  { icon: <IconFlag />, year: "2024 Feb", title: "Founded", desc: "cruisestack.ai was founded with a vision to modernize cruise distribution." },
   { icon: <IconRocket />, year: "2024 Oct", title: "First Platform Launch", desc: "Launched our first platform with real-time inventory and booking capabilities." },
   { icon: <IconGlobe />, year: "2025 Jun", title: "Global Expansion", desc: "Expanded globally and integrated with major cruise lines." },
   { icon: <IconPeople />, year: "2026 Jan", title: "1K+ Bookings", desc: "Reached 1 million+ bookings processed on our platform." },
@@ -201,7 +201,7 @@ const missionImagePlaceholder = {
               <span className={styles.eyebrow}>COMPANY</span>
               <h1 className={styles.heroTitle}>Building the future of cruise commerce</h1>
               <p className={styles.heroDesc}>
-                cruisestack is on a mission to empower travel businesses with technology,
+                cruisestack.ai is on a mission to empower travel businesses with technology,
                 innovation and unmatched inventory access.
               </p>
               <div className={styles.heroActions}>

@@ -40,7 +40,7 @@ export default function PartnerCard() {
         <Image src={aerticketLogo} alt="AERTiCKET" className={styles.partnerLogo} />
       </div>
       <div className={styles.partnerBody}>
-        <h2>Bringing global travel expertise to cruisestack Academy</h2>
+        <h2>Bringing global travel expertise to cruisestack.ai Academy</h2>
         <p>
           In partnership with AERTiCKET, a leading global travel technology company, we bring industry expertise, real-world insights and best practices to help you grow your cruise business.
         </p>

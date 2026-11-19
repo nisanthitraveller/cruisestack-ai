@@ -61,7 +61,7 @@ export default function Footer() {
           {/* Brand */}
           <div className={styles.brand}>
             <Link href="/" className={styles.logo}>
-              <Image src={logoft} alt="cruisestack" width={250} height={33} />
+              <Image src={logoft} alt="cruisestack.ai" width={250} height={33} />
             </Link>
             <p>
               The complete cruise commerce platform for travel businesses. Real inventory. Real opportunities. A more connected cruise future.
@@ -130,7 +130,7 @@ export default function Footer() {
         </div>
 
         <div className={styles.bottom}>
-          <span>&copy; {new Date().getFullYear()} CruiseStack. All rights reserved.</span>
+          <span>&copy; {new Date().getFullYear()} cruisestack.ai. All rights reserved.</span>
           {/* No legal pages yet
           <div className={styles.legal}>
             <Link href="/privacy-policy">Privacy Policy</Link>

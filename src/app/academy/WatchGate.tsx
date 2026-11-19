@@ -126,7 +126,7 @@ export default function WatchGate({ children }: { children: ReactNode }) {
               </svg>
             </button>
 
-            <h2 id="gate-title">Get started with cruisestack Academy</h2>
+            <h2 id="gate-title">Get started with cruisestack.ai academy</h2>
             <p className={styles.gateSub}>
               Enter your details to access the training videos.
             </p>

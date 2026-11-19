@@ -15,7 +15,7 @@ import aerticketLogo from "../../assets/aerticket.png";
 export const metadata: Metadata = {
   title: "Cruise Selling Training for Travel Agents | cruisestack.ai Academy | Powered by AERTiCKET",
   description:
-    "Step-by-step cruise training for travel agents: destinations, cabins, pricing, TCS & GST, and cancellation terms. Video tutorials inside CruiseStack.",
+    "Step-by-step cruise training for travel agents: destinations, cabins, pricing, TCS & GST, and cancellation terms. Video tutorials inside cruisestack.ai.",
 };
 
 export default function AcademyPage() {
@@ -38,7 +38,7 @@ export default function AcademyPage() {
           </div>
           <h1>Cruise training for growing your cruise business</h1>
           <p>
-            cruisestack Academy is a module-based cruise training program for travel agents and agencies. Each module teaches one part of selling a cruise: where people sail, which cabin to pick, how pricing and tax work, and what happens when a booking is cancelled. Watch in order or jump to the one you need.
+            cruisestack.ai Academy is a module-based cruise training program for travel agents and agencies. Each module teaches one part of selling a cruise: where people sail, which cabin to pick, how pricing and tax work, and what happens when a booking is cancelled. Watch in order or jump to the one you need.
           </p>
           <Link href={moduleHref(firstModule)} className={styles.btnPrimary}>
             Start learning <ArrowRight size={18} />
@@ -52,8 +52,8 @@ export default function AcademyPage() {
           {/* Hidden for now
           <div className={styles.sectionHead}>
             <span className={styles.eyebrow}>Training modules</span>
-            <h2>What you&apos;ll learn in the CruiseStack training modules</h2>
-            <p>Choose a module below to watch step-by-step videos and learn how to use cruisestack effectively.</p>
+            <h2>What you&apos;ll learn in the cruisestack.ai training modules</h2>
+            <p>Choose a module below to watch step-by-step videos and learn how to use cruisestack.ai effectively.</p>
           </div>
           */}
 

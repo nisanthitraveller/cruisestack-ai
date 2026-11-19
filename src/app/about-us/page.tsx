@@ -18,9 +18,9 @@ import vipinImg from "../../assets/team/vipin.png";
 import linkedinIcon from "../../assets/linkedin-square-icon.svg";
 
 export const metadata: Metadata = {
-  title: "About Us - cruisestack",
+  title: "About Us - cruisestack.ai",
   description:
-    "CruiseStack is a technology company on a mission to make cruise commerce simpler, smarter and more accessible for travel businesses around the world.",
+    "cruisestack.ai is a technology company on a mission to make cruise commerce simpler, smarter and more accessible for travel businesses around the world.",
 };
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
@@ -65,8 +65,8 @@ const timeline = [
     desc: "We launched GetMyCruise, a consumer platform to inspire travelers and make cruise holidays accessible to everyone.",
   },
   {
-    title: "CruiseStack",
-    desc: "We created CruiseStack to empower travel businesses with a complete cruise commerce solution.",
+    title: "cruisestack.ai",
+    desc: "We created cruisestack.ai to empower travel businesses with a complete cruise commerce solution.",
   },
 ];
 
@@ -147,14 +147,14 @@ export default function AboutPage() {
           className={styles.heroImg}
         />
         <div className={styles.heroInner}>
-          <span className={styles.eyebrow}>About CruiseStack</span>
+          <span className={styles.eyebrow}>About cruisestack.ai</span>
           <h1>
             A better way
             <br />
             to sell cruises
           </h1>
           <p>
-            CruiseStack is a technology company on a mission to make cruise commerce simpler, smarter and more accessible for travel businesses around the world.
+            cruisestack.ai is a technology company on a mission to make cruise commerce simpler, smarter and more accessible for travel businesses around the world.
           </p>
           <div className={styles.actions}>
             <Link href="/bookdemo" className={styles.btnPrimary}>
@@ -189,7 +189,7 @@ export default function AboutPage() {
               Our journey began with GetMyCruise, a consumer-facing platform created to make it easier for travelers to explore and book amazing cruise holidays. Through this experience, we gained deep industry knowledge, built strong relationships with cruise lines and understood the real challenges of cruise selling.
             </p>
             <p>
-              We saw an opportunity to do more — to empower travel agencies, OTAs, tour operators and enterprise businesses with the right technology to sell cruises more efficiently and profitably. That&apos;s how CruiseStack was born.
+              We saw an opportunity to do more — to empower travel agencies, OTAs, tour operators and enterprise businesses with the right technology to sell cruises more efficiently and profitably. That&apos;s how cruisestack.ai was born.
             </p>
             <p>
               Today, we&apos;re proud to be a trusted technology partner for hundreds of travel businesses worldwide, helping them grow with confidence in the exciting world of cruise travel.
@@ -252,7 +252,7 @@ export default function AboutPage() {
           <div className={styles.teamHead}>
             <div>
               <span className={styles.eyebrow}>Meet Our Team</span>
-              <h2 className={styles.title}>The People Behind CruiseStack</h2>
+              <h2 className={styles.title}>The People Behind cruisestack.ai</h2>
               <p className={styles.intro}>
                 A passionate team of travel, technology and cruise industry experts, working together to build the future of cruise commerce.
               </p>
@@ -290,7 +290,7 @@ export default function AboutPage() {
           <span className={styles.eyebrow}>Our Customers</span>
           <h2 className={styles.title}>Built for the Businesses Behind Every Journey</h2>
           <p className={styles.intro}>
-            Whether you&apos;re a travel agency, OTA, tour operator or enterprise, CruiseStack gives you the tools to sell cruises more efficiently and profitably.
+            Whether you&apos;re a travel agency, OTA, tour operator or enterprise, cruisestack.ai gives you the tools to sell cruises more efficiently and profitably.
           </p>
           <ul className={styles.customers}>
             {customers.map((c) => (
@@ -315,7 +315,7 @@ export default function AboutPage() {
             cruise business?
           </h2>
           <p>
-            Join hundreds of travel businesses already using CruiseStack to sell more cruises, work smarter and deliver better experiences.
+            Join hundreds of travel businesses already using cruisestack.ai to sell more cruises, work smarter and deliver better experiences.
           </p>
           <div className={styles.actions}>
             <Link href="/bookdemo" className={styles.btnPrimary}>

@@ -78,7 +78,7 @@ function LoginContent() {
         <p style={{ marginBottom: "24px" }}>
           Enter your credentials to access your company portal and continue managing your cruise business seamlessly.
         </p>
-        <Image src={loginImg} alt="cruisestack" width={330}/>
+        <Image src={loginImg} alt="cruisestack.ai" width={330}/>
       </section>
 
       <section className="signup-panel login-panel" aria-label="Agent login form">

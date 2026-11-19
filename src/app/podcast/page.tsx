@@ -10,7 +10,7 @@ import { episodeHref, podcastShorts, sortedEpisodes } from "./data";
 import heroImg from "../../assets/hero-r.png";
 
 export const metadata: Metadata = {
-  title: "Podcast - cruisestack",
+  title: "Podcast - cruisestack.ai",
   description:
     "Expert insights, destination highlights and real stories to help you grow your cruise business.",
 };
@@ -26,7 +26,7 @@ export default function PodcastPage() {
       <section className={styles.hero}>
         <Image src={heroImg} alt="" fill priority sizes="100vw" className={styles.heroImg} />
         <div className={styles.heroInner}>
-          <span className={styles.eyebrow}>cruisestack Podcast</span>
+          <span className={styles.eyebrow}>cruisestack.ai Podcast</span>
           <h1>
             Real conversations
             <br />

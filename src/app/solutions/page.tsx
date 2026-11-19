@@ -173,7 +173,7 @@ const whyItems: WhyItem[] = [
 
 const testimonials: Testimonial[] = [
   {
-    quote: "cruisestack has transformed the way we manage cruise bookings. The real-time inventory and instant quotes have significantly boosted our sales.",
+    quote: "cruisestack.ai has transformed the way we manage cruise bookings. The real-time inventory and instant quotes have significantly boosted our sales.",
     name: "Sarah Johnson",
     role: "Head of Operations, TravelCo",
     rating: 5,
@@ -185,7 +185,7 @@ const testimonials: Testimonial[] = [
     rating: 5,
   },
   {
-    quote: "From group bookings to custom packages, cruisestack gives us everything we need to run our tour operations smoothly.",
+    quote: "From group bookings to custom packages, cruisestack.ai gives us everything we need to run our tour operations smoothly.",
     name: "Priya Mehta",
     role: "Tour Director, WorldCruises",
     rating: 5,
@@ -218,7 +218,7 @@ export default function SolutionsPage() {
             <h1 className={styles.heroTitle}>Built for every type of cruise business</h1>
             <p className={styles.heroDesc}>
               Whether you are a travel agency, OTA, tour operator or enterprise,
-              cruisestack provides the tools you need to grow and operate efficiently.
+              cruisestack.ai provides the tools you need to grow and operate efficiently.
             </p>
             <div className={styles.heroActions}>
               <Link href="/bookdemo" className={styles.btnPrimary}>Book a Demo</Link>
@@ -253,7 +253,7 @@ export default function SolutionsPage() {
       {/* ── Why cruisestack ── */}
       <section className={styles.whySection}>
         <div className={styles.container}>
-          <h2 className={styles.centeredTitle}>Why businesses choose cruisestack</h2>
+          <h2 className={styles.centeredTitle}>Why businesses choose cruisestack.ai</h2>
           <div className={styles.whyGrid}>
             {whyItems.map((w) => (
               <div key={w.title} className={styles.whyItem}>
@@ -346,7 +346,7 @@ export default function SolutionsPage() {
             <div className={styles.bottomCtaContent}>
               <h2 className={styles.bottomCtaTitle}>Ready to grow your cruise business?</h2>
               <p className={styles.bottomCtaDesc}>
-                Join thousands of travel businesses already using cruisestack to sell more,
+                Join thousands of travel businesses already using cruisestack.ai to sell more,
                 work less, and deliver better experiences.
               </p>
             </div>

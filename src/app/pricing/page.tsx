@@ -465,7 +465,7 @@ function PricingContent() {
       <nav style={{display:'none'}}>
         <div className='container-nav'>
           <Link href="/" className="nav-logo">
-              <Image src={logoMain} alt="cruisestack" width={190}/>
+              <Image src={logoMain} alt="cruisestack.ai" width={190}/>
           </Link>
           <ul className="nav-links">
             <li><a href="/product">Product</a></li>

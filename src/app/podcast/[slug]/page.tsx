@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const episode = getEpisode((await params).slug);
   if (!episode) return {};
   return {
-    title: `${episode.title} - cruisestack Podcast`,
+    title: `${episode.title} - cruisestack.ai Podcast`,
     description: episode.description,
   };
 }

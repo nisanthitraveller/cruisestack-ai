@@ -299,7 +299,7 @@ const complianceBadges = [
 ];
 
 export const metadata: Metadata = {
-  title: "cruisestack - all-in-one cruise booking & management platform",
+  title: "cruisestack.ai - all-in-one cruise booking & management platform",
   description: "Power your cruise business with live inventory, instant quotes, and secure bookings across 30+ cruise lines. Built for travel agencies, OTAs & enterprises."
 };
 
@@ -470,7 +470,7 @@ const ftrimgsect = {
         <div className="fx-header">
           <span className="fx-eyebrow">One platform. <span>From search to settlement.</span></span>
           <h2>Everything You Need to Sell Cruises, Effortlessly</h2>
-          <p>From live inventory and instant pricing to bookings, operations and analytics — CruiseStack brings your entire cruise commerce workflow together.</p>
+          <p>From live inventory and instant pricing to bookings, operations and analytics — cruisestack.ai brings your entire cruise commerce workflow together.</p>
         </div>
         <div className="fx-grid">
           {featureGroups.map((group) => (
@@ -502,8 +502,8 @@ const ftrimgsect = {
       <section className="hiw">
         <div className="hiw-header">
           <span className="hiw-eyebrow">How it works</span>
-          <h2>How cruisestack works?</h2>
-          <p>From search to sale, CruiseStack gives you the tools, content and support you need — all in one platform.</p>
+          <h2>How cruisestack.ai works?</h2>
+          <p>From search to sale, cruisestack.ai gives you the tools, content and support you need — all in one platform.</p>
         </div>
         <ol className="hiw-steps">
           {howSteps.map((step, i) => (
@@ -520,7 +520,7 @@ const ftrimgsect = {
             Book a Demo
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </Link>
-          <p>See how CruiseStack can work for your business.</p>
+          <p>See how cruisestack.ai can work for your business.</p>
         </div>
       </section>
 
@@ -531,7 +531,7 @@ const ftrimgsect = {
             <span className="wl-eyebrow">White-label &amp; API</span>
             <h2>Your brand. our technology.</h2>
             <p className="wl-lead">
-              Launch and grow your cruise business with CruiseStack&apos;s white-label platform or powerful APIs. Deliver a seamless booking experience under your own brand, with full flexibility and control.
+              Launch and grow your cruise business with cruisestack.ai&apos;s white-label platform or powerful APIs. Deliver a seamless booking experience under your own brand, with full flexibility and control.
             </p>
             <ul className="wl-features">
               {whiteLabelFeatures.map((f) => (
@@ -645,7 +645,7 @@ const ftrimgsect = {
         <div className="dashboard-mockup">
           <div className="db-topbar">
             <span className="db-logo">
-              <Image src={cruisestackLogo} alt="cruisestack Logo" width={151} height={20} /></span>
+              <Image src={cruisestackLogo} alt="cruisestack.ai Logo" width={151} height={20} /></span>
             <div className="db-dots"><div className="db-dot"></div><div className="db-dot"></div><div className="db-dot"></div></div>
           </div>
           <div className="db-body">
@@ -723,7 +723,7 @@ const ftrimgsect = {
         <div className="bf-header">
           <span className="bf-eyebrow">Built for...</span>
           <h2>Every cruise business, big or small</h2>
-          <p>No matter your business model, CruiseStack gives you the tools, content and support to sell more cruises and create unforgettable travel experiences.</p>
+          <p>No matter your business model, cruisestack.ai gives you the tools, content and support to sell more cruises and create unforgettable travel experiences.</p>
         </div>
         <div className="bf-grid">
           {builtFor.map((b) => (
@@ -746,7 +746,7 @@ const ftrimgsect = {
         </div>
         <div className="bf-cta">
           <h3>Ready to take your cruise business further?</h3>
-          <p>Let&apos;s show you how CruiseStack can work for you.</p>
+          <p>Let&apos;s show you how cruisestack.ai can work for you.</p>
           <Link href="/bookdemo" className="hiw-cta-btn">
             Book a Demo
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -894,7 +894,7 @@ const ftrimgsect = {
           <div className="sec-copy">
             <span className="sec-eyebrow">Security &amp; Infrastructure</span>
             <h2>Built on a secure, scalable foundation</h2>
-            <p className="sec-lead">Your data, your customers and your business are in safe hands. CruiseStack is built with enterprise-grade security, reliability and global infrastructure.</p>
+            <p className="sec-lead">Your data, your customers and your business are in safe hands. cruisestack.ai is built with enterprise-grade security, reliability and global infrastructure.</p>
             <ul className="sec-grid">
               {securityFeatures.map((f) => (
                 <li className="sec-card" key={f.title}>
@@ -970,7 +970,7 @@ const ftrimgsect = {
 
       <section className="media">
         <div className="section-header">
-          <h2>cruisestack in media</h2>
+          <h2>cruisestack.ai in media</h2>
         </div>
 
         <div className="media-grid">
@@ -1097,7 +1097,7 @@ const ftrimgsect = {
       <section className="cta" style={ftrimgsect}>
         <div className="cta-content" style={{maxWidth:'1290px',marginRight:'auto',width:'100%'}}>
           <h2>Ready to grow your cruise business?</h2>
-          <p>Join hundreds of travel businesses that trust cruisestack to power their cruise commerce.</p>
+          <p>Join hundreds of travel businesses that trust cruisestack.ai to power their cruise commerce.</p>
           <div className="cta-btns">
             <Link href="/bookdemo" className="btn-primary">Book a Demo</Link>
             

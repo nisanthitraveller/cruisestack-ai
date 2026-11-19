@@ -176,7 +176,7 @@ export default function Product() {
             <span className={styles.eyebrow}>PRODUCT</span>
             <h1 className={styles.heroTitle}>Everything you need to sell, manage, and scale cruise bookings</h1>
             <p className={styles.heroDesc}>
-              cruisestack brings together inventory, pricing, booking, payments, and
+              cruisestack.ai brings together inventory, pricing, booking, payments, and
               operations in one unified platform built for modern travel businesses.
             </p>
             <div className={styles.heroActions}>
@@ -289,7 +289,7 @@ export default function Product() {
               <span className={styles.eyebrowGreen}>BUILT FOR GROWTH</span>
               <h2 className={styles.growthTitle}>One platform.<br />Endless possibilities.</h2>
               <p className={styles.growthDesc}>
-                From search to settlement, cruisestack streamlines your entire cruise
+                From search to settlement, cruisestack.ai streamlines your entire cruise
                 commerce workflow so you can focus on growth.
               </p>
               <ul className={styles.checkList}>

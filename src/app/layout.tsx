@@ -5,7 +5,7 @@ import "./globals.css";
 const GTM_ID = "GTM-TLKV4CD3";
 
 export const metadata: Metadata = {
-  title: "cruisestack - all-in-one cruise booking & management platform",
+  title: "cruisestack.ai - all-in-one cruise booking & management platform",
   description:
     "Power your cruise business with live inventory, instant quotes, and secure bookings across 30+ cruise lines. Built for travel agencies, OTAs & enterprises.",
 };

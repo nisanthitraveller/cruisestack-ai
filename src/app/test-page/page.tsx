@@ -11,7 +11,7 @@ export default function TestPage() {
       />
 
       <section className="test-page-panel">
-        <p className="test-page-kicker">Cruisestack test page</p>
+        <p className="test-page-kicker">cruisestack.ai test page</p>
         <h1>Stripe $1 button test</h1>
         <p>
           Use this page for payment-button checks and other future experiments.

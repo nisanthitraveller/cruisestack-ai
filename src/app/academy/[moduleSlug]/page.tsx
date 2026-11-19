@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title:
       found.module.seoTitle ??
-      `Module ${found.module.number}: ${found.module.title} - cruisestack Academy`,
+      `Module ${found.module.number}: ${found.module.title} - cruisestack.ai Academy`,
     description: found.module.seoDescription ?? found.module.description,
   };
 }

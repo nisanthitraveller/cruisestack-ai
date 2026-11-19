@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!found) return {};
   return {
     title:
-      found.chapter.seoTitle ?? `${found.chapter.title} - cruisestack Academy`,
+      found.chapter.seoTitle ?? `${found.chapter.title} - cruisestack.ai Academy`,
     description: found.chapter.seoDescription ?? found.chapter.description,
   };
 }
@@ -94,7 +94,6 @@ export default async function ChapterPage({ params }: Props) {
           {/* ───── VIDEO ───── */}
           <main className={styles.watchMain}>
             <span className={styles.eyebrow}>Module {m.number}</span>
-            <p className={styles.watchModule}>{m.title}</p>
             <h1 className={styles.watchTitle}>
               {chapter.heading ?? chapter.title}
             </h1>

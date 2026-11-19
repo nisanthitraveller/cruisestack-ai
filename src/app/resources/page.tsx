@@ -67,7 +67,7 @@ const topics: TopicItem[] = [
       </svg>
     ),
     title: "How-to Guides",
-    desc: "Step-by-step guides to help you make the most of cruisestack.",
+    desc: "Step-by-step guides to help you make the most of cruisestack.ai.",
   },
   {
     icon: (
@@ -113,7 +113,7 @@ const topics: TopicItem[] = [
 
 const popular: PopularItem[] = [
   { tag: "BLOG",           title: "Real-time Inventory: The Key to More Bookings",              date: "May 10, 2024", readTime: "5 min read" },
-  { tag: "CASE STUDY",     title: "How TravelCo Increased Bookings by 40% with cruisestack",    date: "Apr 28, 2024", readTime: "7 min read" },
+  { tag: "CASE STUDY",     title: "How TravelCo Increased Bookings by 40% with cruisestack.ai",    date: "Apr 28, 2024", readTime: "7 min read" },
   { tag: "WEBINAR",        title: "Maximizing Revenue with Dynamic Pricing Strategies",          date: "Apr 15, 2024", readTime: "45 min watch" },
   { tag: "GUIDE",          title: "API Integrations: Connect and Scale Seamlessly",             date: "Apr 05, 2024", readTime: "6 min read" },
   { tag: "PRODUCT UPDATE", title: "What's New: Latest Features and Enhancements",              date: "Mar 22, 2024", readTime: "3 min read" },

@@ -80,11 +80,11 @@ const sections: Category[] = [
     items: [
       {
         q: "How can travel agencies automate lead follow-up?",
-        a: "Most travel agencies lose bookings not because of bad service, but because of slow follow-up. When a lead comes in via WhatsApp, website, or a call, every hour of delay drops conversion odds. Travel agency automation tools like CruiseStack use AI to instantly respond to new enquiries, qualify the lead based on budget and travel dates, and trigger follow-up sequences automatically so no lead sits untouched. This is especially useful for solo agents or small teams who can't monitor every channel 24/7.",
+        a: "Most travel agencies lose bookings not because of bad service, but because of slow follow-up. When a lead comes in via WhatsApp, website, or a call, every hour of delay drops conversion odds. Travel agency automation tools like cruisestack.ai use AI to instantly respond to new enquiries, qualify the lead based on budget and travel dates, and trigger follow-up sequences automatically so no lead sits untouched. This is especially useful for solo agents or small teams who can't monitor every channel 24/7.",
       },
       {
         q: "What is the best CRM for travel and cruise agents?",
-        a: "A good travel CRM needs to do more than store contacts - it should capture leads from multiple channels (WhatsApp, website, calls), auto-qualify them, and push follow-ups without manual work. Generic CRMs like Zoho or HubSpot aren't built for cruise-specific workflows (cabin categories, sailing dates, multi-line comparisons). Purpose-built platforms like CruiseStack combine CRM + booking engine + AI qualification in one system, made specifically for cruise agents.",
+        a: "A good travel CRM needs to do more than store contacts - it should capture leads from multiple channels (WhatsApp, website, calls), auto-qualify them, and push follow-ups without manual work. Generic CRMs like Zoho or HubSpot aren't built for cruise-specific workflows (cabin categories, sailing dates, multi-line comparisons). Purpose-built platforms like cruisestack.ai combine CRM + booking engine + AI qualification in one system, made specifically for cruise agents.",
       },
       {
         q: "Can AI handle customer enquiries for a travel agency?",
@@ -99,39 +99,39 @@ const sections: Category[] = [
         a: "Yes — instead of manually checking cabin availability and pricing across cruise lines, AI-powered tools can pull live pricing and generate a shareable quote or itinerary in minutes. This is one of the biggest time-drains for cruise agents that automation directly solves.",
       },
       {
-        q: "What is CruiseStack and who is it for?",
-        a: "CruiseStack is an AI-powered platform built specifically for cruise travel agents and agencies. It combines a live online booking engine covering 2500+ sailings across major cruise lines with an AI-driven lead dashboard — automating enquiry capture, qualification, quoting, and follow-up. It's built for independent agents and agencies who want to stop losing bookings to slow manual processes.",
+        q: "What is cruisestack.ai and who is it for?",
+        a: "cruisestack.ai is an AI-powered platform built specifically for cruise travel agents and agencies. It combines a live online booking engine covering 2500+ sailings across major cruise lines with an AI-driven lead dashboard — automating enquiry capture, qualification, quoting, and follow-up. It's built for independent agents and agencies who want to stop losing bookings to slow manual processes.",
       },
       {
-        q: "Does CruiseStack work with all major cruise lines?",
-        a: "Yes. CruiseStack's booking engine covers 2500+ sailings across all major cruise lines with live pricing and cabin category availability, so agents don't need to check multiple cruise line portals separately.",
+        q: "Does cruisestack.ai work with all major cruise lines?",
+        a: "Yes. cruisestack.ai's booking engine covers 2500+ sailings across all major cruise lines with live pricing and cabin category availability, so agents don't need to check multiple cruise line portals separately.",
       },
       {
-        q: "How is CruiseStack different from a generic travel CRM?",
-        a: "Generic CRMs are built for general sales pipelines, not cruise-specific workflows like sailing dates, cabin categories, and multi-line price comparison. CruiseStack is purpose-built around this, combining booking data with AI lead handling in one workflow, instead of forcing agents to stitch together separate CRM and booking tools.",
+        q: "How is cruisestack.ai different from a generic travel CRM?",
+        a: "Generic CRMs are built for general sales pipelines, not cruise-specific workflows like sailing dates, cabin categories, and multi-line price comparison. cruisestack.ai is purpose-built around this, combining booking data with AI lead handling in one workflow, instead of forcing agents to stitch together separate CRM and booking tools.",
       },
     ],
   },
   {
     id: "about",
-    label: "About CruiseStack",
+    label: "About cruisestack.ai",
     icon: icon.info,
     items: [
       {
-        q: "What is CruiseStack?",
-        a: "CruiseStack is an AI-powered cruise booking and management platform built specifically for travel agents and agencies. It combines live cruise inventory, booking, quotes, lead management, AI automation, payments, and back-office operations in one platform.",
+        q: "What is cruisestack.ai?",
+        a: "cruisestack.ai is an AI-powered cruise booking and management platform built specifically for travel agents and agencies. It combines live cruise inventory, booking, quotes, lead management, AI automation, payments, and back-office operations in one platform.",
       },
       {
-        q: "Who is CruiseStack built for?",
-        a: "CruiseStack is built for independent travel agents, cruise specialists, and travel agencies selling cruises through B2C or B2B channels.",
+        q: "Who is cruisestack.ai built for?",
+        a: "cruisestack.ai is built for independent travel agents, cruise specialists, and travel agencies selling cruises through B2C or B2B channels.",
       },
       {
-        q: "How does CruiseStack help travel agencies sell more cruises?",
-        a: "CruiseStack brings cruise search, comparison, quoting, booking, lead management, and AI-powered follow-up into one system. This helps agencies respond faster, reduce manual work, and manage more enquiries without adding unnecessary operational complexity.",
+        q: "How does cruisestack.ai help travel agencies sell more cruises?",
+        a: "cruisestack.ai brings cruise search, comparison, quoting, booking, lead management, and AI-powered follow-up into one system. This helps agencies respond faster, reduce manual work, and manage more enquiries without adding unnecessary operational complexity.",
       },
       {
-        q: "How is CruiseStack different from a generic travel CRM?",
-        a: "Generic CRMs are built around general sales pipelines. CruiseStack is built specifically around cruise workflows such as sailing dates, cabin categories, live pricing, cruise comparisons, quotes, bookings, and cabin blocking — while also providing CRM and AI capabilities.",
+        q: "How is cruisestack.ai different from a generic travel CRM?",
+        a: "Generic CRMs are built around general sales pipelines. cruisestack.ai is built specifically around cruise workflows such as sailing dates, cabin categories, live pricing, cruise comparisons, quotes, bookings, and cabin blocking — while also providing CRM and AI capabilities.",
       },
     ],
   },
@@ -141,11 +141,11 @@ const sections: Category[] = [
     icon: icon.bookings,
     items: [
       {
-        q: "How many cruise lines and sailings are available on CruiseStack?",
-        a: "CruiseStack's booking engine provides access to 36+ cruise lines and 2,600+ sailings, giving agents a wide range of cruise options from one platform.",
+        q: "How many cruise lines and sailings are available on cruisestack.ai?",
+        a: "cruisestack.ai's booking engine provides access to 36+ cruise lines and 2,600+ sailings, giving agents a wide range of cruise options from one platform.",
       },
       {
-        q: "Does CruiseStack show live cruise pricing and cabin availability?",
+        q: "Does cruisestack.ai show live cruise pricing and cabin availability?",
         a: "Yes. Agents can search live cruise inventory and view current pricing and cabin category availability without having to check multiple cruise line portals separately.",
       },
       {
@@ -153,12 +153,12 @@ const sections: Category[] = [
         a: "Yes. Agents can compare cruise lines, sailing dates, itineraries, cabin categories, and pricing in one place, making it easier to find the right option for each customer.",
       },
       {
-        q: "Can I book cruises directly through CruiseStack?",
+        q: "Can I book cruises directly through cruisestack.ai?",
         a: "Yes. Agents can search, quote, and book cruises directly through the platform.",
       },
       {
-        q: "Can CruiseStack generate cruise quotes and itineraries automatically?",
-        a: "Yes. CruiseStack can use live cruise information to help agents create quotes and itineraries without manually compiling information from multiple cruise line systems.",
+        q: "Can cruisestack.ai generate cruise quotes and itineraries automatically?",
+        a: "Yes. cruisestack.ai can use live cruise information to help agents create quotes and itineraries without manually compiling information from multiple cruise line systems.",
       },
       {
         q: "Can I create and share PDF cruise quotations?",
@@ -166,7 +166,7 @@ const sections: Category[] = [
       },
       {
         q: "Can I block a cabin or lock the price for my customer?",
-        a: "Yes. CruiseStack supports cabin blocking and price-lock functionality, allowing agents to secure an option while customers make their final decision.",
+        a: "Yes. cruisestack.ai supports cabin blocking and price-lock functionality, allowing agents to secure an option while customers make their final decision.",
       },
     ],
   },
@@ -177,23 +177,23 @@ const sections: Category[] = [
     items: [
       {
         q: "How can travel agencies automate lead follow-up?",
-        a: "CruiseStack can automatically respond to new enquiries, qualify leads, and trigger follow-up sequences. This helps agencies respond quickly and ensures potential customers don't get forgotten when agents are busy.",
+        a: "cruisestack.ai can automatically respond to new enquiries, qualify leads, and trigger follow-up sequences. This helps agencies respond quickly and ensures potential customers don't get forgotten when agents are busy.",
       },
       {
         q: "Can AI handle customer enquiries for a travel agency?",
-        a: "Yes. CruiseStack's AI can handle the first layer of customer conversations, answer common questions, collect travel preferences, qualify enquiries, and pass qualified leads to a human agent.",
+        a: "Yes. cruisestack.ai's AI can handle the first layer of customer conversations, answer common questions, collect travel preferences, qualify enquiries, and pass qualified leads to a human agent.",
       },
       {
         q: "What is an AI voice bot and how does it help travel agents?",
         a: "An AI voice bot can answer and make calls automatically, ask qualifying questions, capture customer requirements, and log the information for agents. This helps agencies handle enquiries even when their team is unavailable.",
       },
       {
-        q: "Can CruiseStack's AI work on WhatsApp and my website?",
-        a: "Yes. CruiseStack's AI can be deployed across customer-facing channels such as your website and WhatsApp, allowing customers to get responses without waiting for an agent.",
+        q: "Can cruisestack.ai's AI work on WhatsApp and my website?",
+        a: "Yes. cruisestack.ai's AI can be deployed across customer-facing channels such as your website and WhatsApp, allowing customers to get responses without waiting for an agent.",
       },
       {
         q: "Does AI replace travel agents?",
-        a: "No. CruiseStack is designed to support agents, not replace them. AI handles repetitive tasks such as initial enquiries, qualification, and follow-up so agents can focus on customers who are ready to book.",
+        a: "No. cruisestack.ai is designed to support agents, not replace them. AI handles repetitive tasks such as initial enquiries, qualification, and follow-up so agents can focus on customers who are ready to book.",
       },
     ],
   },
@@ -204,14 +204,14 @@ const sections: Category[] = [
     items: [
       {
         q: "Can customers make payments online?",
-        a: "Yes. CruiseStack supports online-direct payments, making it easier for customers to complete their bookings digitally.",
+        a: "Yes. cruisestack.ai supports online-direct payments, making it easier for customers to complete their bookings digitally.",
       },
       {
-        q: "Can CruiseStack be integrated with my existing website?",
-        a: "Yes. CruiseStack can be integrated with an existing agency website through options such as iframe and API integration, depending on the agency's requirements.",
+        q: "Can cruisestack.ai be integrated with my existing website?",
+        a: "Yes. cruisestack.ai can be integrated with an existing agency website through options such as iframe and API integration, depending on the agency's requirements.",
       },
       {
-        q: "Can I customize CruiseStack for my travel agency?",
+        q: "Can I customize cruisestack.ai for my travel agency?",
         a: "Yes. Agencies can customize elements such as branding and the customer-facing booking experience. Additional integrations and requirements can be discussed based on the agency's needs.",
       },
     ],
@@ -222,24 +222,24 @@ const sections: Category[] = [
     icon: icon.support,
     items: [
       {
-        q: "Do I need technical knowledge to use CruiseStack?",
-        a: "No. CruiseStack is designed for travel agents and agencies and does not require advanced technical knowledge for everyday use. The team can also assist with setup, integrations, and onboarding.",
+        q: "Do I need technical knowledge to use cruisestack.ai?",
+        a: "No. cruisestack.ai is designed for travel agents and agencies and does not require advanced technical knowledge for everyday use. The team can also assist with setup, integrations, and onboarding.",
       },
       {
-        q: "Can independent travel agents use CruiseStack?",
-        a: "Yes. CruiseStack can be used by independent agents as well as larger travel agencies, with capabilities designed to support different sales and operational requirements.",
+        q: "Can independent travel agents use cruisestack.ai?",
+        a: "Yes. cruisestack.ai can be used by independent agents as well as larger travel agencies, with capabilities designed to support different sales and operational requirements.",
       },
       {
         q: "Do you provide training and support?",
-        a: "Yes. CruiseStack provides onboarding and support to help agencies get started with the platform and use its booking, CRM, AI, and operational features effectively.",
+        a: "Yes. cruisestack.ai provides onboarding and support to help agencies get started with the platform and use its booking, CRM, AI, and operational features effectively.",
       },
       {
-        q: "How much does CruiseStack cost?",
-        a: "CruiseStack offers packages based on an agency's requirements, including the features, integrations, and scale of the business. Contact the CruiseStack team for pricing and a demo.",
+        q: "How much does cruisestack.ai cost?",
+        a: "cruisestack.ai offers packages based on an agency's requirements, including the features, integrations, and scale of the business. Contact the cruisestack.ai team for pricing and a demo.",
       },
       {
-        q: "How do I get started with CruiseStack?",
-        a: "You can start by booking a demo with the CruiseStack team. The team can understand your agency's workflow, show you the relevant features, and recommend the right setup.",
+        q: "How do I get started with cruisestack.ai?",
+        a: "You can start by booking a demo with the cruisestack.ai team. The team can understand your agency's workflow, show you the relevant features, and recommend the right setup.",
       },
     ],
   },
@@ -314,7 +314,7 @@ const FAQ = () => {
             <span className={styles.heroBadge}>FAQ</span>
             <h1>Frequently asked questions</h1>
             <p>
-              Get answers to common questions about cruisestack, our platform,
+              Get answers to common questions about cruisestack.ai, our platform,
               features, pricing and more.
             </p>
 
@@ -445,7 +445,7 @@ const FAQ = () => {
             <span className={styles.ctaEyebrow}>Still have questions?</span>
             <h2 className={styles.ctaTitle}>Our experts are ready to help.</h2>
             <p className={styles.ctaDesc}>
-              Get a personalised walkthrough and see how cruisestack can power
+              Get a personalised walkthrough and see how cruisestack.ai can power
               your cruise business.
             </p>
             <div className={styles.ctaActions}>

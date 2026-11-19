@@ -10,9 +10,9 @@ import ctaImg from "../../assets/faq-cta.png";
 import worldDots from "../../assets/world-dots.svg";
 
 export const metadata: Metadata = {
-  title: "Contact Us - cruisestack",
+  title: "Contact Us - cruisestack.ai",
   description:
-    "Have questions about CruiseStack, need a demo, or want to discuss how we can help your business? Get in touch with our team.",
+    "Have questions about cruisestack.ai, need a demo, or want to discuss how we can help your business? Get in touch with our team.",
 };
 
 // Contact details shown on the page. Confirm before publishing.
@@ -47,7 +47,7 @@ export default function ContactUsPage() {
           <span className={styles.eyebrow}>Contact Us</span>
           <h1>We&apos;re here to help</h1>
           <p>
-            Have questions about CruiseStack, need a demo, or want to discuss how we can help your business? Our team is ready to connect.
+            Have questions about cruisestack.ai, need a demo, or want to discuss how we can help your business? Our team is ready to connect.
           </p>
         </div>
       </section>
@@ -91,7 +91,7 @@ export default function ContactUsPage() {
               </span>
               <div>
                 <h3>Book a personalized demo</h3>
-                <p>See how CruiseStack can work for your business with a personalized demo from our team.</p>
+                <p>See how cruisestack.ai can work for your business with a personalized demo from our team.</p>
                 <Link href="/bookdemo" className={styles.btnOutline}>
                   Book a Demo <Arrow />
                 </Link>
@@ -149,7 +149,7 @@ export default function ContactUsPage() {
             cruise business?
           </h2>
           <p>
-            Get in touch with our team to learn how CruiseStack can help you sell more cruises, work smarter and deliver better experiences.
+            Get in touch with our team to learn how cruisestack.ai can help you sell more cruises, work smarter and deliver better experiences.
           </p>
           <Link href="/bookdemo" className={styles.btnPrimary}>
             Book a Demo <Arrow />

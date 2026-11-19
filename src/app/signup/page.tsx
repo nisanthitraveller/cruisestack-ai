@@ -97,11 +97,11 @@ export default function CompanySignupPage() {
       <div className="login-page">
       <section className="login-intro">
         <p className="eyebrow">Company Signup</p>
-        <h1>Get started with cruisestack</h1>
+        <h1>Get started with cruisestack.ai</h1>
         <p style={{marginBottom:'28px'}}>
          Register your company and start managing your cruise business with a secure, centralized system.
         </p>
-        <Image src={signImg} alt="cruisestack" width={340}/>
+        <Image src={signImg} alt="cruisestack.ai" width={340}/>
       </section>
 
       <section className="signup-panel" aria-label="Company signup form">

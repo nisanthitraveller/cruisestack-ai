@@ -66,9 +66,9 @@ export default function BookDemoPage() {
         {/* Left — text content */}
         <div className={styles.heroLeft}>
           <span className={styles.eyebrow}>BOOK A DEMO</span>
-          <h1 className={styles.heroTitle}>See cruisestack <br/>in action</h1>
+          <h1 className={styles.heroTitle}>See cruisestack.ai <br/>in action</h1>
           <p className={styles.heroDesc}>
-            Schedule a personalized demo and see how cruisestack can help your business grow.
+            Schedule a personalized demo and see how cruisestack.ai can help your business grow.
           </p>
         </div>
 
