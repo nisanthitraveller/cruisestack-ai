@@ -44,7 +44,7 @@ export function CertificationCardView({ moduleTitle, enrolHref, examUrl, success
           </>
         ) : (
           <>
-            <h2 className={styles.certTitle}>Complete this module and get certified</h2>
+            <h2 className={styles.certTitle}>Cruise travel expert certification level 1</h2>
             <p>Watch all chapter videos, take a short exam and earn a cruisestack.ai Academy certificate with your score.</p>
             <Link href={enrolHref} className={styles.btnPrimary}>
               Enrol for certification <ArrowRight size={18} />

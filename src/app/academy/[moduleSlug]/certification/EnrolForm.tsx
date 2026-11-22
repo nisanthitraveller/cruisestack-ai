@@ -45,8 +45,7 @@ export default function EnrolForm({ moduleSlug }: { moduleSlug: string }) {
   const router = useRouter();
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
-  const firstNameField = useRef<HTMLInputElement>(null);
-  const lastNameField = useRef<HTMLInputElement>(null);
+  const fullNameField = useRef<HTMLInputElement>(null);
   const emailField = useRef<HTMLInputElement>(null);
   const phoneCodeField = useRef<HTMLSelectElement>(null);
   const phoneField = useRef<HTMLInputElement>(null);
@@ -55,12 +54,8 @@ export default function EnrolForm({ moduleSlug }: { moduleSlug: string }) {
     const viewer = getAcademyViewerProfile();
     if (!viewer) return;
 
-    const [firstName = "", ...lastNameParts] = viewer.name.trim().split(/\s+/);
     const phone = splitAcademyViewerPhone(viewer.mobile);
-    if (firstNameField.current) firstNameField.current.value = firstName;
-    if (lastNameField.current) {
-      lastNameField.current.value = lastNameParts.join(" ");
-    }
+    if (fullNameField.current) fullNameField.current.value = viewer.name.trim();
     if (emailField.current) emailField.current.value = viewer.email;
     if (phoneCodeField.current) phoneCodeField.current.value = phone.code;
     if (phoneField.current) phoneField.current.value = phone.number;
@@ -73,12 +68,9 @@ export default function EnrolForm({ moduleSlug }: { moduleSlug: string }) {
     setError("");
     setSending(true);
     const formData = new FormData(e.currentTarget);
-    const name = [
-      String(formData.get("firstName") || "").trim(),
-      String(formData.get("lastName") || "").trim(),
-    ]
-      .filter(Boolean)
-      .join(" ");
+    const name = String(formData.get("fullName") || "")
+      .trim()
+      .replace(/\s+/g, " ");
     const viewer = {
       name,
       email: String(formData.get("email") || "").trim().toLowerCase(),
@@ -125,35 +117,21 @@ export default function EnrolForm({ moduleSlug }: { moduleSlug: string }) {
       <h2>Your details</h2>
 
       <div className={styles.enrolField}>
-        <label htmlFor="firstName">
-          First name <span aria-hidden="true">*</span>
+        <label htmlFor="fullName">
+          Full name <span aria-hidden="true">*</span>
         </label>
         <input
-          ref={firstNameField}
-          id="firstName"
-          name="firstName"
+          ref={fullNameField}
+          id="fullName"
+          name="fullName"
           type="text"
-          placeholder="Enter your first name"
-          autoComplete="given-name"
-          required
-        />
-      </div>
-      <div className={styles.enrolField}>
-        <label htmlFor="lastName">
-          Last name <span aria-hidden="true">*</span>
-        </label>
-        <input
-          ref={lastNameField}
-          id="lastName"
-          name="lastName"
-          type="text"
-          placeholder="Enter your last name"
-          autoComplete="family-name"
+          placeholder="Enter your full name"
+          autoComplete="name"
           required
         />
       </div>
 
-      <div className={`${styles.enrolField} ${styles.enrolFull}`}>
+      <div className={styles.enrolField}>
         <label htmlFor="email">
           Email address <span aria-hidden="true">*</span>
         </label>

@@ -4,9 +4,11 @@ import Link from "next/link";
 import Footer from "@/components/Footer/footer";
 import Header from "@/components/Header/header";
 import styles from "./academy.module.css";
-import { academyModules, moduleHref } from "./data";
+import { academyModules, certificationHref, examFormUrl, moduleHref } from "./data";
 import { ArrowRight, ModuleIconSvg } from "./icons";
 import PartnerCard from "./PartnerCard";
+import StickyEnrol from "./StickyEnrol";
+import { CertificationCardView } from "./CertificationCard";
 import heroImg from "../../assets/academy-banner.webp";
 import academyIllustration from "../../assets/academy-illustration.svg";
 import academyLogo from "../../assets/cruise-academy.svg";
@@ -45,6 +47,16 @@ export default function AcademyPage() {
           </Link>
         </div>
       </section>
+
+      {/* ───── CERTIFICATION ───── */}
+      <div className={styles.container}>
+        <CertificationCardView
+          moduleTitle={academyModules[0].title}
+          enrolHref={certificationHref(academyModules[0])}
+          examUrl={examFormUrl(academyModules[0])}
+          success={false}
+        />
+      </div>
 
       {/* ───── MODULES ───── */}
       <section id="modules" className={styles.section}>
@@ -91,6 +103,7 @@ export default function AcademyPage() {
         </div>
       </section>
 
+      <StickyEnrol href={certificationHref(academyModules[0])} />
       <Footer />
     </div>
   );

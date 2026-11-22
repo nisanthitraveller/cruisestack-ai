@@ -5,7 +5,8 @@ import Header from "@/components/Header/header";
 import styles from "../../academy.module.css";
 import { academyModules, getModule } from "../../data";
 import EnrolForm from "./EnrolForm";
-import CertificateArt from "./CertificateArt";
+import Image from "next/image";
+import certificateImg from "../../../../assets/certificate-expert-level-1.png";
 
 type Props = { params: Promise<{ moduleSlug: string }> };
 
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const found = getModule((await params).moduleSlug);
   if (!found) return {};
   return {
-    title: "CruiseCred - Cruise Travel Specialist Certification | cruisestack.ai Academy",
+    title: "Cruise travel expert certification level 1 | cruisestack.ai Academy",
     description:
       "A professional credential in cruise selling. Watch the five free cruisestack.ai Academy modules, take the assessment and earn a certificate with your score.",
     robots: { index: false }, // a registration form, not a page to rank
@@ -81,7 +82,7 @@ const faqs = [
   },
   {
     q: "What does the certificate show?",
-    a: "Your name, the CruiseCred Cruise Travel Specialist Certification, and the score you achieved — issued by cruisestack.ai Academy. The score is printed on the certificate itself, so it records a result rather than attendance.",
+    a: "Your name, the cruise travel expert certification level 1, and the score you achieved — issued by cruisestack.ai Academy. The score is printed on the certificate itself, so it records a result rather than attendance.",
   },
   {
     q: "Can I add this to my CV and LinkedIn profile?",
@@ -123,7 +124,7 @@ export default async function CertificationEnrolPage({ params }: Props) {
         <div className={`${styles.container} ${styles.cpHeroGrid}`}>
           <div>
             <span className={styles.cpEyebrow}>cruisestack.ai Academy · Certification</span>
-            <h1>CruiseCred - Cruise Travel Specialist Certification</h1>
+            <h1>Cruise travel expert certification level 1</h1>
             <p className={styles.cpLead}>A professional credential in cruise selling</p>
             <ul className={styles.cpChecks}>
               <li><Tick /><span><strong>The course is free.</strong> All five modules, before and after you enrol.</span></li>
@@ -134,7 +135,13 @@ export default async function CertificationEnrolPage({ params }: Props) {
               Get certified <Arrow />
             </a>
           </div>
-          <CertificateArt />
+          <Image
+            src={certificateImg}
+            alt="Sample cruise travel expert certification level 1 certificate"
+            className={styles.cpHeroCert}
+            sizes="(max-width: 900px) 100vw, 600px"
+            priority
+          />
         </div>
       </section>
 
@@ -200,7 +207,7 @@ export default async function CertificationEnrolPage({ params }: Props) {
           <div className={styles.cpPriceCard}>
             <div className={styles.cpPriceHead}>
               <div className={styles.cpPrice}><span>$</span>99</div>
-              <p>One-time fee · Cruise Travel Specialist Certification, all five modules</p>
+              <p>One-time fee · Cruise travel expert certification level 1, all five modules</p>
             </div>
             <div className={styles.cpIncluded}>
               <ul>

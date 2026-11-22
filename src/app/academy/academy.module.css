@@ -16,7 +16,8 @@
   font-family: "Inter", sans-serif;
   color: var(--navy);
   background: #fff;
-  overflow-x: hidden;
+  /* clip (not hidden) so position: sticky still works inside the page */
+  overflow-x: clip;
 }
 /* :where() gives this reset zero specificity, so the shared Header/Footer styles always win over it */
 :where(.page) * {
@@ -909,12 +910,18 @@
     gap: 12px;
     max-width: 480px; /* stop the logos growing past desktop size on small tablets */
   }
+  /* on phones both logos sit in matching white boxes of equal width */
   .academyLogo {
-    flex: 1.45 1 0;
-    align-self: center;
+    flex: 1 1 0;
+    align-self: stretch;
     min-width: 0;
     width: 100%;
     height: auto;
+    padding: 8px 12px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(10, 31, 68, 0.12);
   }
   .poweredBy {
     flex: 1 1 0;
@@ -1729,215 +1736,6 @@
   transform: translateY(-1px);
 }
 
-/* sample certificate (sized with container query units, like the design) */
-.certArtRoot {
-  container-type: inline-size;
-  width: 100%;
-}
-.certPaper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1.414 / 1;
-  overflow: hidden;
-  background: linear-gradient(160deg, #fffefb 0%, #fdfaf3 100%);
-  border: 1px solid #e3d9c2;
-  border-radius: 1.2cqi;
-  box-shadow: 0 2cqi 6cqi rgba(10, 34, 64, 0.16);
-  color: #0a2240;
-}
-.certRuleOuter,
-.certRuleInner {
-  position: absolute;
-  pointer-events: none;
-}
-.certRuleOuter {
-  inset: 2.1cqi;
-  border: 0.5cqi solid #0a2240;
-  border-radius: 0.6cqi;
-}
-.certRuleInner {
-  inset: 3.4cqi;
-  border: 0.14cqi solid #c4a763;
-  border-radius: 0.3cqi;
-}
-.certContent {
-  position: absolute;
-  inset: 3.4cqi;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 4.6cqi 6cqi;
-  text-align: center;
-}
-.certIssuer {
-  display: flex;
-  align-items: center;
-  gap: 1.1cqi;
-  margin-bottom: 0.9cqi;
-  font-size: 2.9cqi;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-.certIssuer svg {
-  width: 4.4cqi;
-  height: 4.4cqi;
-}
-.certBlue {
-  color: #0f5fd9;
-}
-.certLight {
-  font-weight: 500;
-}
-.certPowered {
-  margin-bottom: 2cqi;
-  font-size: 1.5cqi;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #9ca9bc;
-}
-.certGoldBar {
-  width: 7cqi;
-  height: 0.22cqi;
-  margin-bottom: 2.6cqi;
-  background: #c4a763;
-}
-.certKicker {
-  margin-bottom: 2.4cqi;
-  font-size: 2.3cqi;
-  font-weight: 600;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: #8a6e35;
-}
-.certSmall {
-  max-width: 78%;
-  margin-bottom: 1.1cqi;
-  font-size: 2.1cqi;
-  line-height: 1.5;
-  color: #6b7b91;
-}
-.certName {
-  margin-bottom: 0.8cqi;
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: 6.6cqi;
-  font-weight: 600;
-  line-height: 1.1;
-}
-.certNameLine {
-  width: 34cqi;
-  max-width: 70%;
-  height: 0.1cqi;
-  margin-bottom: 2.2cqi;
-  background: #ded3ba;
-}
-.certBrand {
-  margin-bottom: 0.6cqi;
-  font-size: 1.7cqi;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: #8a6e35;
-}
-.certProgram {
-  max-width: 82%;
-  margin-bottom: 0.8cqi;
-  font-size: 3.6cqi;
-  font-weight: 600;
-  line-height: 1.2;
-}
-.certCovers {
-  margin-bottom: 2.2cqi;
-  font-size: 1.9cqi;
-  color: #8a7b63;
-}
-.certScore {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.4cqi;
-  padding: 1.1cqi 2.6cqi;
-  border: 0.14cqi solid #c4a763;
-  border-radius: 10cqi;
-  background: rgba(196, 167, 99, 0.07);
-}
-.certScore span {
-  font-size: 2cqi;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #8a6e35;
-}
-.certScore strong {
-  font-size: 2.9cqi;
-  font-weight: 700;
-}
-.certSpacer {
-  flex: 1 1 auto;
-}
-.certFoot {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 3cqi;
-  width: 100%;
-  text-align: left;
-}
-.certFootRight {
-  text-align: right;
-}
-.certSign {
-  width: 20cqi;
-  height: 0.1cqi;
-  margin-bottom: 0.8cqi;
-  background: #c8cfda;
-}
-.certFootRight .certSign {
-  margin-left: auto;
-}
-.certFootTitle {
-  font-size: 1.8cqi;
-  font-weight: 500;
-}
-.certFootSub {
-  margin-top: 0.3cqi;
-  font-size: 1.6cqi;
-  color: #8e9bad;
-}
-.certSeal {
-  position: absolute;
-  right: 7cqi;
-  bottom: 11cqi;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 13cqi;
-  height: 13cqi;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #d8be7e 0%, #b99246 55%, #cbae69 100%);
-  box-shadow: 0 0.8cqi 2.4cqi rgba(138, 110, 53, 0.32);
-}
-.certSeal > div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 10.4cqi;
-  height: 10.4cqi;
-  border: 0.18cqi solid rgba(255, 253, 246, 0.75);
-  border-radius: 50%;
-}
-.certSeal svg {
-  width: 3.4cqi;
-  height: 3.4cqi;
-}
-.certSeal span {
-  margin-top: 0.5cqi;
-  font-size: 1.4cqi;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: #fffdf6;
-}
-
 @media (max-width: 1100px) {
   .cpHeroGrid {
     gap: 40px;
@@ -1991,4 +1789,53 @@
   .cpFaq summary {
     font-size: 16px;
   }
+}
+
+/* certification page hero image */
+.cpHeroCert {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(10, 31, 68, 0.14);
+}
+
+/* sticky "Enrol for certification" bar at the bottom of Academy pages */
+.stickyEnrol {
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 20px rgba(10, 31, 68, 0.06);
+}
+.stickyEnrolInner {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.stickyEnrolInner .btnPrimary {
+  padding: 13px 26px;
+  font-size: 16px;
+}
+
+/* sticky "Enrol for certification" bar at the bottom of Academy pages */
+.stickyEnrol {
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+  background: #fff;
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -6px 20px rgba(10, 31, 68, 0.06);
+}
+.stickyEnrolInner {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.stickyEnrolInner .btnPrimary {
+  padding: 13px 26px;
+  font-size: 16px;
 }

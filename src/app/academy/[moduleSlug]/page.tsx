@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer/footer";
 import PartnerCard from "../PartnerCard";
+import StickyEnrol from "../StickyEnrol";
 import WatchGate from "../WatchGate";
 import CertificationCard, { CertificationCardView } from "../CertificationCard";
 import Header from "@/components/Header/header";
@@ -223,6 +224,7 @@ export default async function ModulePage({ params }: Props) {
         </div>
       </section>
 
+      <StickyEnrol href={certificationHref(m)} />
       <Footer />
     </div>
   );

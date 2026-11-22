@@ -3,11 +3,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer/footer";
 import PartnerCard from "../../PartnerCard";
+import StickyEnrol from "../../StickyEnrol";
 import Header from "@/components/Header/header";
 import ChapterVideo from "../../ChapterVideo";
 import styles from "../../academy.module.css";
 import {
   academyModules,
+  certificationHref,
   chapterHref,
   chapterThumbnail,
   getChapter,
@@ -174,6 +176,7 @@ export default async function ChapterPage({ params }: Props) {
         </nav>
       </div>
 
+      <StickyEnrol href={certificationHref(m)} />
       <Footer />
     </div>
   );
