@@ -58,7 +58,6 @@ const included = [
   "A credential you can list on your CV and LinkedIn profile",
 ];
 
-// TODO (content): two answers below are placeholders from the design and need real details.
 const faqs = [
   {
     q: "Do I need prior cruise experience to take this?",
@@ -66,35 +65,27 @@ const faqs = [
   },
   {
     q: "Do I have to pay to watch the course?",
-    a: "No. All five modules of cruisestack.ai Academy are free to watch. The $99 is the certification fee — it covers the assessment, the evaluation of your answers and the certificate.",
+    a: "No. All five modules of cruisestack.ai Academy are free to watch.",
   },
   {
     q: "What does the assessment cover?",
     a: "The material across all five modules: destinations, ports and cruise lines; room categories, decks and cabins; trip summaries; pricing, taxation and payments; and payment and cancellation terms.",
   },
   {
-    q: "How long is the exam and how many questions are there?",
-    a: "[The assessment is X questions and takes about X minutes to complete.]",
-  },
-  {
-    q: "What happens if I do not pass?",
-    a: "[Set out your retake policy here — whether a re-sit is included in the $99, how long you wait, and whether a further fee applies.]",
-  },
-  {
-    q: "What does the certificate show?",
-    a: "Your name, the cruise travel expert certification level 1, and the score you achieved — issued by cruisestack.ai Academy. The score is printed on the certificate itself, so it records a result rather than attendance.",
-  },
-  {
     q: "Can I add this to my CV and LinkedIn profile?",
     a: "Yes. It is a named certification from cruisestack.ai Academy, delivered in partnership with AERTiCKET, and you can list it together with the score you achieved.",
   },
   {
-    q: "Is this an industry licence or accreditation?",
-    a: "No, and it does not claim to be. cruisestack.ai Academy is delivered in partnership with AERTiCKET, a global travel technology company. The certification evidences your knowledge of the course material; it is not a government or trade-body licence.",
+    q: "Do I have to watch every module before the assessment?",
+    a: "The assessment draws on all five modules, but you can give the exam if you have prior knowledge. You can watch them in order or jump to the ones you need.",
   },
   {
-    q: "Do I have to watch every module before the exam?",
-    a: "The assessment draws on all five modules, so working through each one is how you prepare for it. You can watch them in order or jump to the ones you need.",
+    q: "How long is the assessment and how many questions are there?",
+    a: "The online assessment takes about 20-30 minutes. The video assessment is a 20-minute call scheduled after you pass it.",
+  },
+  {
+    q: "What happens if I don’t pass?",
+    a: "One re-sit is included. You can retake after 15 days, and your best score is the one recorded on the certificate.",
   },
 ];
 
