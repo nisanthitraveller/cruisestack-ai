@@ -200,17 +200,18 @@ export const academyModules: AcademyModule[] = [
         title: "How to read a cruise trip summary: key details every travel agent should check",
         description:
           "Learn how to read a cruise trip summary and the key details every travel agent should check before sharing it.",
-        duration: "4:51",
+        duration: "5:22",
         updated: "Nov 2026",
-        videoUrl: "https://www.youtube.com/watch?v=QTpCTPO6roo",
+        videoUrl: "https://www.youtube.com/watch?v=lW6WsV6UeK8",
       },
       {
         slug: "share-trip-summary-with-customer",
         title: "How to share a trip summary with the customer",
-        description: "Learn how to share a trip summary with your customer from cruisestack.ai.",
-        duration: "2:41",
+        description:
+          "Learn how to share a cruise trip summary with your customer, so they can review the itinerary, cabin details, pricing and other booking information.",
+        duration: "5:10",
         updated: "Nov 2026",
-        videoUrl: "https://www.youtube.com/watch?v=R2ANNAEcesk",
+        videoUrl: "https://www.youtube.com/watch?v=qBU7DgR_RuE",
       },
     ],
   },

@@ -72,6 +72,28 @@ export default async function ModulePage({ params }: Props) {
         </div>
       </section>
 
+      <div className={styles.container}>
+        {/* ───── CERTIFICATION ───── */}
+        {m.chapters.length > 0 && (
+          <Suspense
+            fallback={
+              <CertificationCardView
+                moduleTitle={m.title}
+                enrolHref={certificationHref(m)}
+                examUrl={examFormUrl(m)}
+                success={false}
+              />
+            }
+          >
+            <CertificationCard
+              moduleTitle={m.title}
+              enrolHref={certificationHref(m)}
+              examUrl={examFormUrl(m)}
+            />
+          </Suspense>
+        )}
+      </div>
+
       {/* ───── CHAPTERS ───── */}
       <section className={styles.section}>
         <div className={styles.container}>
@@ -146,26 +168,6 @@ export default async function ModulePage({ params }: Props) {
               )}
             </div>
           </div>
-
-          {/* ───── CERTIFICATION ───── */}
-          {m.chapters.length > 0 && (
-            <Suspense
-              fallback={
-                <CertificationCardView
-                  moduleTitle={m.title}
-                  enrolHref={certificationHref(m)}
-                  examUrl={examFormUrl(m)}
-                  success={false}
-                />
-              }
-            >
-              <CertificationCard
-                moduleTitle={m.title}
-                enrolHref={certificationHref(m)}
-                examUrl={examFormUrl(m)}
-              />
-            </Suspense>
-          )}
 
           <div className={styles.partnerBelow}>
             <PartnerCard />
