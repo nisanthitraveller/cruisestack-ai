@@ -4,12 +4,12 @@ import Link from "next/link";
 import Footer from "@/components/Footer/footer";
 import Header from "@/components/Header/header";
 import styles from "./academy.module.css";
-import { academyModules, certificationHref, examFormUrl, moduleHref } from "./data";
+import { academyModules, certificationHref, moduleHref } from "./data";
 import { ArrowRight, ModuleIconSvg } from "./icons";
 import PartnerCard from "./PartnerCard";
 import StickyEnrol from "./StickyEnrol";
-import { CertificationCardView } from "./CertificationCard";
-import heroImg from "../../assets/academy-banner.webp";
+import coastlineImg from "../../assets/academy-coastline.png";
+import certificateImg from "../../assets/academy-certificate.png";
 import academyIllustration from "../../assets/academy-illustration.svg";
 import academyLogo from "../../assets/cruise-academy.svg";
 import aerticketLogo from "../../assets/aerticket.png";
@@ -21,42 +21,46 @@ export const metadata: Metadata = {
 };
 
 export default function AcademyPage() {
-  const firstModule = academyModules[0];
-
   return (
     <div className={styles.page}>
       <Header />
 
       {/* ───── HERO ───── */}
-      <section className={styles.hero}>
-        <Image src={heroImg} alt="" fill priority sizes="100vw" className={styles.heroImg} />
-        <div className={styles.heroInner}>
-          <div className={styles.heroLogos}>
-            <Image src={academyLogo} alt="cruisestack.ai Academy" priority className={styles.academyLogo} />
-            <div className={styles.poweredBy}>
-              <span>Powered by</span>
-              <Image src={aerticketLogo} alt="AERTiCKET" />
+      <section className={styles.academyHero}>
+        <Image src={coastlineImg} alt="" fill priority sizes="100vw" className={styles.academyHeroBg} />
+        <div className={styles.academyHeroInner}>
+          <div className={styles.academyHeroCopy}>
+            <div className={styles.heroLogos}>
+              <Image src={academyLogo} alt="cruisestack.ai Academy" priority className={styles.academyLogo} />
+              <div className={styles.poweredBy}>
+                <span>Powered by</span>
+                <Image src={aerticketLogo} alt="AERTiCKET" />
+              </div>
+            </div>
+            <h1>Cruise training for growing your cruise business</h1>
+            <p>
+              A practical, module-based training program for travel agents and agencies. Learn how to sell cruises with confidence, grow your bookings, and get certified.
+            </p>
+            <span className={styles.academyCertEyebrow}>Certification program</span>
+            <h2>Cruise Travel Certification Level 1(CTEC 1)</h2>
+            <div className={styles.academyHeroActions}>
+              <Link href={certificationHref(academyModules[0])} className={styles.btnPrimary}>
+                Enrol for certification
+              </Link>
+              <Link href="#modules" className={styles.academyHeroSecondary}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+                  <path d="m10 8 6 4-6 4V8Z" fill="currentColor" />
+                </svg>
+                View program details
+              </Link>
             </div>
           </div>
-          <h1>Cruise training for growing your cruise business</h1>
-          <p>
-            cruisestack.ai Academy is a module-based cruise training program for travel agents and agencies. Each module teaches one part of selling a cruise: where people sail, which cabin to pick, how pricing and tax work, and what happens when a booking is cancelled. Watch in order or jump to the one you need.
-          </p>
-          <Link href={moduleHref(firstModule)} className={styles.btnPrimary}>
-            Start learning <ArrowRight size={18} />
-          </Link>
+          <div className={styles.academyHeroCertificate}>
+            <Image src={certificateImg} alt="Cruise Travel Certification Level 1(CTEC 1) sample certificate" priority sizes="(max-width: 780px) 92vw, 48vw" />
+          </div>
         </div>
       </section>
-
-      {/* ───── CERTIFICATION ───── */}
-      <div className={styles.container}>
-        <CertificationCardView
-          moduleTitle={academyModules[0].title}
-          enrolHref={certificationHref(academyModules[0])}
-          examUrl={examFormUrl(academyModules[0])}
-          success={false}
-        />
-      </div>
 
       {/* ───── MODULES ───── */}
       <section id="modules" className={styles.section}>
