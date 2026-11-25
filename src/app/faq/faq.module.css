@@ -32,7 +32,7 @@
 
 .heroContent h1 {
   font-family: "Inter", sans-serif;
-  font-size: clamp(32px, 4vw, 52px);
+  font-size: clamp(32px, 4vw, 46px);
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -0.02em;

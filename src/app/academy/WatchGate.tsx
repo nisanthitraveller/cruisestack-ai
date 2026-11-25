@@ -133,7 +133,7 @@ export default function WatchGate({ children }: { children: ReactNode }) {
 
             <form className={styles.gateForm} onSubmit={onSubmit}>
               <div className={styles.enrolField}>
-                <label htmlFor="gate-name">Name</label>
+                <label htmlFor="gate-name">Full name</label>
                 <input
                   ref={firstField}
                   id="gate-name"

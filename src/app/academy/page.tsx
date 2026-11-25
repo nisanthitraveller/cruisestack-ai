@@ -6,6 +6,7 @@ import Header from "@/components/Header/header";
 import styles from "./academy.module.css";
 import { academyModules, certificationHref, moduleHref } from "./data";
 import { ArrowRight, ModuleIconSvg } from "./icons";
+import HeroCertification from "./HeroCertification";
 import PartnerCard from "./PartnerCard";
 import StickyEnrol from "./StickyEnrol";
 import coastlineImg from "../../assets/academy-coastline.png";
@@ -41,23 +42,10 @@ export default function AcademyPage() {
             <p>
               A practical, module-based training program for travel agents and agencies. Learn how to sell cruises with confidence, grow your bookings, and get certified.
             </p>
-            <span className={styles.academyCertEyebrow}>Certification program</span>
-            <h2>Cruise Travel Certification Level 1(CTEC 1)</h2>
-            <div className={styles.academyHeroActions}>
-              <Link href={certificationHref(academyModules[0])} className={styles.btnPrimary}>
-                Enrol for certification
-              </Link>
-              <Link href="#modules" className={styles.academyHeroSecondary}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-                  <path d="m10 8 6 4-6 4V8Z" fill="currentColor" />
-                </svg>
-                View program details
-              </Link>
-            </div>
+            <HeroCertification href={certificationHref(academyModules[0])} secondaryHref="#modules" secondaryLabel="View program" />
           </div>
           <div className={styles.academyHeroCertificate}>
-            <Image src={certificateImg} alt="Cruise Travel Certification Level 1(CTEC 1) sample certificate" priority sizes="(max-width: 780px) 92vw, 48vw" />
+            <Image src={certificateImg} alt="Certified Cruise Expert Level 1 (CCE 1) sample certificate" priority sizes="(max-width: 780px) 92vw, 48vw" />
           </div>
         </div>
       </section>

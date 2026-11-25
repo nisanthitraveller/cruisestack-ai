@@ -152,7 +152,7 @@
   padding: 56px 15px 128px; /* 44px + the 84px stats overlap */
 }
 .hero h1 {
-  font-size: clamp(32px, 4vw, 52px);
+  font-size: clamp(32px, 4vw, 46px);
   font-weight: 800;
   line-height: 1.04;
   letter-spacing: -2px;
@@ -160,7 +160,7 @@
   margin-bottom: 22px;
 }
 .hero p {
-  max-width: 480px;
+  max-width: 710px;
   margin-bottom: 34px;
   font-size: 19px;
   line-height: 1.6;

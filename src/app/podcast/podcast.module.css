@@ -1,6 +1,6 @@
 /* ─────────────────────────────────────────────────────────────
    cruisestack Podcast  |  listing page
-   container 1320px  |  hero h1 clamp(32px, 4vw, 52px), body 16px
+   container 1320px  |  hero h1 clamp(32px, 4vw, 46px), body 16px
    ───────────────────────────────────────────────────────────── */
 
 .page {
@@ -103,7 +103,7 @@
 .hero h1 {
   max-width: 620px;
   margin-bottom: 18px;
-  font-size: clamp(32px, 4vw, 52px);
+  font-size: clamp(32px, 4vw, 46px);
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -1.4px;

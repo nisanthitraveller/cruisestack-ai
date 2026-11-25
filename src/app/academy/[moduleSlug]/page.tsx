@@ -4,10 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer/footer";
+import HeroCertification from "../HeroCertification";
 import PartnerCard from "../PartnerCard";
 import StickyEnrol from "../StickyEnrol";
 import WatchGate from "../WatchGate";
-import CertificationCard, { CertificationCardView } from "../CertificationCard";
+import CertificationCard from "../CertificationCard";
 import Header from "@/components/Header/header";
 import styles from "../academy.module.css";
 import {
@@ -69,33 +70,21 @@ export default async function ModulePage({ params }: Props) {
           <span className={styles.eyebrow}>Module {m.number}</span>
           <h1>{m.heading ?? m.title}</h1>
           <p>{m.intro ?? m.description}</p>
+          <HeroCertification href={certificationHref(m)} secondaryHref="#chapters" secondaryLabel="View chapters" />
         </div>
       </section>
 
       <div className={styles.container}>
-        {/* ───── CERTIFICATION ───── */}
+        {/* ───── ENROLMENT CONFIRMATION (only after enrolling) ───── */}
         {m.chapters.length > 0 && (
-          <Suspense
-            fallback={
-              <CertificationCardView
-                moduleTitle={m.title}
-                enrolHref={certificationHref(m)}
-                examUrl={examFormUrl(m)}
-                success={false}
-              />
-            }
-          >
-            <CertificationCard
-              moduleTitle={m.title}
-              enrolHref={certificationHref(m)}
-              examUrl={examFormUrl(m)}
-            />
+          <Suspense fallback={null}>
+            <CertificationCard moduleTitle={m.title} examUrl={examFormUrl(m)} />
           </Suspense>
         )}
       </div>
 
       {/* ───── CHAPTERS ───── */}
-      <section className={styles.section}>
+      <section id="chapters" className={styles.section}>
         <div className={styles.container}>
           <div className={styles.split}>
             <div className={styles.illustration} aria-hidden="true">

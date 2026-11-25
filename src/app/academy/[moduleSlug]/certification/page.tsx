@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const found = getModule((await params).moduleSlug);
   if (!found) return {};
   return {
-    title: "Cruise Travel Certification Level 1(CTEC 1) | cruisestack.ai Academy",
+    title: "Certified Cruise Expert Level 1 (CCE 1) | cruisestack.ai Academy",
     description:
       "A professional credential in cruise selling. Watch the five free cruisestack.ai Academy modules, take the assessment and earn a certificate with your score.",
     robots: { index: false }, // a registration form, not a page to rank
@@ -116,7 +116,7 @@ export default async function CertificationEnrolPage({ params }: Props) {
         <div className={`${styles.container} ${styles.cpHeroGrid}`}>
           <div>
             <span className={styles.cpEyebrow}>cruisestack.ai Academy · Certification</span>
-            <h1>Cruise Travel Certification Level 1(CTEC 1)</h1>
+            <h1>Certified Cruise Expert Level 1 (CCE 1)</h1>
             <p className={styles.cpLead}>A professional credential in cruise selling</p>
             <ul className={styles.cpChecks}>
               <li><Tick /><span><strong>The course is free.</strong> All five modules, before and after you enrol.</span></li>
@@ -129,7 +129,7 @@ export default async function CertificationEnrolPage({ params }: Props) {
           </div>
           <Image
             src={certificateImg}
-            alt="Sample Cruise Travel Certification Level 1(CTEC 1) certificate"
+            alt="Sample Certified Cruise Expert Level 1 (CCE 1) certificate"
             className={styles.cpHeroCert}
             sizes="(max-width: 900px) 100vw, 600px"
             priority
@@ -199,7 +199,7 @@ export default async function CertificationEnrolPage({ params }: Props) {
           <div className={styles.cpPriceCard}>
             <div className={styles.cpPriceHead}>
               <div className={styles.cpPrice}><span>$</span>99</div>
-              <p>One-time fee · Cruise Travel Certification Level 1(CTEC 1), all five modules</p>
+              <p>One-time fee · Certified Cruise Expert Level 1 (CCE 1), all five modules</p>
             </div>
             <div className={styles.cpIncluded}>
               <ul>
@@ -219,7 +219,7 @@ export default async function CertificationEnrolPage({ params }: Props) {
       {/* ───── FAQ ───── */}
       <section className={styles.cpSection}>
         <div className={`${styles.container} ${styles.cpNarrow}`}>
-          <h2 className={styles.cpTitle}>Before you enrol</h2>
+          <h2 className={styles.cpTitle}>Frequently asked questions</h2>
           <div className={styles.cpFaq}>
             {faqs.map((f) => (
               <details key={f.q}>

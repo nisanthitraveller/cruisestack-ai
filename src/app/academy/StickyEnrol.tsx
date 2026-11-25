@@ -2,7 +2,7 @@ import Link from "next/link";
 import styles from "./academy.module.css";
 import { ArrowRight } from "./icons";
 
-// Full-width bar pinned to the bottom of the screen with the "Enrol for certification"
+// Full-width bar pinned to the bottom of the screen with the "Get certified"
 // button. It's sticky (not fixed) and sits just above the footer, so when the footer
 // comes into view the bar scrolls up with the page instead of covering it.
 export default function StickyEnrol({ href }: { href: string }) {
@@ -10,7 +10,7 @@ export default function StickyEnrol({ href }: { href: string }) {
     <div className={styles.stickyEnrol}>
       <div className={`${styles.container} ${styles.stickyEnrolInner}`}>
         <Link href={href} className={styles.btnPrimary}>
-          Enrol for certification <ArrowRight size={18} />
+          Get certified <ArrowRight size={18} />
         </Link>
       </div>
     </div>

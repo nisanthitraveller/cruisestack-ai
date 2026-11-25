@@ -78,7 +78,7 @@
 }
 
 .heroTitle {
-  font-size: clamp(32px, 4vw, 52px);
+  font-size: clamp(32px, 4vw, 46px);
   font-weight:700;
   color: #ffffff;
   line-height: 1.1;
