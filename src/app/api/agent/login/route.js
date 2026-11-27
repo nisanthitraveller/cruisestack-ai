@@ -8,6 +8,10 @@ import {
   findCompanyBySlug,
   getAgentCookieOptions,
 } from "@/lib/agentAuth";
+import {
+  findLatestCompanySubscription,
+  isActiveCompanySubscription,
+} from "@/lib/subscriptionAccess";
 
 function whitelabelPath(company, agent, token) {
   const agentSlug = String(company.slug || "");
@@ -79,6 +83,36 @@ export async function POST(request) {
         { message: "Invalid agent credentials" },
         { status: 401 },
       );
+    }
+
+    const subscription = await findLatestCompanySubscription(
+      connection,
+      company.id,
+    );
+
+    if (!isActiveCompanySubscription(company, subscription)) {
+      // Keep the user authenticated on the public app so Stripe checkout can
+      // resolve the company, but do not issue a tenant dashboard redirect.
+      const publicSession = await createAgentSessionRecord(
+        connection,
+        agent,
+        company,
+      );
+      const response = NextResponse.json(
+        {
+          ok: true,
+          dashboardAccess: false,
+          code: "SUBSCRIPTION_REQUIRED",
+          message: "Please select and activate a subscription to continue",
+          redirectUrl: `/pricing?company=${encodeURIComponent(company.slug)}`,
+        },
+      );
+      response.cookies.set(
+        AGENT_SESSION_COOKIE,
+        publicSession.cookieValue,
+        getAgentCookieOptions(),
+      );
+      return response;
     }
 
     const agentSession = await createAgentSessionRecord(

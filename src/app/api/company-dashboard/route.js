@@ -7,6 +7,10 @@ import {
   findFirstCompanyAgent,
   getAgentCookieOptions,
 } from "@/lib/agentAuth";
+import {
+  findLatestCompanySubscription,
+  isActiveCompanySubscription,
+} from "@/lib/subscriptionAccess";
 
 const PUBLIC_APP_ORIGIN = "https://cruisestack.ai";
 
@@ -28,22 +32,6 @@ function whitelabelPath(company, agent, token) {
   return `/agents/${encodeURIComponent(agentSlug)}/api/company/whitelabel?${params.toString()}`;
 }
 
-function isActiveSubscription(company, subscription) {
-  if (!company || !subscription) return false;
-
-  const paymentStatus = String(subscription.payment_status || "").toLowerCase();
-  const stripeStatus = String(subscription.stripe_status || "").toLowerCase();
-
-  return (
-    Number(company.status) === 1 &&
-    Number(subscription.status) === 1 &&
-    (paymentStatus === "paid" ||
-      stripeStatus === "active" ||
-      stripeStatus === "trialing" ||
-      stripeStatus === "manual_active")
-  );
-}
-
 export async function GET(request) {
   let connection;
 
@@ -63,18 +51,12 @@ export async function GET(request) {
       return redirectTo("/login?dashboard=company-not-found");
     }
 
-    const [subscriptions] = await connection.query(
-      `
-      SELECT payment_status, stripe_status, status
-      FROM company_subscriptions
-      WHERE company_id = ?
-      ORDER BY id DESC
-      LIMIT 1
-      `,
-      [company.id],
+    const subscription = await findLatestCompanySubscription(
+      connection,
+      company.id,
     );
 
-    if (!isActiveSubscription(company, subscriptions[0] || null)) {
+    if (!isActiveCompanySubscription(company, subscription)) {
       return redirectTo(`/pricing?company=${encodeURIComponent(company.slug)}&dashboard=inactive`);
     }
 

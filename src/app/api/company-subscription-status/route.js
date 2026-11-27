@@ -1,22 +1,7 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db_mysql";
 import { findCompanyBySlug } from "@/lib/agentAuth";
-
-function isActiveSubscription(company, subscription) {
-  if (!company || !subscription) return false;
-
-  const paymentStatus = String(subscription.payment_status || "").toLowerCase();
-  const stripeStatus = String(subscription.stripe_status || "").toLowerCase();
-
-  return (
-    Number(company.status) === 1 &&
-    Number(subscription.status) === 1 &&
-    (paymentStatus === "paid" ||
-      stripeStatus === "active" ||
-      stripeStatus === "trialing" ||
-      stripeStatus === "manual_active")
-  );
-}
+import { isActiveCompanySubscription } from "@/lib/subscriptionAccess";
 
 export async function GET(request) {
   let connection;
@@ -69,7 +54,7 @@ export async function GET(request) {
       currentPeriodStart: subscription?.current_period_start || null,
       dashboardUrl: `/api/company-dashboard?company=${encodeURIComponent(company.slug)}`,
       hasSubscription: Boolean(subscription),
-      isActive: isActiveSubscription(company, subscription),
+      isActive: isActiveCompanySubscription(company, subscription),
       paymentMethod: subscription?.payment_method || "stripe",
       paymentStatus: subscription?.payment_status || null,
       planName: subscription?.plan_name || company.plan_type || null,

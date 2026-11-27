@@ -43,6 +43,10 @@ function LoginContent() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.code === "SUBSCRIPTION_REQUIRED" && data.redirectUrl) {
+          router.push(data.redirectUrl);
+          return;
+        }
         throw new Error(data.message || "Unable to log in");
       }
 
