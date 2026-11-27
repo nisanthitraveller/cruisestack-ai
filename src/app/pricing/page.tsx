@@ -543,6 +543,43 @@ function PricingContent() {
             </Link>
           </section>
         ) : null}
+
+        {!payTestActive &&
+        companySlug &&
+        !checkingSubscription &&
+        subscriptionStatus?.companyFound &&
+        !subscriptionStatus.isActive &&
+        !subscriptionStatus.hasSubscription ? (
+          <section className="pricing-subscription-card warning">
+            <span>Subscription not active</span>
+            <strong>{subscriptionStatus.companyName || companySlug}</strong>
+            <p>
+              We could not find an active subscription for this company. If
+              your subscription is handled manually, please contact our
+              representative to activate your dashboard access.
+            </p>
+          </section>
+        ) : null}
+
+        {!payTestActive &&
+        companySlug &&
+        !checkingSubscription &&
+        subscriptionStatus?.companyFound &&
+        !subscriptionStatus.isActive &&
+        subscriptionStatus.hasSubscription ? (
+          <section className="pricing-subscription-card warning">
+            <span>Subscription payment pending</span>
+            <strong>{subscriptionStatus.companyName || companySlug}</strong>
+            <p>
+              Your subscription payment is currently{" "}
+              {subscriptionStatus.stripeStatus ||
+                subscriptionStatus.paymentStatus ||
+                "pending"}
+              , so dashboard access is temporarily unavailable. Please complete
+              the payment or contact our representative for assistance.
+            </p>
+          </section>
+        ) : null}
         {checkoutError ? <div className="form-alert error">{checkoutError}</div> : null}
   {/* <div
   className="billing-toggle"
