@@ -383,7 +383,13 @@ function PricingContent() {
 
 
 
-  const paymentsHidden = Boolean(subscriptionStatus?.isActive);
+  const hasExistingSubscription = Boolean(subscriptionStatus?.hasSubscription);
+  const paymentsHidden = Boolean(
+    subscriptionStatus?.isActive || hasExistingSubscription,
+  );
+  const hidePlanSelection = Boolean(
+    companySlug && (checkingSubscription || hasExistingSubscription),
+  );
   const boldFeatures = new Set([
     "B2B integration",
     "User login integration",
@@ -569,7 +575,15 @@ function PricingContent() {
         subscriptionStatus.hasSubscription ? (
           <section className="pricing-subscription-card warning">
             <span>Subscription payment pending</span>
-            <strong>{subscriptionStatus.companyName || companySlug}</strong>
+            <strong>
+              {subscriptionStatus.companyName || companySlug} -{" "}
+              {subscriptionStatus.planName || "Selected plan"}
+            </strong>
+            <p>
+              Billing cycle: {subscriptionStatus.billingCycle || "Not available"}
+              {" · "}Payment method:{" "}
+              {subscriptionStatus.paymentMethod || "stripe"}
+            </p>
             <p>
               Your subscription payment is currently{" "}
               {subscriptionStatus.stripeStatus ||
@@ -654,7 +668,10 @@ function PricingContent() {
   <span className="save_badge">Save 20%</span>
 </div> */}
 
-        <section className="pricing-grid structural-four-columns">
+        <section
+          className="pricing-grid structural-four-columns"
+          style={hidePlanSelection ? { display: "none" } : undefined}
+        >
 
 
           {plans.map((plan) => (
